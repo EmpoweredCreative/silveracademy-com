@@ -188,7 +188,7 @@ watch(() => props.form.type, (newType) => {
         <!-- Event-specific fields -->
         <template v-if="isEvent">
             <div class="border-t border-slate-200 pt-6">
-                <h3 class="text-lg font-medium text-slate-900 mb-4">Event Details</h3>
+                <h3 class="text-lg font-serif font-semibold text-slate-900 mb-4">Event Details</h3>
                 
                 <!-- Event Dates -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
