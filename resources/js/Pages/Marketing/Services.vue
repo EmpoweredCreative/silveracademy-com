@@ -20,28 +20,28 @@ const gradeLevels = [
         subtitle: 'Early Childhood Program',
         description: 'Early literacy and numeracy, creative play, social-emotional development, and introduction to Jewish stories, songs, and traditions.',
         image: 'https://images.unsplash.com/photo-1587654780291-39c9404d746b?auto=format&fit=crop&w=800&q=80',
-        link: '#'
+        link: '/programs/ganeinu'
     },
     {
         title: 'Kindergarten',
         subtitle: 'Foundational Skills',
         description: 'Foundational skills in reading, math, and science alongside art, music, and movement. Jewish values and Torah studies integrated into daily lessons.',
         image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=800&q=80',
-        link: '#'
+        link: '/programs/kindergarten'
     },
     {
         title: 'Lower School',
         subtitle: 'Grades 1-4',
         description: 'Strong academic foundation, project-based learning, STEAM enrichment, and Hebrew language. Focus on social-emotional learning and character building.',
         image: 'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=800&q=80',
-        link: '#'
+        link: '/programs/lower-school'
     },
     {
         title: 'Upper School',
         subtitle: 'Grades 5-8',
         description: 'Advanced academics with critical thinking focus. Leadership opportunities, continued Judaic studies, and hands-on technology projects.',
         image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80',
-        link: '#'
+        link: '/programs/upper-school'
     }
 ];
 
@@ -87,7 +87,7 @@ const enrichment = [
         </section>
 
         <!-- Our Approach & Pillars -->
-        <section class="py-24 bg-slate-50">
+        <section id="our-approach" class="py-24 bg-slate-50">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
                 <div class="text-center mb-16">
                     <h2 class="font-serif text-3xl text-slate-800 font-bold mb-4">Our Approach</h2>
@@ -162,12 +162,15 @@ const enrichment = [
                                     <p class="text-white/90 mb-6 leading-relaxed text-sm md:text-base">
                                         {{ grade.description }}
                                     </p>
-                                    <span class="inline-flex items-center text-white font-semibold text-sm uppercase tracking-wider hover:text-accent-300 transition-colors">
+                                    <Link 
+                                        :href="grade.link"
+                                        class="inline-flex items-center text-white font-semibold text-sm uppercase tracking-wider hover:text-accent-300 transition-colors"
+                                    >
                                         Learn More
                                         <svg class="ml-2 w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                                         </svg>
-                                    </span>
+                                    </Link>
                                 </div>
                             </div>
                         </div>

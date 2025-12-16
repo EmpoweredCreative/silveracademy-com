@@ -12,31 +12,31 @@ const panels = [
         title: 'Small Class Sizes',
         description: 'Our low student-to-teacher ratio ensures that every child is seen, heard, and valued. Teachers tailor instruction to meet individual needs, fostering deep understanding and academic confidence.',
         image: 'https://images.unsplash.com/photo-1544531586-fde5298cdd40?auto=format&fit=crop&w=800&q=80',
-        link: '/about'
+        link: '/about#why-silver-academy'
     },
     {
         title: 'Dual Curriculum',
         description: 'We seamlessly integrate rigorous general studies with rich Jewish education, empowering students to navigate the world with intellectual depth and spiritual grounding.',
         image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80',
-        link: '/programs'
+        link: '/services#our-approach'
     },
     {
         title: 'Restorative Culture',
         description: 'We prioritize social-emotional learning and character development, building a community rooted in empathy, respect, and mutual responsibility.',
         image: 'https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&w=800&q=80',
-        link: '/about'
+        link: '/about#why-silver-academy'
     },
     {
         title: 'Joyful Learning',
         description: 'Education should be exciting. We create a dynamic environment where curiosity thrives, questions are encouraged, and learning is a daily adventure.',
         image: 'https://images.unsplash.com/photo-1488998427799-e3362cec87c3?auto=format&fit=crop&w=800&q=80',
-        link: '/programs'
+        link: '/services'
     },
     {
         title: 'Accessible Education',
         description: 'We are committed to making a Silver Academy education reachable for every family through generous scholarship programs and tuition assistance.',
         image: 'https://images.unsplash.com/photo-1571260899304-425eee4c7efc?auto=format&fit=crop&w=800&q=80',
-        link: '/admissions'
+        link: '/admissions#tuition'
     },
     {
         title: 'Family Partnership',
@@ -52,28 +52,28 @@ const gradeLevels = [
         subtitle: 'Preschool',
         description: 'Our early childhood program fosters creativity, socialization, and a love for Jewish traditions in a warm, nurturing environment.',
         image: 'https://images.unsplash.com/photo-1587654780291-39c9404d746b?auto=format&fit=crop&w=800&q=80',
-        link: '#'
+        link: '/programs/ganeinu'
     },
     {
         title: 'Kindergarten',
         subtitle: 'Foundations',
         description: 'Building strong foundations in literacy, numeracy, and Hebrew language through play-based and structured learning.',
         image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=800&q=80',
-        link: '#'
+        link: '/programs/kindergarten'
     },
     {
         title: 'Lower School',
         subtitle: 'Grades 1-4',
         description: 'Developing critical thinking skills and independence while deepening connection to Jewish identity and community.',
         image: 'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=800&q=80',
-        link: '#'
+        link: '/programs/lower-school'
     },
     {
         title: 'Upper School',
         subtitle: 'Grades 5-8',
         description: 'Preparing students for high school and beyond with rigorous academics, leadership opportunities, and ethical growth.',
         image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80',
-        link: '#'
+        link: '/programs/upper-school'
     }
 ];
 
@@ -322,12 +322,15 @@ const stats = [
                                     <p class="text-white/90 mb-6 leading-relaxed">
                                         {{ grade.description }}
                                     </p>
-                                    <span class="inline-flex items-center text-white font-semibold text-sm uppercase tracking-wider hover:text-accent-300 transition-colors">
+                                    <Link 
+                                        :href="grade.link"
+                                        class="inline-flex items-center text-white font-semibold text-sm uppercase tracking-wider hover:text-accent-300 transition-colors"
+                                    >
                                         Discover More
                                         <svg class="ml-2 w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                                         </svg>
-                                    </span>
+                                    </Link>
                                 </div>
                             </div>
                         </div>

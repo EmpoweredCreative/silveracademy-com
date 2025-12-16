@@ -15,15 +15,26 @@ const utilityNav = [
     { name: 'Schedule a Visit', href: '/contact' },
     { name: 'Apply', href: '#' },
     { name: 'Family Portal', href: '/login' },
-    { name: 'Give', href: '#' },
+    { name: 'Give', href: 'https://wl.donorperfect.net/weblink/WebLink.aspx?name=E341196&id=36' },
 ];
 
     const mainNav = [
         { name: 'Welcome', href: '/' },
         { name: 'About', href: '/about' },
         { name: 'Admissions', href: '/admissions' },
-        { name: 'Programs', href: '/services' },
-        { name: 'News & Events', href: '#' },
+        { 
+            name: 'Programs', 
+            href: '/services',
+            children: [
+                { name: 'Ganeinu (Preschool)', href: '/programs/ganeinu' },
+                { name: 'Kindergarten', href: '/programs/kindergarten' },
+                { name: 'Lower School', href: '/programs/lower-school' },
+                { name: 'Upper School', href: '/programs/upper-school' },
+                { name: 'After School', href: '/programs/after-school' },
+                { name: 'Parent Circle', href: '/programs/parent-circle' },
+            ]
+        },
+        { name: 'News & Events', href: '/news-events' },
         { name: 'Get Involved', href: '#' },
     ];
 
@@ -32,7 +43,7 @@ const footerNav = [
     { name: 'Admissions & Tours', href: '#' },
     { name: 'Student Life & Programs', href: '/services' },
     { name: 'Tuition & Scholarships', href: '#' },
-    { name: 'News & Events', href: '#' },
+    { name: 'News & Events', href: '/news-events' },
 ];
 
 const socialLinks = [
@@ -100,14 +111,43 @@ const socialLinks = [
                     
                     <!-- Desktop Navigation -->
                     <div class="hidden lg:flex lg:items-center lg:gap-x-1">
-                        <Link
-                            v-for="item in mainNav"
-                            :key="item.name"
-                            :href="item.href"
-                            class="px-3 py-2 text-sm font-medium uppercase tracking-wide text-slate-700 hover:text-brand-600 transition-colors duration-200"
-                        >
-                            {{ item.name }}
-                        </Link>
+                        <template v-for="item in mainNav" :key="item.name">
+                            <!-- Standard Link -->
+                            <Link
+                                v-if="!item.children"
+                                :href="item.href"
+                                class="px-3 py-2 text-sm font-medium uppercase tracking-wide text-slate-700 hover:text-brand-600 transition-colors duration-200"
+                            >
+                                {{ item.name }}
+                            </Link>
+
+                            <!-- Dropdown Menu -->
+                            <div v-else class="relative group">
+                                <Link
+                                    :href="item.href"
+                                    class="inline-flex items-center px-3 py-2 text-sm font-medium uppercase tracking-wide text-slate-700 hover:text-brand-600 transition-colors duration-200"
+                                >
+                                    {{ item.name }}
+                                    <svg class="ml-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </Link>
+
+                                <!-- Dropdown Content -->
+                                <div class="absolute left-0 mt-0 w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0 z-50">
+                                    <div class="rounded-md shadow-lg ring-1 ring-black ring-opacity-5 bg-white mt-2 py-1">
+                                        <Link
+                                            v-for="child in item.children"
+                                            :key="child.name"
+                                            :href="child.href"
+                                            class="block px-4 py-2 text-sm text-slate-700 hover:bg-brand-50 hover:text-brand-600 uppercase tracking-wide"
+                                        >
+                                            {{ child.name }}
+                                        </Link>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
                     </div>
                     
                     <!-- Contact Button -->
@@ -139,15 +179,32 @@ const socialLinks = [
                 <!-- Mobile Navigation -->
                 <div v-if="mobileMenuOpen" class="lg:hidden pb-4">
                     <div class="space-y-1">
-                        <Link
-                            v-for="item in mainNav"
-                            :key="item.name"
-                            :href="item.href"
-                            class="block px-3 py-2 text-base font-medium text-slate-700 hover:bg-brand-50 hover:text-brand-600 rounded-md"
-                            @click="mobileMenuOpen = false"
-                        >
-                            {{ item.name }}
-                        </Link>
+                        <template v-for="item in mainNav" :key="item.name">
+                            <Link
+                                v-if="!item.children"
+                                :href="item.href"
+                                class="block px-3 py-2 text-base font-medium text-slate-700 hover:bg-brand-50 hover:text-brand-600 rounded-md"
+                                @click="mobileMenuOpen = false"
+                            >
+                                {{ item.name }}
+                            </Link>
+                            <div v-else>
+                                <div class="block px-3 py-2 text-base font-medium text-slate-700 rounded-md">
+                                    {{ item.name }}
+                                </div>
+                                <div class="pl-4 space-y-1">
+                                    <Link
+                                        v-for="child in item.children"
+                                        :key="child.name"
+                                        :href="child.href"
+                                        class="block px-3 py-2 text-sm font-medium text-slate-600 hover:bg-brand-50 hover:text-brand-600 rounded-md"
+                                        @click="mobileMenuOpen = false"
+                                    >
+                                        {{ child.name }}
+                                    </Link>
+                                </div>
+                            </div>
+                        </template>
                     </div>
                     <div class="mt-4 pt-4 border-t border-slate-200">
                         <div class="space-y-1">
@@ -263,8 +320,14 @@ const socialLinks = [
                             >
                                 Family Portal
                             </Link>
+                            <Link 
+                                href="/login" 
+                                class="text-sm uppercase tracking-wide text-white hover:text-accent-300 transition-colors font-medium"
+                            >
+                                Staff Login
+                            </Link>
                             <a 
-                                href="#" 
+                                href="https://wl.donorperfect.net/weblink/WebLink.aspx?name=E341196&id=36" 
                                 class="text-sm uppercase tracking-wide text-white hover:text-accent-300 transition-colors font-medium"
                             >
                                 Give a Gift

@@ -6,10 +6,12 @@ import { Link } from '@inertiajs/vue3';
     <div class="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 via-white to-brand-50 px-4 py-12">
         <div class="w-full max-w-md">
             <div class="text-center mb-8">
-                <Link href="/">
-                    <span class="text-3xl font-bold bg-gradient-to-r from-brand-600 to-brand-800 bg-clip-text text-transparent">
-                        Silver Academy
-                    </span>
+                <Link href="/" class="inline-block">
+                    <img 
+                        src="/img/logo/silveracademylogo.png" 
+                        alt="The Silver Academy - Central PA's Jewish Day School" 
+                        class="h-12 sm:h-14 w-auto mx-auto"
+                    />
                 </Link>
             </div>
 

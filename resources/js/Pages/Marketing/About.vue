@@ -200,7 +200,7 @@ const cards = [
         </section>
 
         <!-- Three Cards Section -->
-        <section class="py-24 bg-white">
+        <section id="why-silver-academy" class="py-24 bg-white">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
                 <div class="grid md:grid-cols-3 gap-8 mb-24">
                     <div 

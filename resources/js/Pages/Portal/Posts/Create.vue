@@ -1,0 +1,53 @@
+<script setup>
+import { Head, Link, useForm } from '@inertiajs/vue3';
+import PortalLayout from '@/Layouts/PortalLayout.vue';
+import PostForm from '@/Components/Portal/PostForm.vue';
+
+const form = useForm({
+    type: 'news',
+    title: '',
+    content: '',
+    image: null,
+    event_start_date: '',
+    event_end_date: '',
+    button_text: '',
+    button_url: '',
+    publish_now: true,
+});
+
+const submit = () => {
+    form.post('/portal/posts', {
+        forceFormData: true,
+    });
+};
+</script>
+
+<template>
+    <Head title="Create Post" />
+
+    <PortalLayout>
+        <template #header>Create New Post</template>
+        
+        <div class="max-w-4xl mx-auto">
+            <!-- Header -->
+            <div class="mb-8">
+                <Link
+                    href="/portal/posts"
+                    class="inline-flex items-center text-sm text-slate-600 hover:text-slate-900 mb-4"
+                >
+                    <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                    Back to Posts
+                </Link>
+                <p class="text-slate-600">Create a news article or event to share with your community.</p>
+            </div>
+
+            <!-- Form -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <PostForm :form="form" @submit="submit" mode="create" />
+            </div>
+        </div>
+    </PortalLayout>
+</template>
+
