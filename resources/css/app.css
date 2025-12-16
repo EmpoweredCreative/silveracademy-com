@@ -1,0 +1,40 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+@source '../**/*.vue';
+
+@theme {
+    /* Typography */
+    --font-sans: 'Open Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-serif: 'Cormorant Garamond', 'Georgia', 'Times New Roman', serif;
+    
+    /* Silver Academy Brand Colors - Blue #5090cc */
+    --color-brand-50: #f0f6fb;
+    --color-brand-100: #dceaf6;
+    --color-brand-200: #bedaef;
+    --color-brand-300: #91c2e5;
+    --color-brand-400: #5da3d6;
+    --color-brand-500: #5090cc;
+    --color-brand-600: #3a74b3;
+    --color-brand-700: #325f92;
+    --color-brand-800: #2d5079;
+    --color-brand-900: #294465;
+    --color-brand-950: #1c2c43;
+    
+    /* Accent Color - Gold/Amber */
+    --color-accent-50: #fefbf3;
+    --color-accent-100: #fdf5e1;
+    --color-accent-200: #fae8be;
+    --color-accent-300: #f6d78f;
+    --color-accent-400: #f0c05e;
+    --color-accent-500: #e9a83a;
+    --color-accent-600: #d4892a;
+    --color-accent-700: #b06a24;
+    --color-accent-800: #8f5424;
+    --color-accent-900: #754520;
+    --color-accent-950: #40230f;
+}

@@ -1,0 +1,357 @@
+<script setup>
+import { ref } from 'vue';
+import { Head, Link } from '@inertiajs/vue3';
+import MarketingLayout from '@/Layouts/MarketingLayout.vue';
+
+const activePanel = ref(6); // Default to Accessible Education (index 6)
+
+const panels = [
+    {
+        title: 'Small Class Sizes',
+        description: 'With a maximum of 12 students per class, every child receives individualized attention.',
+        image: 'https://images.unsplash.com/photo-1544531586-fde5298cdd40?auto=format&fit=crop&w=800&q=80',
+        link: '/about'
+    },
+    {
+        title: 'Dual Excellence',
+        description: 'Integrated general and Judaic curriculum prepares students academically and spiritually.',
+        image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80',
+        link: '/programs'
+    },
+    {
+        title: 'Holistic Development',
+        description: 'Students explore art, music, STEM, and project-based learning.',
+        image: 'https://images.unsplash.com/photo-1488998427799-e3362cec87c3?auto=format&fit=crop&w=800&q=80',
+        link: '/programs'
+    },
+    {
+        title: 'Jewish Identity & Pride',
+        description: 'Torah, tradition, and values guide daily life, fostering confidence and connection.',
+        image: 'https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&w=800&q=80',
+        link: '/about'
+    },
+    {
+        title: 'Supportive Culture',
+        description: 'Restorative practices teach accountability, empathy, and emotional intelligence.',
+        image: 'https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&w=800&q=80',
+        link: '/about'
+    },
+    {
+        title: 'Family Partnership',
+        description: 'Transparent communication ensures parents are active partners in education.',
+        image: 'https://images.unsplash.com/photo-1536640712-4d4c36ff0e4e?auto=format&fit=crop&w=800&q=80',
+        link: '#'
+    },
+    {
+        title: 'Accessible Education',
+        description: 'Generous financial aid and EITC programs ensure every family has access.',
+        image: 'https://images.unsplash.com/photo-1571260899304-425eee4c7efc?auto=format&fit=crop&w=800&q=80',
+        link: '#tuition'
+    }
+];
+
+const steps = [
+    { title: 'Schedule a Tour', description: 'See our classrooms, meet our faculty, and experience the Silver Academy difference firsthand.' },
+    { title: 'Submit an Application', description: 'Complete our online application for your child’s grade. Include any supporting documents or recommendations.' },
+    { title: 'Meet with Our Team', description: 'An admissions meeting with our Head of School or Enrollment Coordinator allows us to understand your child’s unique needs and goals.' },
+    { title: 'Enrollment & Financial Aid', description: 'We review applications alongside financial aid requests to ensure all families can access a Silver Academy education.' },
+    { title: 'Welcome to the Community', description: 'Once accepted, families join a vibrant, supportive school community ready to nurture your child’s growth.' },
+];
+
+const tuition = [
+    { grade: 'Ganeinu', price: '$2,000' },
+    { grade: 'Kindergarten', price: '$10,000' },
+    { grade: 'Grade 1', price: '$32,500' },
+    { grade: 'Grades 2–8', price: '$35,000' },
+];
+
+const stats = [
+    { value: '61%', label: 'of students receive financial aid' },
+    { value: '$8,178', label: 'Average Tuition Paid' },
+    { value: '60%', label: 'Average Scholarship Award ($17,105)' },
+];
+
+const benefits = [
+    { title: 'Integrated Curriculum', description: 'Our general and Judaic studies are fully connected, fostering critical thinking, problem-solving, and creativity.' },
+    { title: 'Small Class Sizes', description: 'With no more than 12 students per class, every child receives individualized attention, support, and challenge.' },
+    { title: 'Hands-On Learning', description: 'Art, music, STEM, and project-based experiences help students explore, discover, and grow.' },
+    { title: 'Jewish Values, Universal Impact', description: 'Lessons rooted in Torah, tradition, and ethical principles nurture empathy, integrity, responsibility, and intentionality—skills that benefit every child.' },
+    { title: 'Restorative Practices', description: 'Our approach teaches accountability, conflict resolution, and emotional intelligence.' },
+    { title: 'Leadership and Community Service', description: 'Students develop confidence, collaboration skills, and a sense of purpose.' },
+];
+
+const testimonials = [
+    {
+        quote: "From the moment we joined Silver, we knew our children would be seen and supported. The small class sizes and individualized attention made all the difference. Our kids not only excel academically but also grow into kind, confident, and thoughtful young people.",
+        author: "Parent of 3 Silver Academy Students"
+    },
+    {
+        quote: "Silver gave me the tools to succeed academically and the values to navigate life with integrity and purpose. The sense of community and support I experienced has stayed with me through college and into my career.",
+        author: "Alumni Reflection"
+    },
+    {
+        quote: "Watching students grow and knowing we’ve contributed to their academic and personal journeys is the most rewarding part of being part of Silver Academy. The partnership with families and the dedication of our staff make this a truly special school.",
+        author: "Faculty & Volunteer Perspective"
+    }
+];
+</script>
+
+<template>
+    <Head title="Admissions - The Silver Academy" />
+
+    <MarketingLayout>
+        <!-- Hero Section -->
+        <section class="relative h-[400px] overflow-hidden">
+            <div class="absolute inset-0">
+                <img 
+                    src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=1920&q=80" 
+                    alt="Students" 
+                    class="w-full h-full object-cover opacity-100" 
+                />
+                <div class="absolute inset-0 bg-black/20"></div>
+            </div>
+        </section>
+
+        <!-- Intro Section -->
+        <section class="py-20 bg-white text-center">
+            <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                <div class="max-w-4xl mx-auto">
+                    <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl text-slate-800 leading-tight tracking-tight">
+                        Nurturing Confidence, Character,<br>and a Love of Learning
+                    </h1>
+                    <p class="mt-8 text-lg sm:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
+                        Join a small, values-driven school where students thrive academically, socially, and spiritually from Pre-K through 8th grade.
+                    </p>
+                    <div class="mt-10 flex justify-center gap-4">
+                        <Link href="#process" class="bg-accent-500 text-white px-8 py-3 rounded font-semibold uppercase tracking-wider hover:bg-accent-600 transition-colors">
+                            How to Apply
+                        </Link>
+                        <Link href="#tuition" class="bg-white text-brand-600 px-8 py-3 rounded font-semibold uppercase tracking-wider hover:bg-slate-50 transition-colors border-2 border-brand-100">
+                            Tuition & Aid
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Why Choose Silver - Interactive Panels -->
+        <section class="h-[600px] w-full flex bg-slate-900 overflow-hidden">
+            <div 
+                v-for="(panel, index) in panels" 
+                :key="index"
+                class="relative transition-all duration-500 ease-in-out border-r border-white/20 last:border-r-0 cursor-pointer overflow-hidden group"
+                :class="activePanel === index ? 'flex-grow-[4]' : 'flex-grow-[1] hover:flex-grow-[1.2]'"
+                @click="activePanel = index"
+            >
+                <!-- Background Image -->
+                <div class="absolute inset-0 transition-transform duration-700 ease-out"
+                     :class="activePanel === index ? 'scale-100' : 'scale-110 grayscale group-hover:grayscale-0'">
+                    <img :src="panel.image" :alt="panel.title" class="w-full h-full object-cover" />
+                    <!-- Overlay -->
+                    <div class="absolute inset-0 bg-brand-900/40 transition-opacity duration-300"
+                         :class="activePanel === index ? 'opacity-20' : 'opacity-60 group-hover:opacity-40'"></div>
+                     
+                     <!-- Blue overlay for inactive tabs -->
+                     <div class="absolute inset-0 bg-brand-600/80 mix-blend-multiply transition-opacity duration-300"
+                          :class="activePanel === index ? 'opacity-0' : 'opacity-100'"></div>
+                </div>
+
+                <!-- Vertical Title (Inactive State) -->
+                <div 
+                    class="absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-300"
+                    :class="activePanel === index ? 'opacity-0' : 'opacity-100'"
+                >
+                    <h3 class="text-white font-bold text-xl uppercase tracking-widest whitespace-nowrap rotate-180 writing-vertical-lr select-none drop-shadow-md">
+                        {{ panel.title }}
+                    </h3>
+                </div>
+
+                <!-- Content (Active State) -->
+                <div 
+                    class="absolute bottom-0 left-0 right-0 p-8 md:p-12 transition-all duration-500 transform"
+                    :class="activePanel === index ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'"
+                >
+                    <div class="bg-white/95 backdrop-blur-sm p-8 rounded-lg shadow-xl max-w-xl mx-auto md:mx-0">
+                        <h3 class="text-2xl font-serif font-bold text-slate-800 mb-4">{{ panel.title }}</h3>
+                        <p class="text-slate-600 mb-6 leading-relaxed">{{ panel.description }}</p>
+                        <Link 
+                            :href="panel.link" 
+                            class="inline-flex items-center text-sm font-bold text-brand-600 uppercase tracking-wider hover:text-brand-800 transition-colors"
+                        >
+                            {{ panel.title === 'Accessible Education' ? 'Tuition & Scholarships' : 'Learn More' }}
+                            <svg class="ml-2 w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                            </svg>
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Why A Jewish Day School -->
+        <section class="py-24 bg-slate-50">
+            <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                <div class="grid lg:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <span class="text-brand-500 font-bold tracking-wider uppercase mb-2 block">Why A Jewish Day School</span>
+                        <h2 class="font-serif text-3xl sm:text-4xl text-slate-800 font-bold mb-6">
+                            Learning, Character, and Community for Every Student
+                        </h2>
+                        <p class="text-lg text-slate-600 mb-6">
+                            At The Silver Academy, Jewish values guide everything we do, but the benefits extend to all students. Our integrated approach to learning combines rigorous academics, character development, and a supportive, inclusive community.
+                        </p>
+                        <p class="text-lg text-slate-600 mb-8">
+                            Children of all backgrounds gain the tools, confidence, and resilience they need to succeed in school and in life.
+                        </p>
+                        
+                        <div class="space-y-6">
+                            <div v-for="benefit in benefits.slice(0, 3)" :key="benefit.title">
+                                <h4 class="font-bold text-slate-800 mb-1">{{ benefit.title }}</h4>
+                                <p class="text-slate-600 text-sm">{{ benefit.description }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="relative h-full min-h-[500px]">
+                        <div class="absolute inset-0 bg-brand-500 rounded-2xl transform rotate-3"></div>
+                        <img 
+                            src="https://images.unsplash.com/photo-1587654780291-39c9404d746b?auto=format&fit=crop&w=800&q=80" 
+                            alt="Students learning" 
+                            class="absolute inset-0 w-full h-full object-cover rounded-2xl transform -rotate-3 hover:rotate-0 transition-transform duration-500 shadow-xl"
+                        />
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Admissions Process -->
+        <section id="process" class="py-24 bg-white">
+            <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="font-serif text-3xl text-slate-800 font-bold mb-4">Our Admissions Process</h2>
+                    <p class="text-lg text-slate-600">We strive to make the admissions experience welcoming, transparent, and straightforward.</p>
+                </div>
+
+                <div class="max-w-4xl mx-auto">
+                    <div class="relative">
+                        <!-- Line -->
+                        <div class="absolute left-8 top-0 bottom-0 w-0.5 bg-brand-100 hidden md:block"></div>
+                        
+                        <div class="space-y-12">
+                            <div v-for="(step, index) in steps" :key="index" class="relative flex gap-8 items-start">
+                                <div class="flex-shrink-0 w-16 h-16 bg-brand-500 rounded-full flex items-center justify-center text-white font-bold text-xl z-10 border-4 border-white shadow-md">
+                                    {{ index + 1 }}
+                                </div>
+                                <div class="pt-3">
+                                    <h3 class="text-xl font-bold text-slate-800 mb-2">{{ step.title }}</h3>
+                                    <p class="text-slate-600 leading-relaxed">{{ step.description }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-16 text-center">
+                        <a href="#" class="inline-block bg-accent-500 text-white px-10 py-4 rounded font-bold uppercase tracking-wider hover:bg-accent-600 transition-colors shadow-lg hover:shadow-xl">
+                            Apply Now
+                        </a>
+                        <p class="mt-4 text-sm text-slate-500">Start your online application today</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tuition Section -->
+        <section id="tuition" class="py-24 bg-slate-50">
+            <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="font-serif text-3xl text-slate-800 font-bold mb-4">Tuition & Financial Support</h2>
+                    <p class="text-lg text-slate-600 max-w-3xl mx-auto">
+                        We are committed to making an excellent education accessible for all families.
+                        Finances are never a barrier to a high-quality Jewish education.
+                    </p>
+                </div>
+
+                <div class="grid lg:grid-cols-2 gap-12">
+                    <!-- Pricing Card -->
+                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
+                        <h3 class="text-xl font-bold text-brand-600 mb-6 uppercase tracking-wide">Full-Cost Tuition</h3>
+                        <div class="space-y-4">
+                            <div v-for="item in tuition" :key="item.grade" class="flex justify-between items-center py-4 border-b border-slate-100 last:border-0">
+                                <span class="font-medium text-slate-700">{{ item.grade }}</span>
+                                <span class="font-bold text-slate-900">{{ item.price }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Aid Stats -->
+                    <div class="space-y-8">
+                        <div class="bg-brand-500 p-8 rounded-2xl text-white text-center">
+                            <h3 class="text-2xl font-serif font-bold mb-2">Scholarships Available</h3>
+                            <p class="text-white/90">Through scholarships, tuition assistance, and community programs, we ensure access for all.</p>
+                        </div>
+                        
+                        <div class="grid sm:grid-cols-3 gap-4">
+                            <div v-for="stat in stats" :key="stat.label" class="bg-white p-6 rounded-xl text-center shadow-sm border border-slate-100">
+                                <div class="text-3xl font-bold text-brand-600 mb-2">{{ stat.value }}</div>
+                                <div class="text-xs text-slate-500 uppercase tracking-wide">{{ stat.label }}</div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-8 rounded-2xl border-l-4 border-accent-500 shadow-sm">
+                            <h4 class="font-bold text-slate-800 mb-2">EITC & OSTC Programs</h4>
+                            <p class="text-slate-600 text-sm mb-4">Redirect PA state taxes to support scholarships.</p>
+                            <a href="#" class="text-brand-600 font-semibold hover:text-brand-700 text-sm flex items-center">
+                                Learn more about EITC
+                                <svg class="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Alumni & Testimonials -->
+        <section class="py-24 bg-brand-900 text-white">
+            <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="font-serif text-3xl sm:text-4xl font-bold mb-4">Celebrating Generations of Lifelong Learners</h2>
+                    <p class="text-brand-100 max-w-3xl mx-auto">
+                        For more than 80 years, The Silver Academy has nurtured students who thrive academically, socially, and spiritually.
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div v-for="(testimonial, index) in testimonials" :key="index" class="bg-brand-800 p-8 rounded-xl relative">
+                        <svg class="w-10 h-10 text-accent-500 mb-4 opacity-50" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.996 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.984zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
+                        </svg>
+                        <p class="text-brand-50 mb-6 italic leading-relaxed">"{{ testimonial.quote }}"</p>
+                        <div class="text-accent-400 font-bold text-sm tracking-wide uppercase">{{ testimonial.author }}</div>
+                    </div>
+                </div>
+
+                <div class="mt-16 text-center">
+                    <div class="bg-white/10 p-8 rounded-2xl max-w-4xl mx-auto backdrop-blur-sm">
+                        <div class="flex flex-col md:flex-row items-center gap-8">
+                            <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=200&h=200&q=80" alt="Student" class="w-24 h-24 rounded-full object-cover border-4 border-accent-500" />
+                            <div class="text-left">
+                                <h3 class="text-xl font-bold text-white mb-2">Student Story: Alexandra</h3>
+                                <p class="text-brand-100 text-sm leading-relaxed">
+                                    Alexandra joined The Silver Academy as the youngest of four siblings. Initially shy, she thrived thanks to nurturing teachers. Now a first grader, Alexandra is a top reader, confident in her abilities, and proud of her Jewish identity.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </MarketingLayout>
+</template>
+
+<style scoped>
+.writing-vertical-lr {
+    writing-mode: vertical-lr;
+}
+</style>
+
