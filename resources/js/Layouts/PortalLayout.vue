@@ -14,9 +14,8 @@ const isAdmin = computed(() => {
 const navigation = computed(() => {
     const items = [
         { name: 'Dashboard', href: '/portal/dashboard' },
-        { name: 'Messages', href: '/portal/messages' },
+        { name: 'Lunch Menu', href: '/portal/lunch' },
         { name: 'Calendar', href: '/portal/calendar' },
-        { name: 'Documents', href: '/portal/documents' },
     ]
 
     if (isAdmin.value) {

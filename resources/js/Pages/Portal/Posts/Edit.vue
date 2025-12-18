@@ -7,16 +7,40 @@ const props = defineProps({
     post: Object,
 });
 
+// Format datetime for input fields (YYYY-MM-DDTHH:MM)
+const formatDateTimeLocal = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+};
+
+// Format date for input fields (YYYY-MM-DD)
+const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
+
 const form = useForm({
     type: props.post.type,
     title: props.post.title,
     content: props.post.content,
     image: null,
     remove_image: false,
-    event_start_date: props.post.event_start_date ? props.post.event_start_date.split('T')[0] : '',
-    event_end_date: props.post.event_end_date ? props.post.event_end_date.split('T')[0] : '',
+    event_start_date: formatDateTimeLocal(props.post.event_start_date),
+    event_end_date: formatDateTimeLocal(props.post.event_end_date),
     button_text: props.post.button_text || '',
     button_url: props.post.button_url || '',
+    recurrence_type: props.post.recurrence_type || 'none',
+    recurrence_end_date: formatDate(props.post.recurrence_end_date),
     published_at: props.post.published_at,
 });
 
@@ -24,7 +48,7 @@ const submit = () => {
     form.transform((data) => ({
         ...data,
         _method: 'PUT',
-    })).post(`/portal/posts/${props.post.id}`, {
+    })).post(`/portal/posts/${props.post.slug}`, {
         forceFormData: true,
     });
 };

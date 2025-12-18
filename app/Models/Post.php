@@ -23,14 +23,66 @@ class Post extends Model
         'event_end_date',
         'button_text',
         'button_url',
+        'recurrence_type',
+        'recurrence_end_date',
         'published_at',
     ];
 
     protected $casts = [
         'event_start_date' => 'datetime',
         'event_end_date' => 'datetime',
+        'recurrence_end_date' => 'date',
         'published_at' => 'datetime',
     ];
+
+    /**
+     * Check if this is a recurring event.
+     */
+    public function isRecurring(): bool
+    {
+        return $this->recurrence_type && $this->recurrence_type !== 'none';
+    }
+
+    /**
+     * Generate all occurrences of a recurring event within a date range.
+     */
+    public function getOccurrences(\DateTime $rangeStart, \DateTime $rangeEnd): array
+    {
+        if (!$this->isRecurring() || !$this->event_start_date) {
+            return [$this->event_start_date];
+        }
+
+        $occurrences = [];
+        $current = clone $this->event_start_date;
+        $endDate = $this->recurrence_end_date 
+            ? min($this->recurrence_end_date, $rangeEnd) 
+            : $rangeEnd;
+
+        while ($current <= $endDate) {
+            if ($current >= $rangeStart && $current <= $rangeEnd) {
+                $occurrences[] = clone $current;
+            }
+
+            switch ($this->recurrence_type) {
+                case 'daily':
+                    $current->modify('+1 day');
+                    break;
+                case 'weekly':
+                    $current->modify('+1 week');
+                    break;
+                case 'biweekly':
+                    $current->modify('+2 weeks');
+                    break;
+                case 'monthly':
+                    $current->modify('+1 month');
+                    break;
+                default:
+                    return $occurrences;
+            }
+        }
+
+        return $occurrences;
+    }
 
     /**
      * Boot the model.

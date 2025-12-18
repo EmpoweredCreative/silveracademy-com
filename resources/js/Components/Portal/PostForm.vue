@@ -53,7 +53,22 @@ watch(() => props.form.type, (newType) => {
         props.form.event_end_date = '';
         props.form.button_text = '';
         props.form.button_url = '';
+        props.form.recurrence_type = 'none';
+        props.form.recurrence_end_date = '';
     }
+});
+
+// Recurrence options
+const recurrenceOptions = [
+    { value: 'none', label: 'Does not repeat' },
+    { value: 'daily', label: 'Daily' },
+    { value: 'weekly', label: 'Weekly' },
+    { value: 'biweekly', label: 'Every 2 weeks' },
+    { value: 'monthly', label: 'Monthly' },
+];
+
+const showRecurrenceEndDate = computed(() => {
+    return props.form.recurrence_type && props.form.recurrence_type !== 'none';
 });
 </script>
 
@@ -217,6 +232,51 @@ watch(() => props.form.type, (newType) => {
                         />
                         <p v-if="form.errors.event_end_date" class="mt-1 text-sm text-red-600">{{ form.errors.event_end_date }}</p>
                     </div>
+                </div>
+
+                <!-- Recurrence Options -->
+                <div class="bg-slate-50 rounded-lg p-4 mb-4">
+                    <h4 class="text-sm font-medium text-slate-700 mb-3">
+                        <svg class="inline-block w-4 h-4 mr-1 -mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        Repeat Event
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="recurrence_type" class="block text-sm font-medium text-slate-600 mb-1">
+                                Frequency
+                            </label>
+                            <select
+                                id="recurrence_type"
+                                v-model="form.recurrence_type"
+                                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white"
+                            >
+                                <option 
+                                    v-for="option in recurrenceOptions" 
+                                    :key="option.value" 
+                                    :value="option.value"
+                                >
+                                    {{ option.label }}
+                                </option>
+                            </select>
+                        </div>
+                        <div v-if="showRecurrenceEndDate">
+                            <label for="recurrence_end_date" class="block text-sm font-medium text-slate-600 mb-1">
+                                Repeat Until
+                            </label>
+                            <input
+                                id="recurrence_end_date"
+                                type="date"
+                                v-model="form.recurrence_end_date"
+                                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                            />
+                            <p v-if="form.errors.recurrence_end_date" class="mt-1 text-sm text-red-600">{{ form.errors.recurrence_end_date }}</p>
+                        </div>
+                    </div>
+                    <p v-if="showRecurrenceEndDate" class="mt-2 text-xs text-slate-500">
+                        This event will repeat {{ form.recurrence_type === 'daily' ? 'every day' : form.recurrence_type === 'weekly' ? 'every week' : form.recurrence_type === 'biweekly' ? 'every 2 weeks' : 'every month' }} until the specified end date.
+                    </p>
                 </div>
 
                 <!-- Registration Button -->

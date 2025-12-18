@@ -9,17 +9,27 @@ const props = defineProps({
 });
 
 const confirmingDelete = ref(null);
+const deleteConfirmText = ref('');
 
-const deletePost = (postId) => {
-    router.delete(`/portal/posts/${postId}`, {
+const deletePost = (postSlug) => {
+    if (deleteConfirmText.value.toLowerCase() !== 'delete') {
+        return;
+    }
+    router.delete(`/portal/posts/${postSlug}`, {
         onSuccess: () => {
             confirmingDelete.value = null;
+            deleteConfirmText.value = '';
         },
     });
 };
 
-const togglePublish = (postId) => {
-    router.post(`/portal/posts/${postId}/toggle-publish`);
+const cancelDelete = () => {
+    confirmingDelete.value = null;
+    deleteConfirmText.value = '';
+};
+
+const togglePublish = (postSlug) => {
+    router.post(`/portal/posts/${postSlug}/toggle-publish`);
 };
 
 const formatDate = (date) => {
@@ -111,16 +121,29 @@ const formatDate = (date) => {
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <span
-                                    :class="[
-                                        'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
-                                        post.type === 'news' 
-                                            ? 'bg-blue-100 text-blue-800' 
-                                            : 'bg-purple-100 text-purple-800'
-                                    ]"
-                                >
-                                    {{ post.type === 'news' ? 'News' : 'Event' }}
-                                </span>
+                                <div class="flex items-center gap-2">
+                                    <span
+                                        :class="[
+                                            'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+                                            post.type === 'news' 
+                                                ? 'bg-blue-100 text-blue-800' 
+                                                : 'bg-purple-100 text-purple-800'
+                                        ]"
+                                    >
+                                        {{ post.type === 'news' ? 'News' : 'Event' }}
+                                    </span>
+                                    <!-- Recurrence indicator -->
+                                    <span 
+                                        v-if="post.recurrence_type && post.recurrence_type !== 'none'"
+                                        class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800"
+                                        :title="`Repeats ${post.recurrence_type}`"
+                                    >
+                                        <svg class="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                        </svg>
+                                        {{ post.recurrence_type === 'daily' ? 'Daily' : post.recurrence_type === 'weekly' ? 'Weekly' : post.recurrence_type === 'biweekly' ? 'Bi-weekly' : 'Monthly' }}
+                                    </span>
+                                </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span
@@ -146,7 +169,7 @@ const formatDate = (date) => {
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <div class="flex items-center justify-end gap-2">
                                     <button
-                                        @click="togglePublish(post.id)"
+                                        @click="togglePublish(post.slug)"
                                         :class="[
                                             'px-3 py-1 text-xs font-medium rounded-md transition-colors',
                                             post.published_at
@@ -157,31 +180,46 @@ const formatDate = (date) => {
                                         {{ post.published_at ? 'Unpublish' : 'Publish' }}
                                     </button>
                                     <Link
-                                        :href="`/portal/posts/${post.id}/edit`"
+                                        :href="`/portal/posts/${post.slug}/edit`"
                                         class="px-3 py-1 text-xs font-medium text-brand-700 bg-brand-50 hover:bg-brand-100 rounded-md transition-colors"
                                     >
                                         Edit
                                     </Link>
                                     <button
-                                        v-if="confirmingDelete !== post.id"
-                                        @click="confirmingDelete = post.id"
+                                        v-if="confirmingDelete !== post.slug"
+                                        @click="confirmingDelete = post.slug"
                                         class="px-3 py-1 text-xs font-medium text-red-700 bg-red-50 hover:bg-red-100 rounded-md transition-colors"
                                     >
                                         Delete
                                     </button>
-                                    <div v-else class="flex items-center gap-1">
-                                        <button
-                                            @click="deletePost(post.id)"
-                                            class="px-3 py-1 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors"
-                                        >
-                                            Confirm
-                                        </button>
-                                        <button
-                                            @click="confirmingDelete = null"
-                                            class="px-3 py-1 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-md transition-colors"
-                                        >
-                                            Cancel
-                                        </button>
+                                    <div v-else class="flex flex-col items-end gap-2">
+                                        <div class="flex items-center gap-2">
+                                            <input
+                                                v-model="deleteConfirmText"
+                                                type="text"
+                                                placeholder="Type 'delete'"
+                                                class="w-28 px-2 py-1 text-xs border border-red-300 rounded-md focus:ring-red-500 focus:border-red-500"
+                                                @keyup.enter="deletePost(post.slug)"
+                                            />
+                                            <button
+                                                @click="deletePost(post.slug)"
+                                                :disabled="deleteConfirmText.toLowerCase() !== 'delete'"
+                                                :class="[
+                                                    'px-3 py-1 text-xs font-medium rounded-md transition-colors',
+                                                    deleteConfirmText.toLowerCase() === 'delete'
+                                                        ? 'text-white bg-red-600 hover:bg-red-700'
+                                                        : 'text-red-300 bg-red-100 cursor-not-allowed'
+                                                ]"
+                                            >
+                                                Delete
+                                            </button>
+                                            <button
+                                                @click="cancelDelete"
+                                                class="px-3 py-1 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-md transition-colors"
+                                            >
+                                                Cancel
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </td>

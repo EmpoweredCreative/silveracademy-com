@@ -12,6 +12,8 @@ const form = useForm({
     event_end_date: '',
     button_text: '',
     button_url: '',
+    recurrence_type: 'none',
+    recurrence_end_date: '',
     publish_now: true,
 });
 

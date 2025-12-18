@@ -49,6 +49,8 @@ class PostController extends Controller
             'event_end_date' => 'nullable|date|after_or_equal:event_start_date',
             'button_text' => 'nullable|string|max:100',
             'button_url' => 'nullable|url|max:500',
+            'recurrence_type' => 'nullable|in:none,daily,weekly,biweekly,monthly',
+            'recurrence_end_date' => 'nullable|date|after:event_start_date',
             'publish_now' => 'boolean',
         ]);
 
@@ -68,6 +70,8 @@ class PostController extends Controller
             'event_end_date' => $validated['event_end_date'] ?? null,
             'button_text' => $validated['button_text'] ?? null,
             'button_url' => $validated['button_url'] ?? null,
+            'recurrence_type' => $validated['recurrence_type'] ?? 'none',
+            'recurrence_end_date' => $validated['recurrence_end_date'] ?? null,
             'published_at' => $request->boolean('publish_now') ? now() : null,
         ]);
 
@@ -100,6 +104,8 @@ class PostController extends Controller
             'event_end_date' => 'nullable|date|after_or_equal:event_start_date',
             'button_text' => 'nullable|string|max:100',
             'button_url' => 'nullable|url|max:500',
+            'recurrence_type' => 'nullable|in:none,daily,weekly,biweekly,monthly',
+            'recurrence_end_date' => 'nullable|date|after:event_start_date',
             'published_at' => 'nullable|date',
         ]);
 
@@ -128,6 +134,8 @@ class PostController extends Controller
             'event_end_date' => $validated['event_end_date'] ?? null,
             'button_text' => $validated['button_text'] ?? null,
             'button_url' => $validated['button_url'] ?? null,
+            'recurrence_type' => $validated['recurrence_type'] ?? 'none',
+            'recurrence_end_date' => $validated['recurrence_end_date'] ?? null,
             'published_at' => $validated['published_at'] ?? $post->published_at,
         ]);
 

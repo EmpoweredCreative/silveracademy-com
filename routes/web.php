@@ -5,6 +5,8 @@ use App\Http\Controllers\Marketing\NewsController;
 use App\Http\Controllers\Marketing\EventController;
 use App\Http\Controllers\Portal\DashboardController;
 use App\Http\Controllers\Portal\PostController;
+use App\Http\Controllers\Portal\CalendarController;
+use App\Http\Controllers\Portal\LunchMenuController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -47,6 +49,19 @@ Route::get('/events/{post:slug}', [EventController::class, 'show'])->name('event
 
 Route::middleware(['auth', 'verified'])->prefix('portal')->name('portal.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Calendar (accessible to all authenticated users)
+    Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar');
+
+    // Lunch Menus (view accessible to all, CRUD requires admin)
+    Route::get('/lunch', [LunchMenuController::class, 'index'])->name('lunch.index');
+    Route::middleware('admin')->group(function () {
+        Route::get('/lunch/create', [LunchMenuController::class, 'create'])->name('lunch.create');
+        Route::post('/lunch', [LunchMenuController::class, 'store'])->name('lunch.store');
+        Route::get('/lunch/{lunch}/edit', [LunchMenuController::class, 'edit'])->name('lunch.edit');
+        Route::put('/lunch/{lunch}', [LunchMenuController::class, 'update'])->name('lunch.update');
+        Route::delete('/lunch/{lunch}', [LunchMenuController::class, 'destroy'])->name('lunch.destroy');
+    });
 
     // Admin-only routes for managing posts
     Route::middleware('admin')->group(function () {

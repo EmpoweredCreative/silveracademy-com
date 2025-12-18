@@ -1,0 +1,110 @@
+<?php
+
+namespace App\Http\Controllers\Portal;
+
+use App\Http\Controllers\Controller;
+use App\Models\CalendarEvent;
+use App\Models\LunchMenu;
+use App\Models\Post;
+use Carbon\Carbon;
+use Inertia\Inertia;
+use Inertia\Response;
+
+class CalendarController extends Controller
+{
+    /**
+     * Display the calendar page.
+     */
+    public function index(): Response
+    {
+        // Define date range for recurring events (6 months before and after today)
+        $rangeStart = Carbon::now()->subMonths(1)->startOfMonth();
+        $rangeEnd = Carbon::now()->addMonths(12)->endOfMonth();
+
+        // Get calendar events from the CalendarEvent model
+        $calendarEvents = CalendarEvent::orderBy('event_date', 'asc')
+            ->get();
+
+        // Get events from the Post model (published events)
+        $posts = Post::where('type', 'event')
+            ->whereNotNull('published_at')
+            ->where('published_at', '<=', now())
+            ->get();
+
+        // Generate event instances (including recurring)
+        $postEvents = collect();
+        
+        foreach ($posts as $post) {
+            if ($post->isRecurring()) {
+                // Generate all occurrences for recurring events
+                $occurrences = $post->getOccurrences($rangeStart, $rangeEnd);
+                $occurrenceIndex = 0;
+                
+                foreach ($occurrences as $occurrence) {
+                    $postEvents->push([
+                        'id' => 'post-' . $post->id . '-' . $occurrenceIndex,
+                        'original_id' => $post->id,
+                        'title' => $post->title,
+                        'event_date' => $occurrence->format('Y-m-d\TH:i:s'),
+                        'event_end_date' => $post->event_end_date 
+                            ? $post->event_end_date->format('Y-m-d\TH:i:s') 
+                            : null,
+                        'description' => $post->content,
+                        'button_text' => $post->button_text,
+                        'button_url' => $post->button_url,
+                        'recurrence_type' => $post->recurrence_type,
+                        'is_recurring' => true,
+                        'type' => 'event',
+                    ]);
+                    $occurrenceIndex++;
+                }
+            } else {
+                // Single event
+                $postEvents->push([
+                    'id' => 'post-' . $post->id,
+                    'original_id' => $post->id,
+                    'title' => $post->title,
+                    'event_date' => $post->event_start_date,
+                    'event_end_date' => $post->event_end_date,
+                    'description' => $post->content,
+                    'button_text' => $post->button_text,
+                    'button_url' => $post->button_url,
+                    'recurrence_type' => 'none',
+                    'is_recurring' => false,
+                    'type' => 'event',
+                ]);
+            }
+        }
+
+        // Merge calendar events with post events
+        $events = $calendarEvents->map(function ($event) {
+            return [
+                'id' => $event->id,
+                'title' => $event->title,
+                'event_date' => $event->event_date,
+                'event_end_date' => $event->event_end_date,
+                'description' => $event->description,
+                'recurrence_type' => 'none',
+                'is_recurring' => false,
+                'type' => 'calendar',
+            ];
+        })->concat($postEvents);
+
+        // Get lunch menus
+        $lunchMenus = LunchMenu::orderBy('week_start', 'asc')
+            ->get()
+            ->map(function ($menu) {
+                return [
+                    'id' => $menu->id,
+                    'week_start' => $menu->week_start->format('Y-m-d'),
+                    'content' => $menu->content,
+                ];
+            });
+
+        return Inertia::render('Portal/Calendar', [
+            'events' => $events,
+            'lunchMenus' => $lunchMenus,
+        ]);
+    }
+}
+
