@@ -20,6 +20,8 @@ const navigation = computed(() => {
 
     if (isAdmin.value) {
         items.push({ name: 'News & Events', href: '/portal/posts' })
+        items.push({ name: 'Staff', href: '/portal/admin/staff' })
+        items.push({ name: 'Classrooms', href: '/portal/admin/classrooms' })
     }
 
     items.push({ name: 'Settings', href: '/portal/settings' })

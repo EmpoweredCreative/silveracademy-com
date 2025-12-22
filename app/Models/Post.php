@@ -16,6 +16,9 @@ class Post extends Model
         'slug',
         'user_id',
         'type',
+        'audience',
+        'target_grade_id',
+        'target_teacher_id',
         'title',
         'content',
         'image_path',
@@ -114,6 +117,22 @@ class Post extends Model
     }
 
     /**
+     * Get the target grade for this post (if grade-targeted).
+     */
+    public function targetGrade(): BelongsTo
+    {
+        return $this->belongsTo(Grade::class, 'target_grade_id');
+    }
+
+    /**
+     * Get the target teacher for this post (if teacher-targeted).
+     */
+    public function targetTeacher(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'target_teacher_id');
+    }
+
+    /**
      * Scope to only published posts.
      */
     public function scopePublished(Builder $query): Builder
@@ -148,6 +167,107 @@ class Post extends Model
                 $q->where('event_start_date', '>=', now())
                     ->orWhere('event_end_date', '>=', now());
             });
+    }
+
+    /**
+     * Scope to posts visible to everyone (public).
+     */
+    public function scopePublicAudience(Builder $query): Builder
+    {
+        return $query->where(function ($q) {
+            $q->where('audience', 'all')
+                ->orWhereNull('audience');
+        });
+    }
+
+    /**
+     * Scope to posts for all teachers (not public).
+     */
+    public function scopeTeachersOnly(Builder $query): Builder
+    {
+        return $query->where('audience', 'teachers_only');
+    }
+
+    /**
+     * Scope to posts for a specific grade's teachers.
+     */
+    public function scopeForGrade(Builder $query, int $gradeId): Builder
+    {
+        return $query->where('audience', 'grade_teachers')
+            ->where('target_grade_id', $gradeId);
+    }
+
+    /**
+     * Scope to posts for a specific teacher.
+     */
+    public function scopeForTeacher(Builder $query, int $teacherId): Builder
+    {
+        return $query->where('audience', 'specific_teacher')
+            ->where('target_teacher_id', $teacherId);
+    }
+
+    /**
+     * Scope to posts visible to a specific teacher (all applicable posts).
+     */
+    public function scopeVisibleToTeacher(Builder $query, User $teacher, ?int $gradeId = null): Builder
+    {
+        return $query->where(function ($q) use ($teacher, $gradeId) {
+            // All teachers announcements
+            $q->where('audience', 'teachers_only')
+                // Or grade-specific (if teacher has a grade)
+                ->when($gradeId, function ($q) use ($gradeId) {
+                    $q->orWhere(function ($q) use ($gradeId) {
+                        $q->where('audience', 'grade_teachers')
+                            ->where('target_grade_id', $gradeId);
+                    });
+                })
+                // Or specifically for this teacher
+                ->orWhere(function ($q) use ($teacher) {
+                    $q->where('audience', 'specific_teacher')
+                        ->where('target_teacher_id', $teacher->id);
+                });
+        });
+    }
+
+    /**
+     * Check if this post is for teachers only (any staff-only type).
+     */
+    public function isTeachersOnly(): bool
+    {
+        return in_array($this->audience, ['teachers_only', 'grade_teachers', 'specific_teacher']);
+    }
+
+    /**
+     * Check if this post is for a specific grade.
+     */
+    public function isForGrade(): bool
+    {
+        return $this->audience === 'grade_teachers';
+    }
+
+    /**
+     * Check if this post is for a specific teacher.
+     */
+    public function isForSpecificTeacher(): bool
+    {
+        return $this->audience === 'specific_teacher';
+    }
+
+    /**
+     * Get the target description for display.
+     */
+    public function getTargetDescription(): string
+    {
+        switch ($this->audience) {
+            case 'teachers_only':
+                return 'All Staff';
+            case 'grade_teachers':
+                return $this->targetGrade?->name . ' Teachers' ?? 'Grade Teachers';
+            case 'specific_teacher':
+                return $this->targetTeacher?->name ?? 'Specific Teacher';
+            default:
+                return 'Everyone';
+        }
     }
 
     /**

@@ -17,6 +17,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Staff Email Domain
+    |--------------------------------------------------------------------------
+    |
+    | This domain is used to verify staff registration. Only users with email
+    | addresses from this domain can self-register as staff members.
+    |
+    */
+
+    'staff_email_domain' => env('STAFF_EMAIL_DOMAIN', 'silveracademypa.org'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |

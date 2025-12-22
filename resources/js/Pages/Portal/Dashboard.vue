@@ -18,6 +18,7 @@ const props = defineProps({
     currentLunchMenu: Object,
     upcomingEvents: Array,
     recentAnnouncements: Array,
+    teacherAnnouncements: Array,
 });
 
 const previewRole = ref('admin'); // 'admin', 'teacher', 'parent'
@@ -57,7 +58,7 @@ const toggleRole = () => {
 const previewRoleLabel = computed(() => {
     const labels = {
         'admin': 'Admin View',
-        'teacher': 'Teacher View',
+        'teacher': 'Staff View',
         'parent': 'Parent View'
     };
     return labels[previewRole.value];
@@ -203,23 +204,88 @@ const formatWeekDate = (dateStr) => {
                 </div>
             </template>
 
-            <!-- TEACHER VIEW -->
+            <!-- STAFF VIEW -->
             <template v-else-if="previewRole === 'teacher'">
                 <div class="space-y-6">
-                    <!-- Teacher Welcome Card -->
+                    <!-- Staff Welcome Card -->
                     <div class="bg-gradient-to-r from-emerald-600 to-emerald-700 rounded-xl p-6 text-white shadow-lg">
                         <div class="flex items-center gap-4">
                             <div class="p-3 bg-white/10 rounded-lg backdrop-blur-sm">
                                 <AcademicCapIcon class="w-8 h-8 text-white" />
                             </div>
                             <div>
-                                <h2 class="text-xl font-serif font-semibold">Teacher Dashboard</h2>
+                                <h2 class="text-xl font-serif font-semibold">Staff Dashboard</h2>
                                 <p class="text-emerald-100 mt-1">Manage your classroom and communicate with parents</p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Teacher Quick Actions -->
+                    <!-- Staff Announcements -->
+                    <div v-if="teacherAnnouncements && teacherAnnouncements.length > 0" class="bg-amber-50 rounded-xl shadow-sm border border-amber-200 overflow-hidden">
+                        <div class="px-6 py-4 border-b border-amber-200 bg-amber-100">
+                            <div class="flex items-center gap-2">
+                                <MegaphoneIcon class="w-5 h-5 text-amber-700" />
+                                <h2 class="text-lg font-serif font-semibold text-amber-900">Staff Announcements</h2>
+                            </div>
+                        </div>
+                        <div class="divide-y divide-amber-200">
+                            <div
+                                v-for="announcement in teacherAnnouncements"
+                                :key="announcement.id"
+                                class="px-6 py-4 hover:bg-amber-100/50 transition-colors"
+                            >
+                                <div class="flex items-start gap-4">
+                                    <div class="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center"
+                                        :class="{
+                                            'bg-emerald-200': announcement.audience === 'teachers_only',
+                                            'bg-amber-200': announcement.audience === 'grade_teachers',
+                                            'bg-purple-200': announcement.audience === 'specific_teacher',
+                                        }"
+                                    >
+                                        <UserGroupIcon v-if="announcement.audience === 'teachers_only'" class="w-5 h-5 text-emerald-700" />
+                                        <svg v-else-if="announcement.audience === 'grade_teachers'" class="w-5 h-5 text-amber-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                        </svg>
+                                        <svg v-else class="w-5 h-5 text-purple-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center gap-2 flex-wrap">
+                                            <p class="text-sm font-medium text-amber-900">{{ announcement.title }}</p>
+                                            <!-- Target badge -->
+                                            <span 
+                                                v-if="announcement.audience === 'teachers_only'"
+                                                class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700"
+                                            >
+                                                All Staff
+                                            </span>
+                                            <span 
+                                                v-else-if="announcement.audience === 'grade_teachers'"
+                                                class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700"
+                                            >
+                                                {{ announcement.target_grade?.name || 'Grade' }}
+                                            </span>
+                                            <span 
+                                                v-else-if="announcement.audience === 'specific_teacher'"
+                                                class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-700"
+                                            >
+                                                For: {{ announcement.target_teacher?.name || 'You' }}
+                                            </span>
+                                        </div>
+                                        <p class="text-sm text-amber-700 mt-1 line-clamp-2">
+                                            {{ announcement.content.replace(/<[^>]*>/g, '').substring(0, 150) }}{{ announcement.content.length > 150 ? '...' : '' }}
+                                        </p>
+                                        <p class="text-xs text-amber-600 mt-2">
+                                            Posted {{ formatDate(announcement.published_at) }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Staff Quick Actions -->
                     <div class="bg-white rounded-xl shadow-sm border border-slate-200">
                         <div class="px-6 py-4 border-b border-slate-200">
                             <h2 class="text-lg font-serif font-semibold text-slate-900">Quick Actions</h2>
@@ -255,7 +321,7 @@ const formatWeekDate = (dateStr) => {
                         </div>
                     </div>
 
-                    <!-- Upcoming Events for Teacher -->
+                    <!-- Upcoming Events -->
                     <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                         <div class="px-6 py-4 border-b border-slate-200">
                             <div class="flex items-center justify-between">

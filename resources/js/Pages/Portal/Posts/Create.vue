@@ -3,8 +3,16 @@ import { Head, Link, useForm } from '@inertiajs/vue3';
 import PortalLayout from '@/Layouts/PortalLayout.vue';
 import PostForm from '@/Components/Portal/PostForm.vue';
 
+const props = defineProps({
+    grades: Array,
+    teachers: Array,
+});
+
 const form = useForm({
     type: 'news',
+    audience: 'all',
+    target_grade_id: null,
+    target_teacher_id: null,
     title: '',
     content: '',
     image: null,
@@ -47,7 +55,13 @@ const submit = () => {
 
             <!-- Form -->
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                <PostForm :form="form" @submit="submit" mode="create" />
+                <PostForm 
+                    :form="form" 
+                    :grades="grades" 
+                    :teachers="teachers" 
+                    @submit="submit" 
+                    mode="create" 
+                />
             </div>
         </div>
     </PortalLayout>

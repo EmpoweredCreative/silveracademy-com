@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
+use App\Models\Grade;
 use App\Models\Post;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -17,7 +19,7 @@ class PostController extends Controller
      */
     public function index(Request $request): Response
     {
-        $posts = Post::with('author')
+        $posts = Post::with(['author', 'targetGrade', 'targetTeacher'])
             ->orderBy('created_at', 'desc')
             ->paginate(15);
 
@@ -32,7 +34,15 @@ class PostController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('Portal/Posts/Create');
+        $grades = Grade::orderBy('sort_order')->get(['id', 'name']);
+        $teachers = User::where('role', User::ROLE_TEACHER)
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        return Inertia::render('Portal/Posts/Create', [
+            'grades' => $grades,
+            'teachers' => $teachers,
+        ]);
     }
 
     /**
@@ -42,6 +52,9 @@ class PostController extends Controller
     {
         $validated = $request->validate([
             'type' => 'required|in:news,event',
+            'audience' => 'nullable|in:all,teachers_only,grade_teachers,specific_teacher',
+            'target_grade_id' => 'nullable|exists:grades,id',
+            'target_teacher_id' => 'nullable|exists:users,id',
             'title' => 'required|string|max:255',
             'content' => 'required|string',
             'image' => 'nullable|image|max:2048',
@@ -59,9 +72,22 @@ class PostController extends Controller
             $imagePath = $request->file('image')->store('posts', 'public');
         }
 
+        // Determine target fields based on audience
+        $targetGradeId = null;
+        $targetTeacherId = null;
+        
+        if ($validated['audience'] === 'grade_teachers' && !empty($validated['target_grade_id'])) {
+            $targetGradeId = $validated['target_grade_id'];
+        } elseif ($validated['audience'] === 'specific_teacher' && !empty($validated['target_teacher_id'])) {
+            $targetTeacherId = $validated['target_teacher_id'];
+        }
+
         $post = Post::create([
             'user_id' => $request->user()->id,
             'type' => $validated['type'],
+            'audience' => $validated['audience'] ?? 'all',
+            'target_grade_id' => $targetGradeId,
+            'target_teacher_id' => $targetTeacherId,
             'title' => $validated['title'],
             'slug' => Str::slug($validated['title']),
             'content' => $validated['content'],
@@ -84,8 +110,15 @@ class PostController extends Controller
      */
     public function edit(Post $post): Response
     {
+        $grades = Grade::orderBy('sort_order')->get(['id', 'name']);
+        $teachers = User::where('role', User::ROLE_TEACHER)
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
         return Inertia::render('Portal/Posts/Edit', [
-            'post' => $post,
+            'post' => $post->load(['targetGrade', 'targetTeacher']),
+            'grades' => $grades,
+            'teachers' => $teachers,
         ]);
     }
 
@@ -96,6 +129,9 @@ class PostController extends Controller
     {
         $validated = $request->validate([
             'type' => 'required|in:news,event',
+            'audience' => 'nullable|in:all,teachers_only,grade_teachers,specific_teacher',
+            'target_grade_id' => 'nullable|exists:grades,id',
+            'target_teacher_id' => 'nullable|exists:users,id',
             'title' => 'required|string|max:255',
             'content' => 'required|string',
             'image' => 'nullable|image|max:2048',
@@ -125,8 +161,21 @@ class PostController extends Controller
             $imagePath = $request->file('image')->store('posts', 'public');
         }
 
+        // Determine target fields based on audience
+        $targetGradeId = null;
+        $targetTeacherId = null;
+        
+        if ($validated['audience'] === 'grade_teachers' && !empty($validated['target_grade_id'])) {
+            $targetGradeId = $validated['target_grade_id'];
+        } elseif ($validated['audience'] === 'specific_teacher' && !empty($validated['target_teacher_id'])) {
+            $targetTeacherId = $validated['target_teacher_id'];
+        }
+
         $post->update([
             'type' => $validated['type'],
+            'audience' => $validated['audience'] ?? 'all',
+            'target_grade_id' => $targetGradeId,
+            'target_teacher_id' => $targetTeacherId,
             'title' => $validated['title'],
             'content' => $validated['content'],
             'image_path' => $imagePath,

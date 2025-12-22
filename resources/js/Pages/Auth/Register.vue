@@ -1,12 +1,21 @@
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
+import { UserIcon, AcademicCapIcon } from '@heroicons/vue/24/outline';
+
+const props = defineProps({
+    staffEmailDomain: {
+        type: String,
+        default: 'silveracademypa.org',
+    },
+});
 
 const form = useForm({
     name: '',
     email: '',
     password: '',
     password_confirmation: '',
+    account_type: 'parent', // Default to parent
 });
 
 const submit = () => {
@@ -22,10 +31,86 @@ const submit = () => {
     <GuestLayout>
         <div class="text-center mb-8">
             <h1 class="text-2xl font-bold text-slate-900">Create your account</h1>
-            <p class="text-slate-600 mt-2">Join Silver Academy parent portal</p>
+            <p class="text-slate-600 mt-2">Join the Silver Academy portal</p>
         </div>
 
         <form @submit.prevent="submit" class="space-y-5">
+            <!-- Account Type Selection -->
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-3">
+                    I am registering as:
+                </label>
+                <div class="grid grid-cols-2 gap-3">
+                    <label 
+                        :class="[
+                            'relative flex flex-col items-center p-4 border-2 rounded-xl cursor-pointer transition-all',
+                            form.account_type === 'parent' 
+                                ? 'border-brand-500 bg-brand-50 ring-2 ring-brand-500/20' 
+                                : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                        ]"
+                    >
+                        <input 
+                            type="radio" 
+                            v-model="form.account_type" 
+                            value="parent" 
+                            class="sr-only" 
+                        />
+                        <UserIcon 
+                            :class="[
+                                'w-8 h-8 mb-2',
+                                form.account_type === 'parent' ? 'text-brand-600' : 'text-slate-400'
+                            ]" 
+                        />
+                        <span 
+                            :class="[
+                                'font-semibold text-sm',
+                                form.account_type === 'parent' ? 'text-brand-700' : 'text-slate-700'
+                            ]"
+                        >
+                            Parent
+                        </span>
+                        <span class="text-xs text-slate-500 mt-1 text-center">
+                            Access your child's info
+                        </span>
+                    </label>
+                    <label 
+                        :class="[
+                            'relative flex flex-col items-center p-4 border-2 rounded-xl cursor-pointer transition-all',
+                            form.account_type === 'staff' 
+                                ? 'border-brand-500 bg-brand-50 ring-2 ring-brand-500/20' 
+                                : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                        ]"
+                    >
+                        <input 
+                            type="radio" 
+                            v-model="form.account_type" 
+                            value="staff" 
+                            class="sr-only" 
+                        />
+                        <AcademicCapIcon 
+                            :class="[
+                                'w-8 h-8 mb-2',
+                                form.account_type === 'staff' ? 'text-brand-600' : 'text-slate-400'
+                            ]" 
+                        />
+                        <span 
+                            :class="[
+                                'font-semibold text-sm',
+                                form.account_type === 'staff' ? 'text-brand-700' : 'text-slate-700'
+                            ]"
+                        >
+                            Staff Member
+                        </span>
+                        <span class="text-xs text-slate-500 mt-1 text-center">
+                            School email required
+                        </span>
+                    </label>
+                </div>
+                <p v-if="form.account_type === 'staff'" class="mt-2 text-xs text-slate-500">
+                    Staff registration requires a @{{ staffEmailDomain }} email address.
+                </p>
+            </div>
+
             <div>
                 <label for="name" class="block text-sm font-medium text-slate-700 mb-2">
                     Full name
@@ -58,7 +143,7 @@ const submit = () => {
                     autocomplete="username"
                     class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 px-4 py-3 border"
                     :class="{ 'border-red-500': form.errors.email }"
-                    placeholder="you@example.com"
+                    :placeholder="form.account_type === 'staff' ? `you@${staffEmailDomain}` : 'you@example.com'"
                 />
                 <p v-if="form.errors.email" class="mt-2 text-sm text-red-600">
                     {{ form.errors.email }}
@@ -123,5 +208,3 @@ const submit = () => {
         </div>
     </GuestLayout>
 </template>
-
-

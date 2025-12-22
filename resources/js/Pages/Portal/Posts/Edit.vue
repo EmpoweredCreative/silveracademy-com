@@ -5,6 +5,8 @@ import PostForm from '@/Components/Portal/PostForm.vue';
 
 const props = defineProps({
     post: Object,
+    grades: Array,
+    teachers: Array,
 });
 
 // Format datetime for input fields (YYYY-MM-DDTHH:MM)
@@ -31,6 +33,9 @@ const formatDate = (dateString) => {
 
 const form = useForm({
     type: props.post.type,
+    audience: props.post.audience || 'all',
+    target_grade_id: props.post.target_grade_id || null,
+    target_teacher_id: props.post.target_teacher_id || null,
     title: props.post.title,
     content: props.post.content,
     image: null,
@@ -80,6 +85,8 @@ const submit = () => {
                 <PostForm 
                     :form="form" 
                     :post="post"
+                    :grades="grades"
+                    :teachers="teachers"
                     @submit="submit" 
                     mode="edit" 
                 />

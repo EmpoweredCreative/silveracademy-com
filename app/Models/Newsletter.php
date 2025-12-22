@@ -49,3 +49,5 @@ class Newsletter extends Model
     }
 }
 
+
+

@@ -1,6 +1,6 @@
 <script setup>
-import { ref } from 'vue';
-import { Link } from '@inertiajs/vue3';
+import { ref, computed } from 'vue';
+import { Link, usePage } from '@inertiajs/vue3';
 
 defineProps({
     title: {
@@ -9,14 +9,18 @@ defineProps({
     },
 });
 
+const page = usePage();
+const isAuthenticated = computed(() => !!page.props.auth?.user);
+const portalLink = computed(() => isAuthenticated.value ? '/portal/dashboard' : '/login');
+
 const mobileMenuOpen = ref(false);
 
-const utilityNav = [
+const utilityNav = computed(() => [
     { name: 'Schedule a Visit', href: '/contact' },
     { name: 'Apply', href: '#' },
-    { name: 'Family Portal', href: '/login' },
+    { name: 'Family Portal', href: portalLink.value },
     { name: 'Give', href: 'https://wl.donorperfect.net/weblink/WebLink.aspx?name=E341196&id=36' },
-];
+]);
 
     const mainNav = [
         { name: 'Welcome', href: '/' },
@@ -315,13 +319,13 @@ const socialLinks = [
                         <!-- Right: Portal Links + Contact -->
                         <div class="flex items-center gap-6">
                             <Link 
-                                href="/login" 
+                                :href="portalLink" 
                                 class="text-sm uppercase tracking-wide text-white hover:text-accent-300 transition-colors font-medium"
                             >
                                 Family Portal
                             </Link>
                             <Link 
-                                href="/login" 
+                                :href="portalLink" 
                                 class="text-sm uppercase tracking-wide text-white hover:text-accent-300 transition-colors font-medium"
                             >
                                 Staff Login

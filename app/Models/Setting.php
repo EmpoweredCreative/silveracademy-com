@@ -46,3 +46,5 @@ class Setting extends Model
     public const STS_ENROLLMENT_URL = 'sts_enrollment_url';
 }
 
+
+

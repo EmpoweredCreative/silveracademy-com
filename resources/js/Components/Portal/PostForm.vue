@@ -11,6 +11,14 @@ const props = defineProps({
         type: String,
         default: 'create',
     },
+    grades: {
+        type: Array,
+        default: () => [],
+    },
+    teachers: {
+        type: Array,
+        default: () => [],
+    },
 });
 
 const emit = defineEmits(['submit']);
@@ -19,6 +27,7 @@ const imagePreview = ref(props.post?.image_path ? `/storage/${props.post.image_p
 const dragActive = ref(false);
 
 const isEvent = computed(() => props.form.type === 'event');
+const isStaffAnnouncement = computed(() => ['teachers_only', 'grade_teachers', 'specific_teacher'].includes(props.form.audience));
 
 const handleImageChange = (event) => {
     const file = event.target.files[0];
@@ -58,6 +67,16 @@ watch(() => props.form.type, (newType) => {
     }
 });
 
+// Clear targeting fields when audience changes
+watch(() => props.form.audience, (newAudience) => {
+    if (newAudience !== 'grade_teachers') {
+        props.form.target_grade_id = null;
+    }
+    if (newAudience !== 'specific_teacher') {
+        props.form.target_teacher_id = null;
+    }
+});
+
 // Recurrence options
 const recurrenceOptions = [
     { value: 'none', label: 'Does not repeat' },
@@ -69,6 +88,26 @@ const recurrenceOptions = [
 
 const showRecurrenceEndDate = computed(() => {
     return props.form.recurrence_type && props.form.recurrence_type !== 'none';
+});
+
+// Audience description for display
+const audienceDescription = computed(() => {
+    switch (props.form.audience) {
+        case 'teachers_only':
+            return 'This announcement will be visible to all staff members in their dashboard.';
+        case 'grade_teachers':
+            const grade = props.grades.find(g => g.id === props.form.target_grade_id);
+            return grade 
+                ? `This announcement will only be visible to ${grade.name} teachers.`
+                : 'Select a grade level to target specific teachers.';
+        case 'specific_teacher':
+            const teacher = props.teachers.find(t => t.id === props.form.target_teacher_id);
+            return teacher 
+                ? `This announcement will only be visible to ${teacher.name}.`
+                : 'Select a teacher to send a private announcement.';
+        default:
+            return '';
+    }
 });
 </script>
 
@@ -117,6 +156,144 @@ const showRecurrenceEndDate = computed(() => {
                     <span class="font-medium">Event</span>
                 </label>
             </div>
+        </div>
+
+        <!-- Audience Selection (for news posts) -->
+        <div v-if="form.type === 'news'">
+            <label class="block text-sm font-medium text-slate-700 mb-2">Who can see this?</label>
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                <!-- Everyone -->
+                <label
+                    :class="[
+                        'flex flex-col items-center justify-center px-3 py-3 border-2 rounded-lg cursor-pointer transition-colors text-center',
+                        form.audience === 'all'
+                            ? 'border-brand-500 bg-brand-50 text-brand-700'
+                            : 'border-slate-200 hover:border-slate-300'
+                    ]"
+                >
+                    <input
+                        type="radio"
+                        v-model="form.audience"
+                        value="all"
+                        class="sr-only"
+                    />
+                    <svg class="w-6 h-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span class="font-medium text-sm">Everyone</span>
+                </label>
+
+                <!-- All Staff -->
+                <label
+                    :class="[
+                        'flex flex-col items-center justify-center px-3 py-3 border-2 rounded-lg cursor-pointer transition-colors text-center',
+                        form.audience === 'teachers_only'
+                            ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
+                            : 'border-slate-200 hover:border-slate-300'
+                    ]"
+                >
+                    <input
+                        type="radio"
+                        v-model="form.audience"
+                        value="teachers_only"
+                        class="sr-only"
+                    />
+                    <svg class="w-6 h-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    <span class="font-medium text-sm">All Staff</span>
+                </label>
+
+                <!-- Grade Level -->
+                <label
+                    :class="[
+                        'flex flex-col items-center justify-center px-3 py-3 border-2 rounded-lg cursor-pointer transition-colors text-center',
+                        form.audience === 'grade_teachers'
+                            ? 'border-amber-500 bg-amber-50 text-amber-700'
+                            : 'border-slate-200 hover:border-slate-300'
+                    ]"
+                >
+                    <input
+                        type="radio"
+                        v-model="form.audience"
+                        value="grade_teachers"
+                        class="sr-only"
+                    />
+                    <svg class="w-6 h-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                    <span class="font-medium text-sm">Grade Level</span>
+                </label>
+
+                <!-- Specific Teacher -->
+                <label
+                    :class="[
+                        'flex flex-col items-center justify-center px-3 py-3 border-2 rounded-lg cursor-pointer transition-colors text-center',
+                        form.audience === 'specific_teacher'
+                            ? 'border-purple-500 bg-purple-50 text-purple-700'
+                            : 'border-slate-200 hover:border-slate-300'
+                    ]"
+                >
+                    <input
+                        type="radio"
+                        v-model="form.audience"
+                        value="specific_teacher"
+                        class="sr-only"
+                    />
+                    <svg class="w-6 h-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    <span class="font-medium text-sm">Specific Teacher</span>
+                </label>
+            </div>
+
+            <!-- Grade Selection (when Grade Level is selected) -->
+            <div v-if="form.audience === 'grade_teachers'" class="mt-4">
+                <label for="target_grade_id" class="block text-sm font-medium text-slate-700 mb-1">
+                    Select Grade Level <span class="text-red-500">*</span>
+                </label>
+                <select
+                    id="target_grade_id"
+                    v-model="form.target_grade_id"
+                    class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white"
+                    required
+                >
+                    <option :value="null" disabled>Choose a grade level...</option>
+                    <option v-for="grade in grades" :key="grade.id" :value="grade.id">
+                        {{ grade.name }}
+                    </option>
+                </select>
+            </div>
+
+            <!-- Teacher Selection (when Specific Teacher is selected) -->
+            <div v-if="form.audience === 'specific_teacher'" class="mt-4">
+                <label for="target_teacher_id" class="block text-sm font-medium text-slate-700 mb-1">
+                    Select Teacher <span class="text-red-500">*</span>
+                </label>
+                <select
+                    id="target_teacher_id"
+                    v-model="form.target_teacher_id"
+                    class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white"
+                    required
+                >
+                    <option :value="null" disabled>Choose a teacher...</option>
+                    <option v-for="teacher in teachers" :key="teacher.id" :value="teacher.id">
+                        {{ teacher.name }}
+                    </option>
+                </select>
+                <p v-if="teachers.length === 0" class="mt-1 text-sm text-slate-500">
+                    No teachers have been added yet. Add teachers in the user management section.
+                </p>
+            </div>
+
+            <!-- Audience Description -->
+            <p v-if="isStaffAnnouncement" class="mt-3 text-sm" :class="{
+                'text-emerald-600': form.audience === 'teachers_only',
+                'text-amber-600': form.audience === 'grade_teachers',
+                'text-purple-600': form.audience === 'specific_teacher',
+            }">
+                {{ audienceDescription }}
+            </p>
         </div>
 
         <!-- Title -->

@@ -14,16 +14,20 @@ class NewsController extends Controller
      */
     public function index(): Response
     {
+        // Only show public news (exclude teacher-only announcements)
         $news = Post::with('author')
             ->published()
             ->news()
+            ->publicAudience()
             ->orderBy('published_at', 'desc')
             ->take(10)
             ->get();
 
+        // Events are always public
         $events = Post::with('author')
             ->published()
             ->upcoming()
+            ->publicAudience()
             ->orderBy('event_start_date', 'asc')
             ->take(10)
             ->get();
@@ -39,15 +43,16 @@ class NewsController extends Controller
      */
     public function show(Post $post): Response
     {
-        // Ensure it's a news post and is published
-        if ($post->type !== 'news' || !$post->published_at) {
+        // Ensure it's a news post, is published, and is not teacher-only
+        if ($post->type !== 'news' || !$post->published_at || $post->isTeachersOnly()) {
             abort(404);
         }
 
-        // Get related news articles
+        // Get related news articles (public only)
         $relatedNews = Post::with('author')
             ->published()
             ->news()
+            ->publicAudience()
             ->where('id', '!=', $post->id)
             ->orderBy('published_at', 'desc')
             ->take(3)
@@ -59,4 +64,6 @@ class NewsController extends Controller
         ]);
     }
 }
+
+
 
