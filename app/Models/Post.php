@@ -16,6 +16,7 @@ class Post extends Model
         'slug',
         'user_id',
         'type',
+        'is_school_closure',
         'audience',
         'target_grade_id',
         'target_teacher_id',
@@ -36,7 +37,24 @@ class Post extends Model
         'event_end_date' => 'datetime',
         'recurrence_end_date' => 'date',
         'published_at' => 'datetime',
+        'is_school_closure' => 'boolean',
     ];
+
+    /**
+     * Check if this is a school closure.
+     */
+    public function isSchoolClosure(): bool
+    {
+        return (bool) $this->is_school_closure;
+    }
+
+    /**
+     * Scope to only school closure events.
+     */
+    public function scopeSchoolClosures(Builder $query): Builder
+    {
+        return $query->where('is_school_closure', true);
+    }
 
     /**
      * Check if this is a recurring event.

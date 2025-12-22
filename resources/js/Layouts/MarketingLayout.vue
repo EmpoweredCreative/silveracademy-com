@@ -39,7 +39,17 @@ const utilityNav = computed(() => [
             ]
         },
         { name: 'News & Events', href: '/news-events' },
-        { name: 'Get Involved', href: '#' },
+        { 
+            name: 'Get Involved', 
+            href: '/get-involved',
+            children: [
+                { name: 'Make a Donation', href: '/get-involved/donate' },
+                { name: 'EITC - Corporate', href: '/get-involved/eitc-corporate' },
+                { name: 'EITC - Individual', href: '/get-involved/eitc-individual' },
+                { name: 'Life and Legacy', href: '/get-involved/life-and-legacy' },
+                { name: 'Fundraisers', href: '/get-involved/fundraisers' },
+            ]
+        },
     ];
 
 const footerNav = [

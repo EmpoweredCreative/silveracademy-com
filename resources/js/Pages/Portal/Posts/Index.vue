@@ -122,7 +122,19 @@ const formatDate = (date) => {
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center gap-2 flex-wrap">
+                                    <!-- School Closure Badge (takes priority) -->
                                     <span
+                                        v-if="post.is_school_closure"
+                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800"
+                                    >
+                                        <svg class="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                        </svg>
+                                        No School
+                                    </span>
+                                    <!-- Regular Type Badge -->
+                                    <span
+                                        v-else
                                         :class="[
                                             'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
                                             post.type === 'news' 

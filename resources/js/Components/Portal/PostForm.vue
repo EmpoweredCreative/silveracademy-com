@@ -382,6 +382,23 @@ const audienceDescription = computed(() => {
             <div class="border-t border-slate-200 pt-6">
                 <h3 class="text-lg font-serif font-semibold text-slate-900 mb-4">Event Details</h3>
                 
+                <!-- School Closure Toggle -->
+                <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                    <label class="flex items-center cursor-pointer">
+                        <input
+                            type="checkbox"
+                            v-model="form.is_school_closure"
+                            class="h-5 w-5 text-red-600 focus:ring-red-500 border-red-300 rounded"
+                        />
+                        <div class="ml-3">
+                            <span class="font-medium text-red-700">School Closure / No School</span>
+                            <p class="text-sm text-red-600 mt-0.5">
+                                Mark this event as a school closure (holiday, snow day, etc.). This will display prominently on all calendars.
+                            </p>
+                        </div>
+                    </label>
+                </div>
+                
                 <!-- Event Dates -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>

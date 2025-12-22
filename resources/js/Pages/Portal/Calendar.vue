@@ -1,5 +1,5 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import PortalLayout from '@/Layouts/PortalLayout.vue';
 import { Menu, MenuButton, MenuItem, MenuItems, Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue';
 import {
@@ -9,8 +9,8 @@ import {
     ClockIcon,
     EllipsisHorizontalIcon,
 } from '@heroicons/vue/20/solid';
-import { CalendarIcon, XMarkIcon } from '@heroicons/vue/24/outline';
-import { ref, computed } from 'vue';
+import { CalendarIcon, XMarkIcon, PencilIcon, TrashIcon, PlusIcon, ArrowUpTrayIcon, EyeIcon } from '@heroicons/vue/24/outline';
+import { ref, computed, watch } from 'vue';
 
 const props = defineProps({
     events: {
@@ -21,7 +21,48 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
+    defaultView: {
+        type: String,
+        default: 'events',
+    },
+    user: {
+        type: Object,
+        default: null,
+    },
 });
+
+// Role preview toggle (for super admins)
+const previewRole = ref('admin'); // 'admin', 'teacher', 'parent'
+const previewRoles = ['admin', 'teacher', 'parent'];
+
+const isSuperAdmin = computed(() => props.user?.role === 'super_admin');
+const isActualAdmin = computed(() => props.user?.role === 'admin' || props.user?.role === 'super_admin');
+
+// Effective admin status based on preview role
+const isAdmin = computed(() => {
+    if (isSuperAdmin.value) {
+        return previewRole.value === 'admin';
+    }
+    return isActualAdmin.value;
+});
+
+const togglePreviewRole = () => {
+    const currentIndex = previewRoles.indexOf(previewRole.value);
+    const nextIndex = (currentIndex + 1) % previewRoles.length;
+    previewRole.value = previewRoles[nextIndex];
+};
+
+const previewRoleLabel = computed(() => {
+    const labels = {
+        'admin': 'Admin View',
+        'teacher': 'Staff View',
+        'parent': 'Parent View'
+    };
+    return labels[previewRole.value];
+});
+
+// View toggle state: 'events', 'lunch', or 'both'
+const currentView = ref(props.defaultView);
 
 // Current date tracking
 const today = new Date();
@@ -87,15 +128,19 @@ const days = computed(() => {
         const dateStr = formatDate(date);
         const isCurrentMonth = date.getMonth() === month;
         const isToday = dateStr === todayStr;
+        const isWeekend = date.getDay() === 0 || date.getDay() === 6;
         
-        // Get events for this day
+        // Get events and lunch menus for this day
         const dayEvents = getEventsForDate(dateStr);
+        const dayLunchMenu = getLunchMenuForDate(dateStr);
         
         calendarDays.push({
             date: dateStr,
             isCurrentMonth,
             isToday,
+            isWeekend,
             events: dayEvents,
+            lunchMenu: dayLunchMenu,
         });
     }
     
@@ -127,26 +172,20 @@ const getEventsForDate = (dateStr) => {
                 type: 'event',
                 isRecurring: event.is_recurring || false,
                 recurrenceType: event.recurrence_type || 'none',
-            });
-        }
-    });
-    
-    // Add lunch menus
-    props.lunchMenus.forEach(menu => {
-        if (menu.week_start === dateStr) {
-            dayEvents.push({
-                id: `lunch-${menu.id}`,
-                name: 'Lunch Menu',
-                time: 'Week of',
-                datetime: menu.week_start,
-                href: '/portal/lunch',
-                type: 'lunch',
-                isRecurring: false,
+                isSchoolClosure: event.is_school_closure || false,
+                description: event.description || '',
+                buttonText: event.button_text || '',
+                buttonUrl: event.button_url || '',
             });
         }
     });
     
     return dayEvents;
+};
+
+// Get lunch menu for a specific date
+const getLunchMenuForDate = (dateStr) => {
+    return props.lunchMenus.find(menu => menu.menu_date === dateStr) || null;
 };
 
 // Format time from datetime
@@ -156,20 +195,83 @@ const formatTime = (datetime) => {
     return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
 };
 
+// Get truncated menu content (preserve line breaks, strip other HTML)
+const getMenuPreview = (content, maxLength = 50, preserveBreaks = true) => {
+    if (!content) return 'No menu details';
+    
+    // Convert common HTML line breaks to newlines
+    let text = content
+        .replace(/<br\s*\/?>/gi, '\n')
+        .replace(/<\/p>\s*<p[^>]*>/gi, '\n\n')
+        .replace(/<\/div>\s*<div[^>]*>/gi, '\n')
+        .replace(/<\/li>\s*<li[^>]*>/gi, '\n• ')
+        .replace(/<li[^>]*>/gi, '• ')
+        .replace(/<[^>]*>/g, '') // Strip remaining HTML
+        .replace(/&nbsp;/g, ' ')
+        .replace(/&amp;/g, '&')
+        .trim();
+    
+    // Collapse multiple newlines to max 2
+    text = text.replace(/\n{3,}/g, '\n\n');
+    
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength).trim() + '...';
+};
+
+// Get first line of menu content for compact display
+const getMenuFirstLine = (content) => {
+    if (!content) return 'No menu details';
+    const preview = getMenuPreview(content, 200);
+    const firstLine = preview.split('\n')[0].trim();
+    return firstLine || 'Menu available';
+};
+
+// Get menu content for calendar cell display (multiple lines, limited)
+const getMenuCalendarDisplay = (content, maxLines = 3) => {
+    if (!content) return { lines: ['No menu details'], hasMore: false };
+    const preview = getMenuPreview(content, 500);
+    const allLines = preview.split('\n').filter(line => line.trim());
+    const displayLines = allLines.slice(0, maxLines);
+    const hasMore = allLines.length > maxLines;
+    return { lines: displayLines, hasMore };
+};
+
 // Selected day events (for mobile)
 const selectedDate = ref(formatDate(today));
 const selectedDayEvents = computed(() => {
     const day = days.value.find(d => d.date === selectedDate.value);
-    return day?.events || [];
+    if (!day) return [];
+    
+    const items = [];
+    
+    // Add events if showing events or both
+    if (currentView.value === 'events' || currentView.value === 'both') {
+        items.push(...day.events);
+    }
+    
+    // Add lunch menu if showing lunch or both
+    if ((currentView.value === 'lunch' || currentView.value === 'both') && day.lunchMenu) {
+        items.push({
+            id: `lunch-${day.lunchMenu.id}`,
+            name: getMenuFirstLine(day.lunchMenu.content),
+            time: day.lunchMenu.short_day_name,
+            datetime: day.lunchMenu.menu_date,
+            type: 'lunch',
+            content: day.lunchMenu.content,
+            menuId: day.lunchMenu.id,
+        });
+    }
+    
+    return items;
 });
 
 const selectDay = (date) => {
     selectedDate.value = date;
 };
 
-// Get events for the current week (Monday-Sunday of selected week)
-const currentWeekEvents = computed(() => {
-    const weekEvents = [];
+// Get items for the current week based on view
+const currentWeekItems = computed(() => {
+    const weekItems = [];
     
     // Find the Monday of the currently selected date's week
     const selectedDateObj = new Date(selectedDate.value + 'T00:00:00');
@@ -181,48 +283,54 @@ const currentWeekEvents = computed(() => {
     const sunday = new Date(monday);
     sunday.setDate(monday.getDate() + 6);
     
-    // Filter events within this week
-    props.events.forEach(event => {
-        const eventDate = new Date(event.event_date);
-        if (eventDate >= monday && eventDate <= sunday) {
-            weekEvents.push({
-                id: `event-${event.id}`,
-                name: event.title,
-                time: formatTime(event.event_date),
-                datetime: event.event_date,
-                dayName: eventDate.toLocaleDateString('en-US', { weekday: 'short' }),
-                formattedDate: eventDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-                type: 'event',
-                description: event.description || '',
-                buttonText: event.button_text || '',
-                buttonUrl: event.button_url || '',
-                endDate: event.event_end_date,
-                isRecurring: event.is_recurring || false,
-                recurrenceType: event.recurrence_type || 'none',
-            });
-        }
-    });
+    // Filter events if showing events or both
+    if (currentView.value === 'events' || currentView.value === 'both') {
+        props.events.forEach(event => {
+            const eventDate = new Date(event.event_date);
+            if (eventDate >= monday && eventDate <= sunday) {
+                weekItems.push({
+                    id: `event-${event.id}`,
+                    name: event.title,
+                    time: formatTime(event.event_date),
+                    datetime: event.event_date,
+                    dayName: eventDate.toLocaleDateString('en-US', { weekday: 'short' }),
+                    formattedDate: eventDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+                    type: 'event',
+                    description: event.description || '',
+                    buttonText: event.button_text || '',
+                    buttonUrl: event.button_url || '',
+                    endDate: event.event_end_date,
+                    isRecurring: event.is_recurring || false,
+                    recurrenceType: event.recurrence_type || 'none',
+                    isSchoolClosure: event.is_school_closure || false,
+                });
+            }
+        });
+    }
     
-    // Add lunch menus for this week
-    props.lunchMenus.forEach(menu => {
-        const menuDate = new Date(menu.week_start + 'T00:00:00');
-        if (menuDate >= monday && menuDate <= sunday) {
-            weekEvents.push({
-                id: `lunch-${menu.id}`,
-                name: 'Lunch Menu',
-                time: 'All Week',
-                datetime: menu.week_start,
-                dayName: 'Mon',
-                formattedDate: menuDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-                type: 'lunch',
-                description: menu.content || '',
-                href: '/portal/lunch',
-            });
-        }
-    });
+    // Add lunch menus if showing lunch or both
+    if (currentView.value === 'lunch' || currentView.value === 'both') {
+        props.lunchMenus.forEach(menu => {
+            const menuDate = new Date(menu.menu_date + 'T00:00:00');
+            if (menuDate >= monday && menuDate <= sunday) {
+                weekItems.push({
+                    id: `lunch-${menu.id}`,
+                    name: getMenuFirstLine(menu.content),
+                    fullContent: getMenuPreview(menu.content, 200),
+                    time: '',
+                    datetime: menu.menu_date,
+                    dayName: menu.short_day_name,
+                    formattedDate: menu.formatted_date,
+                    type: 'lunch',
+                    description: menu.content || '',
+                    menuId: menu.id,
+                });
+            }
+        });
+    }
     
     // Sort by date
-    return weekEvents.sort((a, b) => new Date(a.datetime) - new Date(b.datetime));
+    return weekItems.sort((a, b) => new Date(a.datetime) - new Date(b.datetime));
 });
 
 // Get the week range for display
@@ -240,6 +348,20 @@ const selectedWeekRange = computed(() => {
     const sunStr = sunday.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     
     return `${monStr} - ${sunStr}`;
+});
+
+// Dynamic section title based on view
+const weekSectionTitle = computed(() => {
+    switch (currentView.value) {
+        case 'events':
+            return 'Events This Week';
+        case 'lunch':
+            return 'Lunch Menus This Week';
+        case 'both':
+            return 'This Week';
+        default:
+            return 'This Week';
+    }
 });
 
 // Modal state
@@ -266,20 +388,145 @@ const formatFullDate = (datetime) => {
         year: 'numeric'
     });
 };
+
+// Lunch menu modal for admin
+const showLunchMenuModal = ref(false);
+const selectedLunchDate = ref(null);
+const selectedLunchMenu = ref(null);
+
+const openLunchMenuModal = (date, existingMenu = null) => {
+    selectedLunchDate.value = date;
+    selectedLunchMenu.value = existingMenu;
+    showLunchMenuModal.value = true;
+};
+
+const closeLunchMenuModal = () => {
+    showLunchMenuModal.value = false;
+    selectedLunchDate.value = null;
+    selectedLunchMenu.value = null;
+};
+
+// Admin actions for calendar day click
+const handleDayClick = (day) => {
+    if (isAdmin.value && (currentView.value === 'lunch' || currentView.value === 'both') && !day.isWeekend) {
+        if (day.lunchMenu) {
+            // Edit existing menu
+            router.visit(`/portal/lunch/${day.lunchMenu.id}/edit`);
+        } else {
+            // Create new menu
+            router.visit(`/portal/lunch/create?date=${day.date}`);
+        }
+    } else {
+        selectDay(day.date);
+    }
+};
+
+// Delete lunch menu
+const deleteLunchMenu = (menuId) => {
+    if (confirm('Are you sure you want to delete this lunch menu?')) {
+        router.delete(`/portal/lunch/${menuId}`, {
+            preserveScroll: true,
+        });
+    }
+};
+
+// Get filtered items for calendar day based on view
+const getFilteredItemsForDay = (day) => {
+    const items = [];
+    
+    if (currentView.value === 'events' || currentView.value === 'both') {
+        items.push(...day.events);
+    }
+    
+    if ((currentView.value === 'lunch' || currentView.value === 'both') && day.lunchMenu) {
+        const calendarDisplay = getMenuCalendarDisplay(day.lunchMenu.content, 3);
+        items.push({
+            id: `lunch-${day.lunchMenu.id}`,
+            name: getMenuFirstLine(day.lunchMenu.content),
+            calendarLines: calendarDisplay.lines,
+            hasMoreContent: calendarDisplay.hasMore,
+            type: 'lunch',
+            time: '',
+            content: day.lunchMenu.content,
+            menuId: day.lunchMenu.id,
+        });
+    }
+    
+    return items;
+};
 </script>
 
 <template>
     <Head title="Calendar" />
 
     <PortalLayout>
-        <template #header>Calendar</template>
+        <template #header>
+            <div class="flex items-center justify-between">
+                <span>Calendar</span>
+                
+                <!-- Role Preview Toggle for Super Admin -->
+                <div v-if="isSuperAdmin" class="flex items-center gap-3">
+                    <span class="text-sm text-slate-500 font-normal">Preview as:</span>
+                    <button
+                        @click="togglePreviewRole"
+                        class="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors shadow-sm"
+                    >
+                        <EyeIcon class="w-4 h-4 mr-2 text-slate-500" />
+                        {{ previewRoleLabel }}
+                    </button>
+                </div>
+            </div>
+        </template>
         
         <div class="lg:flex lg:h-full lg:flex-col">
-            <header class="flex items-center justify-between border-b border-slate-200 bg-white px-6 py-4 lg:flex-none rounded-t-xl">
-                <h1 class="text-base font-semibold text-slate-900">
-                    <time :datetime="`${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`">{{ currentMonthName }}</time>
-                </h1>
-                <div class="flex items-center">
+            <header class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-200 bg-white px-6 py-4 lg:flex-none rounded-t-xl">
+                <div class="flex items-center gap-4">
+                    <h1 class="text-base font-semibold text-slate-900">
+                        <time :datetime="`${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`">{{ currentMonthName }}</time>
+                    </h1>
+                    
+                    <!-- View Toggle -->
+                    <div class="flex rounded-lg bg-slate-100 p-1">
+                        <button
+                            type="button"
+                            @click="currentView = 'events'"
+                            :class="[
+                                'px-3 py-1.5 text-sm font-medium rounded-md transition-colors',
+                                currentView === 'events' 
+                                    ? 'bg-white shadow text-slate-900' 
+                                    : 'text-slate-500 hover:text-slate-900'
+                            ]"
+                        >
+                            Events
+                        </button>
+                        <button
+                            type="button"
+                            @click="currentView = 'lunch'"
+                            :class="[
+                                'px-3 py-1.5 text-sm font-medium rounded-md transition-colors',
+                                currentView === 'lunch' 
+                                    ? 'bg-white shadow text-amber-600' 
+                                    : 'text-slate-500 hover:text-slate-900'
+                            ]"
+                        >
+                            Lunch Menu
+                        </button>
+                        <button
+                            type="button"
+                            @click="currentView = 'both'"
+                            :class="[
+                                'px-3 py-1.5 text-sm font-medium rounded-md transition-colors',
+                                currentView === 'both' 
+                                    ? 'bg-white shadow text-slate-900' 
+                                    : 'text-slate-500 hover:text-slate-900'
+                            ]"
+                        >
+                            Both
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-4">
                     <div class="relative flex items-center rounded-md bg-white shadow-sm outline outline-1 -outline-offset-1 outline-slate-300 md:items-stretch">
                         <button 
                             type="button" 
@@ -306,16 +553,41 @@ const formatFullDate = (datetime) => {
                             <ChevronRightIcon class="size-5" aria-hidden="true" />
                         </button>
                     </div>
-                    <div class="hidden md:ml-4 md:flex md:items-center">
-                        <div class="ml-6 h-6 w-px bg-slate-300"></div>
+                    
+                    <div class="hidden md:flex md:items-center gap-2">
+                        <div class="h-6 w-px bg-slate-300"></div>
+                        
+                        <!-- Import button for lunch view (admin only) -->
                         <Link 
+                            v-if="isAdmin && (currentView === 'lunch' || currentView === 'both')"
+                            href="/portal/lunch/import"
+                            class="inline-flex items-center gap-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50"
+                        >
+                            <ArrowUpTrayIcon class="h-4 w-4" />
+                            Import Menus
+                        </Link>
+                        
+                        <!-- Add lunch menu button (admin only) -->
+                        <Link 
+                            v-if="isAdmin && (currentView === 'lunch' || currentView === 'both')"
+                            href="/portal/lunch/create"
+                            class="rounded-md bg-amber-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-amber-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500"
+                        >
+                            Add menu
+                        </Link>
+                        
+                        <!-- Add event button -->
+                        <Link 
+                            v-if="currentView === 'events' || currentView === 'both'"
                             href="/portal/posts/create" 
-                            class="ml-6 rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
+                            class="rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
                         >
                             Add event
                         </Link>
                     </div>
-                    <Menu as="div" class="relative ml-6 md:hidden">
+                    
+                    <!-- Mobile menu -->
+                    <Menu as="div" class="relative md:hidden">
                         <MenuButton class="-mx-2 flex items-center rounded-full border border-transparent p-2 text-slate-400 hover:text-slate-500">
                             <span class="sr-only">Open menu</span>
                             <EllipsisHorizontalIcon class="size-5" aria-hidden="true" />
@@ -331,12 +603,28 @@ const formatFullDate = (datetime) => {
                         >
                             <MenuItems class="absolute right-0 z-10 mt-3 w-36 origin-top-right divide-y divide-slate-100 overflow-hidden rounded-md bg-white shadow-lg outline outline-1 outline-black/5">
                                 <div class="py-1">
-                                    <MenuItem v-slot="{ active }">
+                                    <MenuItem v-if="currentView === 'events' || currentView === 'both'" v-slot="{ active }">
                                         <Link 
                                             href="/portal/posts/create" 
                                             :class="[active ? 'bg-slate-100 text-slate-900 outline-hidden' : 'text-slate-700', 'block px-4 py-2 text-sm']"
                                         >
                                             Create event
+                                        </Link>
+                                    </MenuItem>
+                                    <MenuItem v-if="isAdmin && (currentView === 'lunch' || currentView === 'both')" v-slot="{ active }">
+                                        <Link 
+                                            href="/portal/lunch/create" 
+                                            :class="[active ? 'bg-slate-100 text-slate-900 outline-hidden' : 'text-slate-700', 'block px-4 py-2 text-sm']"
+                                        >
+                                            Add menu
+                                        </Link>
+                                    </MenuItem>
+                                    <MenuItem v-if="isAdmin && (currentView === 'lunch' || currentView === 'both')" v-slot="{ active }">
+                                        <Link 
+                                            href="/portal/lunch/import" 
+                                            :class="[active ? 'bg-slate-100 text-slate-900 outline-hidden' : 'text-slate-700', 'block px-4 py-2 text-sm']"
+                                        >
+                                            Import menus
                                         </Link>
                                     </MenuItem>
                                 </div>
@@ -396,9 +684,13 @@ const formatFullDate = (datetime) => {
                         <div 
                             v-for="day in days" 
                             :key="day.date" 
+                            @click="handleDayClick(day)"
                             :class="[
                                 'group relative px-3 py-2 min-h-[100px]',
-                                day.isCurrentMonth ? 'bg-white' : 'bg-slate-50 text-slate-500'
+                                day.isCurrentMonth ? 'bg-white' : 'bg-slate-50 text-slate-500',
+                                isAdmin && (currentView === 'lunch' || currentView === 'both') && !day.isWeekend 
+                                    ? 'cursor-pointer hover:bg-slate-50' 
+                                    : ''
                             ]"
                         >
                             <time 
@@ -410,43 +702,98 @@ const formatFullDate = (datetime) => {
                             >
                                 {{ day.date.split('-').pop().replace(/^0/, '') }}
                             </time>
-                            <ol v-if="day.events.length > 0" class="mt-2">
-                                <li v-for="event in day.events.slice(0, 2)" :key="event.id">
-                                    <a 
-                                        :href="event.href" 
-                                        class="group flex items-center"
-                                    >
-                                        <!-- Recurring indicator -->
-                                        <svg 
-                                            v-if="event.isRecurring"
-                                            class="w-3 h-3 mr-1 flex-shrink-0 text-amber-500" 
-                                            fill="none" 
-                                            viewBox="0 0 24 24" 
-                                            stroke="currentColor"
-                                            :title="`Repeats ${event.recurrenceType}`"
+                            
+                            <!-- Events/Menus list -->
+                            <ol v-if="getFilteredItemsForDay(day).length > 0" class="mt-2 space-y-0.5">
+                                <template v-for="(item, itemIndex) in getFilteredItemsForDay(day)" :key="item.id">
+                                    <!-- Lunch menu: show multiple lines -->
+                                    <li v-if="item.type === 'lunch'" class="space-y-0.5">
+                                        <a 
+                                            href="#" 
+                                            @click.prevent="openEventDetails({ ...item, description: day.lunchMenu.content, datetime: day.date, menuId: day.lunchMenu.id })"
+                                            class="group block hover:bg-amber-50 rounded px-0.5 -mx-0.5"
                                         >
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                        </svg>
-                                        <p 
-                                            :class="[
-                                                'flex-auto truncate font-medium group-hover:text-brand-600',
-                                                event.type === 'lunch' ? 'text-amber-600' : 'text-slate-900'
-                                            ]"
+                                            <p 
+                                                v-for="(line, lineIndex) in item.calendarLines" 
+                                                :key="lineIndex"
+                                                class="text-xs text-amber-700 truncate leading-tight"
+                                            >
+                                                {{ line }}
+                                            </p>
+                                            <p v-if="item.hasMoreContent" class="text-xs text-amber-500 italic">
+                                                View more...
+                                            </p>
+                                        </a>
+                                    </li>
+                                    <!-- School Closure: prominent red styling -->
+                                    <li v-else-if="item.isSchoolClosure && itemIndex < 2">
+                                        <a 
+                                            href="#" 
+                                            @click.prevent="openEventDetails(item)"
+                                            class="group flex items-center bg-red-100 rounded px-1.5 py-0.5 -mx-1"
                                         >
-                                            {{ event.name }}
-                                        </p>
-                                        <time 
-                                            :datetime="event.datetime" 
-                                            class="ml-3 hidden flex-none text-slate-500 group-hover:text-brand-600 xl:block"
+                                            <!-- School Closure icon -->
+                                            <svg 
+                                                class="w-3 h-3 mr-1 flex-shrink-0 text-red-600" 
+                                                fill="none" 
+                                                viewBox="0 0 24 24" 
+                                                stroke="currentColor"
+                                                title="School Closure"
+                                            >
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                            </svg>
+                                            <p class="flex-auto truncate text-xs font-semibold text-red-700">
+                                                {{ item.name }}
+                                            </p>
+                                        </a>
+                                    </li>
+                                    <!-- Regular event: show as before (limited to first 2) -->
+                                    <li v-else-if="itemIndex < 2">
+                                        <a 
+                                            href="#" 
+                                            @click.prevent="openEventDetails(item)"
+                                            class="group flex items-center"
                                         >
-                                            {{ event.time }}
-                                        </time>
-                                    </a>
-                                </li>
-                                <li v-if="day.events.length > 2" class="text-slate-500">
-                                    + {{ day.events.length - 2 }} more
+                                            <!-- Recurring indicator -->
+                                            <svg 
+                                                v-if="item.isRecurring"
+                                                class="w-3 h-3 mr-1 flex-shrink-0 text-amber-500" 
+                                                fill="none" 
+                                                viewBox="0 0 24 24" 
+                                                stroke="currentColor"
+                                                :title="`Repeats ${item.recurrenceType}`"
+                                            >
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                            </svg>
+                                            <p class="flex-auto truncate text-xs font-medium text-slate-900 group-hover:text-brand-600">
+                                                {{ item.name }}
+                                            </p>
+                                            <time 
+                                                v-if="item.time"
+                                                :datetime="item.datetime" 
+                                                class="ml-3 hidden flex-none text-xs text-slate-500 group-hover:text-brand-600 xl:block"
+                                            >
+                                                {{ item.time }}
+                                            </time>
+                                        </a>
+                                    </li>
+                                </template>
+                                <!-- Show count of additional events (excluding lunch) -->
+                                <li v-if="getFilteredItemsForDay(day).filter(i => i.type !== 'lunch').length > 2" class="text-xs text-slate-500">
+                                    + {{ getFilteredItemsForDay(day).filter(i => i.type !== 'lunch').length - 2 }} more events
                                 </li>
                             </ol>
+                            
+                            <!-- Admin indicator for empty lunch menu day -->
+                            <div 
+                                v-if="isAdmin && (currentView === 'lunch' || currentView === 'both') && !day.lunchMenu && !day.isWeekend && day.isCurrentMonth"
+                                class="mt-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                                <span class="text-xs text-amber-500 flex items-center gap-1">
+                                    <PlusIcon class="w-3 h-3" />
+                                    Add menu
+                                </span>
+                            </div>
                         </div>
                     </div>
                     
@@ -476,14 +823,14 @@ const formatFullDate = (datetime) => {
                             >
                                 {{ day.date.split('-').pop().replace(/^0/, '') }}
                             </time>
-                            <span class="sr-only">{{ day.events.length }} events</span>
-                            <span v-if="day.events.length > 0" class="-mx-0.5 mt-auto flex flex-wrap-reverse">
+                            <span class="sr-only">{{ getFilteredItemsForDay(day).length }} items</span>
+                            <span v-if="getFilteredItemsForDay(day).length > 0" class="-mx-0.5 mt-auto flex flex-wrap-reverse">
                                 <span 
-                                    v-for="event in day.events" 
-                                    :key="event.id" 
+                                    v-for="item in getFilteredItemsForDay(day)" 
+                                    :key="item.id" 
                                     :class="[
                                         'mx-0.5 mb-1 size-1.5 rounded-full',
-                                        event.type === 'lunch' ? 'bg-amber-400' : 'bg-slate-400'
+                                        item.type === 'lunch' ? 'bg-amber-400' : item.isSchoolClosure ? 'bg-red-500' : 'bg-slate-400'
                                     ]"
                                 ></span>
                             </span>
@@ -496,97 +843,145 @@ const formatFullDate = (datetime) => {
             <div v-if="selectedDayEvents.length > 0" class="relative px-4 py-10 sm:px-6 lg:hidden">
                 <ol class="divide-y divide-slate-100 overflow-hidden rounded-lg bg-white text-sm shadow-sm outline outline-1 outline-black/5">
                     <li 
-                        v-for="event in selectedDayEvents" 
-                        :key="event.id" 
+                        v-for="item in selectedDayEvents" 
+                        :key="item.id" 
                         class="group flex p-4 pr-6 focus-within:bg-slate-50 hover:bg-slate-50"
                     >
                         <div class="flex-auto">
                             <p 
                                 :class="[
                                     'font-semibold',
-                                    event.type === 'lunch' ? 'text-amber-600' : 'text-slate-900'
+                                    item.type === 'lunch' ? 'text-amber-600' : 'text-slate-900'
                                 ]"
                             >
-                                {{ event.name }}
+                                {{ item.name }}
                             </p>
-                            <time :datetime="event.datetime" class="mt-2 flex items-center text-slate-700">
+                            <time v-if="item.time" :datetime="item.datetime" class="mt-2 flex items-center text-slate-700">
                                 <ClockIcon class="mr-2 size-5 text-slate-400" aria-hidden="true" />
-                                {{ event.time }}
+                                {{ item.time }}
                             </time>
                         </div>
-                        <a 
-                            :href="event.href" 
+                        <button 
+                            type="button"
+                            @click="openEventDetails(item)"
                             class="ml-6 flex-none self-center rounded-md bg-white px-3 py-2 font-semibold text-slate-900 opacity-0 shadow-sm ring-1 ring-slate-300 ring-inset group-hover:opacity-100 hover:ring-slate-400 focus:opacity-100"
                         >
-                            View<span class="sr-only">, {{ event.name }}</span>
-                        </a>
+                            View<span class="sr-only">, {{ item.name }}</span>
+                        </button>
                     </li>
                 </ol>
             </div>
             
             <!-- Empty state for mobile -->
             <div v-else class="px-4 py-10 sm:px-6 lg:hidden">
-                <p class="text-center text-sm text-slate-500">No events on selected day</p>
+                <p class="text-center text-sm text-slate-500">No items on selected day</p>
             </div>
             
-            <!-- Weekly Events List -->
+            <!-- Weekly Items List -->
             <div class="mt-8 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                 <div class="px-6 py-4 border-b border-slate-200 bg-slate-50">
                     <div class="flex items-center justify-between">
-                        <h2 class="text-lg font-serif font-semibold text-slate-900">Events This Week</h2>
+                        <h2 class="text-lg font-serif font-semibold text-slate-900">{{ weekSectionTitle }}</h2>
                         <span class="text-sm text-slate-500">{{ selectedWeekRange }}</span>
                     </div>
                 </div>
                 
-                <div v-if="currentWeekEvents.length > 0" class="divide-y divide-slate-100">
+                <div v-if="currentWeekItems.length > 0" class="divide-y divide-slate-100">
                     <div 
-                        v-for="event in currentWeekEvents" 
-                        :key="event.id"
-                        class="flex items-center gap-4 px-6 py-4 hover:bg-slate-50 transition-colors"
+                        v-for="item in currentWeekItems" 
+                        :key="item.id"
+                        class="flex items-start gap-4 px-6 py-4 hover:bg-slate-50 transition-colors cursor-pointer"
+                        @click="openEventDetails(item)"
                     >
-                        <div class="flex-shrink-0">
-                            <span class="text-sm font-medium text-slate-500">{{ event.dayName }}</span>
-                            <span class="text-sm font-semibold text-slate-900 ml-1">{{ event.formattedDate }}</span>
+                        <div class="flex-shrink-0 pt-0.5">
+                            <span class="text-sm font-medium text-slate-500">{{ item.dayName }}</span>
+                            <span class="text-sm font-semibold text-slate-900 ml-1">{{ item.formattedDate }}</span>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <div class="flex items-center gap-2">
-                                <p :class="[
-                                    'font-medium',
-                                    event.type === 'lunch' ? 'text-amber-600' : 'text-slate-900'
-                                ]">
-                                    {{ event.name }}
-                                </p>
-                                <!-- Recurring indicator -->
-                                <span 
-                                    v-if="event.isRecurring"
-                                    class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700"
-                                    :title="`Repeats ${event.recurrenceType}`"
-                                >
-                                    <svg class="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            <!-- Lunch Menu -->
+                            <template v-if="item.type === 'lunch'">
+                                <p class="font-medium text-amber-600 mb-1">Lunch Menu</p>
+                                <p 
+                                    v-if="item.fullContent"
+                                    class="text-sm text-slate-600 whitespace-pre-line"
+                                >{{ item.fullContent }}</p>
+                            </template>
+                            <!-- School Closure Event -->
+                            <template v-else-if="item.isSchoolClosure">
+                                <div class="flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-red-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
                                     </svg>
-                                    {{ event.recurrenceType === 'daily' ? 'Daily' : event.recurrenceType === 'weekly' ? 'Weekly' : event.recurrenceType === 'biweekly' ? 'Bi-weekly' : 'Monthly' }}
-                                </span>
-                            </div>
+                                    <p class="font-semibold text-red-700">
+                                        {{ item.name }}
+                                    </p>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">
+                                        No School
+                                    </span>
+                                </div>
+                            </template>
+                            <!-- Regular Event -->
+                            <template v-else>
+                                <div class="flex items-center gap-2">
+                                    <p class="font-medium text-slate-900">
+                                        {{ item.name }}
+                                    </p>
+                                    <!-- Recurring indicator -->
+                                    <span 
+                                        v-if="item.isRecurring"
+                                        class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700"
+                                        :title="`Repeats ${item.recurrenceType}`"
+                                    >
+                                        <svg class="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                        </svg>
+                                        {{ item.recurrenceType === 'daily' ? 'Daily' : item.recurrenceType === 'weekly' ? 'Weekly' : item.recurrenceType === 'biweekly' ? 'Bi-weekly' : 'Monthly' }}
+                                    </span>
+                                </div>
+                            </template>
                         </div>
-                        <button 
-                            type="button"
-                            @click="openEventDetails(event)"
-                            class="flex-shrink-0 px-4 py-2 text-sm font-medium text-brand-600 bg-brand-50 rounded-lg hover:bg-brand-100 transition-colors"
-                        >
-                            View Details
-                        </button>
+                        <div class="flex items-center gap-2">
+                            <!-- Admin actions for lunch menu -->
+                            <template v-if="item.type === 'lunch' && isAdmin">
+                                <Link 
+                                    :href="`/portal/lunch/${item.menuId}/edit`"
+                                    class="p-2 text-slate-400 hover:text-slate-600 transition-colors"
+                                    title="Edit menu"
+                                >
+                                    <PencilIcon class="w-4 h-4" />
+                                </Link>
+                                <button 
+                                    type="button"
+                                    @click="deleteLunchMenu(item.menuId)"
+                                    class="p-2 text-slate-400 hover:text-red-600 transition-colors"
+                                    title="Delete menu"
+                                >
+                                    <TrashIcon class="w-4 h-4" />
+                                </button>
+                            </template>
+                            <button 
+                                type="button"
+                                @click="openEventDetails(item)"
+                                class="flex-shrink-0 px-4 py-2 text-sm font-medium text-brand-600 bg-brand-50 rounded-lg hover:bg-brand-100 transition-colors"
+                            >
+                                View Details
+                            </button>
+                        </div>
                     </div>
                 </div>
                 
                 <div v-else class="px-6 py-12 text-center">
                     <CalendarIcon class="mx-auto h-12 w-12 text-slate-300" />
-                    <p class="mt-2 text-sm text-slate-500">No events scheduled for this week.</p>
+                    <p class="mt-2 text-sm text-slate-500">
+                        {{ currentView === 'events' ? 'No events scheduled for this week.' : 
+                           currentView === 'lunch' ? 'No lunch menus for this week.' : 
+                           'Nothing scheduled for this week.' }}
+                    </p>
                 </div>
             </div>
         </div>
         
-        <!-- Event Details Modal -->
+        <!-- Event/Lunch Details Modal -->
         <TransitionRoot as="template" :show="showEventModal">
             <Dialog class="relative z-50" @close="closeEventModal">
                 <TransitionChild
@@ -614,22 +1009,40 @@ const formatFullDate = (datetime) => {
                         >
                             <DialogPanel class="relative transform overflow-hidden rounded-xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                                 <!-- Header -->
-                                <div class="bg-brand-600 px-6 py-4">
+                                <div :class="[
+                                    'px-6 py-4',
+                                    selectedEvent?.type === 'lunch' ? 'bg-amber-500' : selectedEvent?.isSchoolClosure ? 'bg-red-600' : 'bg-brand-600'
+                                ]">
                                     <div class="flex items-start justify-between">
                                         <div>
-                                            <DialogTitle class="text-lg font-serif font-semibold text-white">
-                                                {{ selectedEvent?.name }}
+                                            <DialogTitle class="text-lg font-serif font-semibold text-white flex items-center gap-2">
+                                                <svg 
+                                                    v-if="selectedEvent?.isSchoolClosure"
+                                                    class="w-5 h-5" 
+                                                    fill="none" 
+                                                    viewBox="0 0 24 24" 
+                                                    stroke="currentColor"
+                                                >
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                                </svg>
+                                                {{ selectedEvent?.type === 'lunch' ? 'Lunch Menu' : selectedEvent?.name }}
                                             </DialogTitle>
-                                            <p class="mt-1 text-sm text-brand-100">
+                                            <p :class="[
+                                                'mt-1 text-sm',
+                                                selectedEvent?.type === 'lunch' ? 'text-amber-100' : selectedEvent?.isSchoolClosure ? 'text-red-100' : 'text-brand-100'
+                                            ]">
                                                 {{ formatFullDate(selectedEvent?.datetime) }}
-                                                <span v-if="selectedEvent?.time && selectedEvent?.time !== 'All Week'">
+                                                <span v-if="selectedEvent?.time && selectedEvent?.type !== 'lunch'">
                                                     at {{ selectedEvent?.time }}
                                                 </span>
                                             </p>
                                         </div>
                                         <button
                                             type="button"
-                                            class="rounded-md text-brand-200 hover:text-white focus:outline-none"
+                                            :class="[
+                                                'rounded-md focus:outline-none',
+                                                selectedEvent?.type === 'lunch' ? 'text-amber-200 hover:text-white' : selectedEvent?.isSchoolClosure ? 'text-red-200 hover:text-white' : 'text-brand-200 hover:text-white'
+                                            ]"
                                             @click="closeEventModal"
                                         >
                                             <span class="sr-only">Close</span>
@@ -640,17 +1053,24 @@ const formatFullDate = (datetime) => {
                                 
                                 <!-- Content -->
                                 <div class="px-6 py-5">
-                                    <!-- Event Type & Recurrence Badges -->
-                                    <div class="mb-4 flex items-center gap-2 flex-wrap">
+                                    <!-- Type Badge (only for events, not lunch) -->
+                                    <div v-if="selectedEvent?.type !== 'lunch'" class="mb-4 flex items-center gap-2 flex-wrap">
+                                        <!-- School Closure Badge -->
                                         <span 
-                                            :class="[
-                                                'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
-                                                selectedEvent?.type === 'lunch' 
-                                                    ? 'bg-amber-100 text-amber-800' 
-                                                    : 'bg-brand-100 text-brand-800'
-                                            ]"
+                                            v-if="selectedEvent?.isSchoolClosure"
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800"
                                         >
-                                            {{ selectedEvent?.type === 'lunch' ? 'Lunch Menu' : 'Event' }}
+                                            <svg class="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                            </svg>
+                                            School Closure
+                                        </span>
+                                        <!-- Regular Event Badge -->
+                                        <span 
+                                            v-else
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-brand-100 text-brand-800"
+                                        >
+                                            Event
                                         </span>
                                         <!-- Recurrence Badge -->
                                         <span 
@@ -664,12 +1084,16 @@ const formatFullDate = (datetime) => {
                                         </span>
                                     </div>
                                     
-                                    <!-- Description -->
-                                    <div v-if="selectedEvent?.description" class="prose prose-sm max-w-none text-slate-700">
+                                    <!-- Lunch Menu Content (with preserved formatting) -->
+                                    <div v-if="selectedEvent?.type === 'lunch' && selectedEvent?.description" class="text-slate-700">
+                                        <p class="whitespace-pre-line text-base leading-relaxed">{{ getMenuPreview(selectedEvent.description, 2000) }}</p>
+                                    </div>
+                                    <!-- Event Description -->
+                                    <div v-else-if="selectedEvent?.description" class="prose prose-sm max-w-none text-slate-700">
                                         <div v-html="selectedEvent.description"></div>
                                     </div>
                                     <p v-else class="text-sm text-slate-500 italic">
-                                        No additional details available for this event.
+                                        No additional details available.
                                     </p>
                                     
                                     <!-- End Date if different -->
@@ -692,14 +1116,16 @@ const formatFullDate = (datetime) => {
                                         {{ selectedEvent.buttonText || 'Register Here' }}
                                     </a>
                                     
-                                    <!-- Lunch Menu Link -->
-                                    <Link 
-                                        v-if="selectedEvent?.type === 'lunch'"
-                                        href="/portal/lunch"
-                                        class="inline-flex justify-center items-center px-4 py-2 bg-amber-500 text-white font-semibold rounded-lg hover:bg-amber-600 transition-colors"
-                                    >
-                                        View Full Menu
-                                    </Link>
+                                    <!-- Admin actions for lunch menu -->
+                                    <template v-if="selectedEvent?.type === 'lunch' && isAdmin && selectedEvent?.menuId">
+                                        <Link 
+                                            :href="`/portal/lunch/${selectedEvent.menuId}/edit`"
+                                            class="inline-flex justify-center items-center gap-2 px-4 py-2 bg-amber-500 text-white font-semibold rounded-lg hover:bg-amber-600 transition-colors"
+                                        >
+                                            <PencilIcon class="w-4 h-4" />
+                                            Edit Menu
+                                        </Link>
+                                    </template>
                                     
                                     <button
                                         type="button"
@@ -717,4 +1143,3 @@ const formatFullDate = (datetime) => {
         </TransitionRoot>
     </PortalLayout>
 </template>
-

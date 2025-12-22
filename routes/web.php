@@ -10,6 +10,8 @@ use App\Http\Controllers\Portal\LunchMenuController;
 use App\Http\Controllers\Portal\Admin\ClassroomController;
 use App\Http\Controllers\Portal\Admin\StudentImportController;
 use App\Http\Controllers\Portal\Admin\StaffController;
+use App\Http\Controllers\Portal\Admin\ParentController;
+use App\Http\Controllers\Portal\Admin\LunchMenuImportController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -36,6 +38,15 @@ Route::prefix('programs')->name('programs.')->group(function () {
     Route::get('/parent-circle', [HomeController::class, 'parentCircle'])->name('parent-circle');
 });
 
+Route::prefix('get-involved')->name('get-involved.')->group(function () {
+    Route::get('/', [HomeController::class, 'getInvolved'])->name('index');
+    Route::get('/donate', [HomeController::class, 'donate'])->name('donate');
+    Route::get('/eitc-corporate', [HomeController::class, 'eitcCorporate'])->name('eitc-corporate');
+    Route::get('/eitc-individual', [HomeController::class, 'eitcIndividual'])->name('eitc-individual');
+    Route::get('/life-and-legacy', [HomeController::class, 'lifeAndLegacy'])->name('life-and-legacy');
+    Route::get('/fundraisers', [HomeController::class, 'fundraisers'])->name('fundraisers');
+});
+
 // News & Events public routes
 Route::get('/news-events', [NewsController::class, 'index'])->name('news-events');
 Route::get('/news/{post:slug}', [NewsController::class, 'show'])->name('news.show');
@@ -58,7 +69,12 @@ Route::middleware(['auth', 'verified'])->prefix('portal')->name('portal.')->grou
 
     // Lunch Menus (view accessible to all, CRUD requires admin)
     Route::get('/lunch', [LunchMenuController::class, 'index'])->name('lunch.index');
+    Route::get('/lunch/api/month', [LunchMenuController::class, 'getMenusForMonth'])->name('lunch.api.month');
     Route::middleware('admin')->group(function () {
+        Route::get('/lunch/import', [LunchMenuImportController::class, 'showImport'])->name('lunch.import');
+        Route::post('/lunch/import', [LunchMenuImportController::class, 'import'])->name('lunch.import.process');
+        Route::get('/lunch/template', [LunchMenuImportController::class, 'downloadTemplate'])->name('lunch.template');
+        Route::get('/lunch/export', [LunchMenuImportController::class, 'export'])->name('lunch.export');
         Route::get('/lunch/create', [LunchMenuController::class, 'create'])->name('lunch.create');
         Route::post('/lunch', [LunchMenuController::class, 'store'])->name('lunch.store');
         Route::get('/lunch/{lunch}/edit', [LunchMenuController::class, 'edit'])->name('lunch.edit');
@@ -92,6 +108,14 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('portal/admin')->name('
     Route::put('/staff/{staff}', [StaffController::class, 'update'])->name('staff.update');
     Route::delete('/staff/{staff}', [StaffController::class, 'destroy'])->name('staff.destroy');
     Route::post('/staff/{staff}/toggle-role', [StaffController::class, 'toggleRole'])->name('staff.toggle-role');
+
+    // Parent Management
+    Route::get('/parents', [ParentController::class, 'index'])->name('parents.index');
+    Route::get('/parents/{parent}/edit', [ParentController::class, 'edit'])->name('parents.edit');
+    Route::put('/parents/{parent}', [ParentController::class, 'update'])->name('parents.update');
+    Route::delete('/parents/{parent}', [ParentController::class, 'destroy'])->name('parents.destroy');
+    Route::post('/parents/{parent}/resend-verification', [ParentController::class, 'resendVerification'])->name('parents.resend-verification');
+    Route::post('/parents/{parent}/verify-email', [ParentController::class, 'verifyEmail'])->name('parents.verify-email');
 
     // Import/Export (must be before {classroom} parameter routes)
     Route::get('/classrooms/import', [StudentImportController::class, 'showImport'])->name('classrooms.import');

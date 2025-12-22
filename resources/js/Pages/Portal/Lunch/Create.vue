@@ -1,28 +1,49 @@
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import PortalLayout from '@/Layouts/PortalLayout.vue';
+import { ArrowLeftIcon } from '@heroicons/vue/24/outline';
+
+const props = defineProps({
+    prefilledDate: {
+        type: String,
+        default: null,
+    },
+});
 
 const form = useForm({
-    week_start: '',
+    menu_date: props.prefilledDate || getTodayOrNextWeekday(),
     content: '',
 });
+
+// Get today's date, or next weekday if today is a weekend
+function getTodayOrNextWeekday() {
+    const today = new Date();
+    const dayOfWeek = today.getDay();
+    
+    // If weekend, get next Monday
+    if (dayOfWeek === 0) {
+        today.setDate(today.getDate() + 1);
+    } else if (dayOfWeek === 6) {
+        today.setDate(today.getDate() + 2);
+    }
+    
+    return today.toISOString().split('T')[0];
+}
 
 const submit = () => {
     form.post('/portal/lunch');
 };
 
-// Get next Monday
-const getNextMonday = () => {
-    const today = new Date();
-    const dayOfWeek = today.getDay();
-    const daysUntilMonday = dayOfWeek === 0 ? 1 : (8 - dayOfWeek);
-    const nextMonday = new Date(today);
-    nextMonday.setDate(today.getDate() + daysUntilMonday);
-    return nextMonday.toISOString().split('T')[0];
+const formatDate = (dateStr) => {
+    if (!dateStr) return '';
+    const date = new Date(dateStr + 'T00:00:00');
+    return date.toLocaleDateString('en-US', { 
+        weekday: 'long',
+        month: 'long', 
+        day: 'numeric',
+        year: 'numeric'
+    });
 };
-
-// Set default to next Monday
-form.week_start = getNextMonday();
 </script>
 
 <template>
@@ -35,34 +56,34 @@ form.week_start = getNextMonday();
             <!-- Header -->
             <div class="mb-8">
                 <Link
-                    href="/portal/lunch"
+                    href="/portal/calendar?view=lunch"
                     class="inline-flex items-center text-sm text-slate-600 hover:text-slate-900 mb-4"
                 >
-                    <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                    </svg>
-                    Back to Lunch Menus
+                    <ArrowLeftIcon class="w-4 h-4 mr-1" />
+                    Back to Calendar
                 </Link>
-                <p class="text-slate-600">Create a new weekly lunch menu for parents to view.</p>
+                <p class="text-slate-600">Create a lunch menu for a specific day.</p>
             </div>
 
             <!-- Form -->
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
                 <form @submit.prevent="submit" class="space-y-6">
-                    <!-- Week Start Date -->
+                    <!-- Menu Date -->
                     <div>
-                        <label for="week_start" class="block text-sm font-medium text-slate-700 mb-1">
-                            Week Starting (Monday) <span class="text-red-500">*</span>
+                        <label for="menu_date" class="block text-sm font-medium text-slate-700 mb-1">
+                            Menu Date <span class="text-red-500">*</span>
                         </label>
                         <input
-                            id="week_start"
+                            id="menu_date"
                             type="date"
-                            v-model="form.week_start"
+                            v-model="form.menu_date"
                             class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                             required
                         />
-                        <p class="mt-1 text-sm text-slate-500">Select the Monday of the week this menu is for.</p>
-                        <p v-if="form.errors.week_start" class="mt-1 text-sm text-red-600">{{ form.errors.week_start }}</p>
+                        <p class="mt-1 text-sm text-slate-500">
+                            Selected: {{ formatDate(form.menu_date) }}
+                        </p>
+                        <p v-if="form.errors.menu_date" class="mt-1 text-sm text-red-600">{{ form.errors.menu_date }}</p>
                     </div>
 
                     <!-- Menu Content -->
@@ -73,30 +94,23 @@ form.week_start = getNextMonday();
                         <textarea
                             id="content"
                             v-model="form.content"
-                            rows="12"
+                            rows="8"
                             class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
-                            placeholder="Monday:
-- Chicken nuggets
-- Mashed potatoes
-- Green beans
-- Fruit cup
+                            placeholder="Pizza Day! 
 
-Tuesday:
-- Pizza
-- Side salad
-- Apple slices
+Cheese or pepperoni pizza with salad bar and fresh fruit.
 
-..."
+Includes: Milk, juice box, and cookie."
                             required
                         ></textarea>
-                        <p class="mt-1 text-sm text-slate-500">Enter the lunch menu for each day of the week. HTML formatting is supported.</p>
+                        <p class="mt-1 text-sm text-slate-500">Describe the lunch menu for this day. HTML formatting is supported.</p>
                         <p v-if="form.errors.content" class="mt-1 text-sm text-red-600">{{ form.errors.content }}</p>
                     </div>
 
                     <!-- Submit Button -->
                     <div class="flex items-center justify-end gap-4 pt-6 border-t border-slate-200">
                         <Link
-                            href="/portal/lunch"
+                            href="/portal/calendar?view=lunch"
                             class="px-4 py-2 text-sm font-medium text-slate-700 hover:text-slate-900"
                         >
                             Cancel
@@ -104,7 +118,7 @@ Tuesday:
                         <button
                             type="submit"
                             :disabled="form.processing"
-                            class="px-6 py-2 bg-brand-600 text-white font-semibold rounded-lg hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            class="px-6 py-2 bg-amber-500 text-white font-semibold rounded-lg hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                         >
                             <span v-if="form.processing">Saving...</span>
                             <span v-else>Save Menu</span>
@@ -115,6 +129,3 @@ Tuesday:
         </div>
     </PortalLayout>
 </template>
-
-
-

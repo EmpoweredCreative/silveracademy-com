@@ -62,5 +62,35 @@ class HomeController extends Controller
     {
         return Inertia::render('Marketing/Programs/ParentCircle');
     }
+
+    public function getInvolved(): Response
+    {
+        return Inertia::render('Marketing/GetInvolved/Index');
+    }
+
+    public function donate(): Response
+    {
+        return Inertia::render('Marketing/GetInvolved/Donate');
+    }
+
+    public function eitcCorporate(): Response
+    {
+        return Inertia::render('Marketing/GetInvolved/EITCCorporate');
+    }
+
+    public function eitcIndividual(): Response
+    {
+        return Inertia::render('Marketing/GetInvolved/EITCIndividual');
+    }
+
+    public function lifeAndLegacy(): Response
+    {
+        return Inertia::render('Marketing/GetInvolved/LifeAndLegacy');
+    }
+
+    public function fundraisers(): Response
+    {
+        return Inertia::render('Marketing/GetInvolved/Fundraisers');
+    }
 }
 

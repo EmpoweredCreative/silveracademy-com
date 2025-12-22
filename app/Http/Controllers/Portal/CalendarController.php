@@ -7,6 +7,7 @@ use App\Models\CalendarEvent;
 use App\Models\LunchMenu;
 use App\Models\Post;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -15,8 +16,11 @@ class CalendarController extends Controller
     /**
      * Display the calendar page.
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        // Get the default view from query parameter
+        $defaultView = $request->get('view', 'events'); // events, lunch, or both
+        
         // Define date range for recurring events (6 months before and after today)
         $rangeStart = Carbon::now()->subMonths(1)->startOfMonth();
         $rangeEnd = Carbon::now()->addMonths(12)->endOfMonth();
@@ -54,6 +58,7 @@ class CalendarController extends Controller
                         'button_url' => $post->button_url,
                         'recurrence_type' => $post->recurrence_type,
                         'is_recurring' => true,
+                        'is_school_closure' => $post->is_school_closure,
                         'type' => 'event',
                     ]);
                     $occurrenceIndex++;
@@ -71,6 +76,7 @@ class CalendarController extends Controller
                     'button_url' => $post->button_url,
                     'recurrence_type' => 'none',
                     'is_recurring' => false,
+                    'is_school_closure' => $post->is_school_closure,
                     'type' => 'event',
                 ]);
             }
@@ -90,21 +96,28 @@ class CalendarController extends Controller
             ];
         })->concat($postEvents);
 
-        // Get lunch menus
-        $lunchMenus = LunchMenu::orderBy('week_start', 'asc')
+        // Get lunch menus (using new menu_date field)
+        $lunchMenus = LunchMenu::orderBy('menu_date', 'asc')
             ->get()
             ->map(function ($menu) {
                 return [
                     'id' => $menu->id,
-                    'week_start' => $menu->week_start->format('Y-m-d'),
+                    'menu_date' => $menu->menu_date->format('Y-m-d'),
                     'content' => $menu->content,
+                    'day_name' => $menu->day_name,
+                    'short_day_name' => $menu->short_day_name,
+                    'formatted_date' => $menu->formatted_date,
                 ];
             });
+
+        // Get user for role-based UI
+        $user = auth()->user();
 
         return Inertia::render('Portal/Calendar', [
             'events' => $events,
             'lunchMenus' => $lunchMenus,
+            'defaultView' => $defaultView,
+            'user' => $user,
         ]);
     }
 }
-

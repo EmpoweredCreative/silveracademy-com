@@ -1,6 +1,11 @@
 <script setup>
 import { Head, useForm } from '@inertiajs/vue3';
 import MarketingLayout from '@/Layouts/MarketingLayout.vue';
+import { 
+    EnvelopeIcon, 
+    PhoneIcon, 
+    MapPinIcon 
+} from '@heroicons/vue/24/outline';
 
 const form = useForm({
     name: '',
@@ -35,30 +40,30 @@ const submit = () => {
 
                         <div class="mt-12 space-y-8">
                             <div class="flex items-start gap-4">
-                                <div class="w-12 h-12 bg-brand-100 rounded-xl flex items-center justify-center text-2xl shrink-0">
-                                    📧
+                                <div class="w-14 h-14 bg-brand-100 rounded-full flex items-center justify-center text-2xl shrink-0">
+                                    <EnvelopeIcon class="w-8 h-8 text-brand-600" />
                                 </div>
                                 <div>
                                     <h3 class="font-semibold text-slate-900">Email</h3>
-                                    <p class="text-slate-600">hello@silveracademy.com</p>
+                                    <p class="text-slate-600">office@silveracademypa.org</p>
                                 </div>
                             </div>
                             <div class="flex items-start gap-4">
-                                <div class="w-12 h-12 bg-brand-100 rounded-xl flex items-center justify-center text-2xl shrink-0">
-                                    📞
+                                <div class="w-14 h-14 bg-brand-100 rounded-full flex items-center justify-center text-2xl shrink-0">
+                                    <PhoneIcon class="w-8 h-8 text-brand-600" />
                                 </div>
                                 <div>
                                     <h3 class="font-semibold text-slate-900">Phone</h3>
-                                    <p class="text-slate-600">(555) 123-4567</p>
+                                    <p class="text-slate-600">717-238-8775</p>
                                 </div>
                             </div>
                             <div class="flex items-start gap-4">
-                                <div class="w-12 h-12 bg-brand-100 rounded-xl flex items-center justify-center text-2xl shrink-0">
-                                    📍
+                                <div class="w-14 h-14 bg-brand-100 rounded-full flex items-center justify-center text-2xl shrink-0">
+                                    <MapPinIcon class="w-8 h-8 text-brand-600" />
                                 </div>
                                 <div>
                                     <h3 class="font-semibold text-slate-900">Address</h3>
-                                    <p class="text-slate-600">123 Education Lane<br>Learning City, LC 12345</p>
+                                    <p class="text-slate-600">3301 N Front St<br>Harrisburg, PA 17110</p>
                                 </div>
                             </div>
                         </div>

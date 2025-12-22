@@ -10,6 +10,7 @@ const props = defineProps({
 
 const form = useForm({
     type: 'news',
+    is_school_closure: false,
     audience: 'all',
     target_grade_id: null,
     target_teacher_id: null,

@@ -14,12 +14,12 @@ const isAdmin = computed(() => {
 const navigation = computed(() => {
     const items = [
         { name: 'Dashboard', href: '/portal/dashboard' },
-        { name: 'Lunch Menu', href: '/portal/lunch' },
         { name: 'Calendar', href: '/portal/calendar' },
     ]
 
     if (isAdmin.value) {
         items.push({ name: 'News & Events', href: '/portal/posts' })
+        items.push({ name: 'Parents', href: '/portal/admin/parents' })
         items.push({ name: 'Staff', href: '/portal/admin/staff' })
         items.push({ name: 'Classrooms', href: '/portal/admin/classrooms' })
     }

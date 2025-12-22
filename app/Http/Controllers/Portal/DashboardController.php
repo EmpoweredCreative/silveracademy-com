@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Portal;
 use App\Http\Controllers\Controller;
 use App\Models\LunchMenu;
 use App\Models\Post;
+use Carbon\Carbon;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -14,12 +15,23 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
 
-        // Get current week's lunch menu
-        $startOfWeek = now()->startOfWeek(); // Monday
-        $currentLunchMenu = LunchMenu::where('week_start', '>=', $startOfWeek->copy()->subWeek())
-            ->where('week_start', '<=', now())
-            ->orderBy('week_start', 'desc')
-            ->first();
+        // Get this week's lunch menus (Monday-Friday)
+        $monday = Carbon::now()->startOfWeek();
+        $friday = Carbon::now()->startOfWeek()->addDays(4);
+        
+        $thisWeekLunchMenus = LunchMenu::whereBetween('menu_date', [$monday, $friday])
+            ->orderBy('menu_date', 'asc')
+            ->get()
+            ->map(function ($menu) {
+                return [
+                    'id' => $menu->id,
+                    'menu_date' => $menu->menu_date->format('Y-m-d'),
+                    'content' => $menu->content,
+                    'day_name' => $menu->day_name,
+                    'short_day_name' => $menu->short_day_name,
+                    'formatted_date' => $menu->formatted_date,
+                ];
+            });
 
         // Get upcoming events (from Posts) - public events only
         $upcomingEvents = Post::where('type', 'event')
@@ -84,7 +96,7 @@ class DashboardController extends Controller
 
         return Inertia::render('Portal/Dashboard', [
             'user' => $user,
-            'currentLunchMenu' => $currentLunchMenu,
+            'thisWeekLunchMenus' => $thisWeekLunchMenus,
             'upcomingEvents' => $upcomingEvents,
             'recentAnnouncements' => $recentAnnouncements,
             'teacherAnnouncements' => $teacherAnnouncements,

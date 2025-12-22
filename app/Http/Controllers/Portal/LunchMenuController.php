@@ -12,52 +12,37 @@ use Illuminate\Http\RedirectResponse;
 class LunchMenuController extends Controller
 {
     /**
-     * Display the lunch menu page.
+     * Display the lunch menu page or redirect to calendar.
      */
-    public function index(): Response
+    public function index(Request $request): Response|RedirectResponse
     {
-        $today = now()->startOfDay();
-        $startOfWeek = now()->startOfWeek(); // Monday
-
-        // Get current week's menu
-        $currentMenu = LunchMenu::with('user')
-            ->where('week_start', '<=', $today)
-            ->where('week_start', '>=', $startOfWeek->copy()->subWeek())
-            ->orderBy('week_start', 'desc')
-            ->first();
-
-        // Get upcoming menus
-        $upcomingMenus = LunchMenu::with('user')
-            ->where('week_start', '>', $today)
-            ->orderBy('week_start', 'asc')
-            ->take(6)
-            ->get();
-
-        // Get past menus (admin only)
-        $pastMenus = [];
-        if (auth()->user()->isAdmin()) {
-            $pastMenus = LunchMenu::with('user')
-                ->where('week_start', '<', $startOfWeek)
-                ->orderBy('week_start', 'desc')
-                ->take(10)
-                ->get();
+        // Check if we should redirect to calendar
+        if (!$request->has('show_all')) {
+            return redirect()->route('portal.calendar', ['view' => 'lunch']);
         }
 
+        // For admin view, show all menus
+        $menus = LunchMenu::orderBy('menu_date', 'desc')
+            ->paginate(30);
+
         return Inertia::render('Portal/Lunch/Index', [
-            'currentMenu' => $currentMenu,
-            'upcomingMenus' => $upcomingMenus,
-            'pastMenus' => $pastMenus,
+            'menus' => $menus,
         ]);
     }
 
     /**
      * Show the form for creating a new lunch menu.
      */
-    public function create(): Response
+    public function create(Request $request): Response
     {
         $this->authorizeAdmin();
 
-        return Inertia::render('Portal/Lunch/Create');
+        // Pre-fill date if provided (from calendar click)
+        $menuDate = $request->get('date');
+
+        return Inertia::render('Portal/Lunch/Create', [
+            'prefilledDate' => $menuDate,
+        ]);
     }
 
     /**
@@ -68,17 +53,19 @@ class LunchMenuController extends Controller
         $this->authorizeAdmin();
 
         $validated = $request->validate([
-            'week_start' => ['required', 'date'],
+            'menu_date' => ['required', 'date', 'unique:lunch_menus,menu_date'],
             'content' => ['required', 'string'],
+        ], [
+            'menu_date.unique' => 'A lunch menu already exists for this date.',
         ]);
 
         LunchMenu::create([
             'user_id' => auth()->id(),
-            'week_start' => $validated['week_start'],
+            'menu_date' => $validated['menu_date'],
             'content' => $validated['content'],
         ]);
 
-        return redirect()->route('portal.lunch.index')
+        return redirect()->route('portal.calendar', ['view' => 'lunch'])
             ->with('success', 'Lunch menu created successfully.');
     }
 
@@ -90,7 +77,11 @@ class LunchMenuController extends Controller
         $this->authorizeAdmin();
 
         return Inertia::render('Portal/Lunch/Edit', [
-            'menu' => $lunch,
+            'menu' => [
+                'id' => $lunch->id,
+                'menu_date' => $lunch->menu_date->format('Y-m-d'),
+                'content' => $lunch->content,
+            ],
         ]);
     }
 
@@ -102,13 +93,15 @@ class LunchMenuController extends Controller
         $this->authorizeAdmin();
 
         $validated = $request->validate([
-            'week_start' => ['required', 'date'],
+            'menu_date' => ['required', 'date', 'unique:lunch_menus,menu_date,' . $lunch->id],
             'content' => ['required', 'string'],
+        ], [
+            'menu_date.unique' => 'A lunch menu already exists for this date.',
         ]);
 
         $lunch->update($validated);
 
-        return redirect()->route('portal.lunch.index')
+        return redirect()->route('portal.calendar', ['view' => 'lunch'])
             ->with('success', 'Lunch menu updated successfully.');
     }
 
@@ -121,8 +114,32 @@ class LunchMenuController extends Controller
 
         $lunch->delete();
 
-        return redirect()->route('portal.lunch.index')
+        return redirect()->route('portal.calendar', ['view' => 'lunch'])
             ->with('success', 'Lunch menu deleted successfully.');
+    }
+
+    /**
+     * Get menus for a specific month (JSON API for calendar).
+     */
+    public function getMenusForMonth(Request $request)
+    {
+        $year = $request->get('year', now()->year);
+        $month = $request->get('month', now()->month);
+
+        $menus = LunchMenu::forMonth($year, $month)
+            ->get()
+            ->map(function ($menu) {
+                return [
+                    'id' => $menu->id,
+                    'menu_date' => $menu->menu_date->format('Y-m-d'),
+                    'content' => $menu->content,
+                    'day_name' => $menu->day_name,
+                    'short_day_name' => $menu->short_day_name,
+                    'formatted_date' => $menu->formatted_date,
+                ];
+            });
+
+        return response()->json($menus);
     }
 
     /**
@@ -135,6 +152,3 @@ class LunchMenuController extends Controller
         }
     }
 }
-
-
-

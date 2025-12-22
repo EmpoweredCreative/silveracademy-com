@@ -15,7 +15,7 @@ import { ref, computed } from 'vue';
 
 const props = defineProps({
     user: Object,
-    currentLunchMenu: Object,
+    thisWeekLunchMenus: Array,
     upcomingEvents: Array,
     recentAnnouncements: Array,
     teacherAnnouncements: Array,
@@ -301,7 +301,7 @@ const formatWeekDate = (dateStr) => {
                                 <span class="text-sm font-medium text-slate-700 group-hover:text-emerald-700 text-center">View Calendar</span>
                             </Link>
                             <Link
-                                href="/portal/lunch"
+                                href="/portal/calendar?view=lunch"
                                 class="flex flex-col items-center justify-center p-6 bg-slate-50 rounded-xl hover:bg-emerald-50 transition-colors group"
                             >
                                 <div class="p-3 bg-white rounded-full shadow-sm mb-3 group-hover:bg-emerald-100 transition-colors">
@@ -367,25 +367,39 @@ const formatWeekDate = (dateStr) => {
             <!-- PARENT VIEW -->
             <template v-else-if="previewRole === 'parent'">
                 <div class="grid lg:grid-cols-2 gap-8">
-                    <!-- This Week's Lunch Menu -->
+                    <!-- This Week's Lunch Menus -->
                     <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                         <div class="px-6 py-4 border-b border-slate-200 bg-amber-50">
                             <div class="flex items-center justify-between">
                                 <h2 class="text-lg font-serif font-semibold text-amber-900">This Week's Lunch Menu</h2>
-                                <Link href="/portal/lunch" class="text-sm text-amber-700 hover:text-amber-800 font-medium">
+                                <Link href="/portal/calendar?view=lunch" class="text-sm text-amber-700 hover:text-amber-800 font-medium">
                                     View All →
                                 </Link>
                             </div>
-                            <p v-if="currentLunchMenu" class="text-sm text-amber-700 mt-1">
-                                Week of {{ formatWeekDate(currentLunchMenu.week_start) }}
-                            </p>
                         </div>
-                        <div class="p-6">
-                            <div v-if="currentLunchMenu" class="prose prose-sm max-w-none text-slate-700" v-html="currentLunchMenu.content"></div>
-                            <div v-else class="text-center py-8">
-                                <ClipboardDocumentListIcon class="mx-auto h-12 w-12 text-slate-300" />
-                                <p class="mt-2 text-sm text-slate-500">No lunch menu posted for this week yet.</p>
+                        <div v-if="thisWeekLunchMenus && thisWeekLunchMenus.length > 0" class="divide-y divide-slate-100">
+                            <div
+                                v-for="menu in thisWeekLunchMenus"
+                                :key="menu.id"
+                                class="px-6 py-4 hover:bg-amber-50/50 transition-colors"
+                            >
+                                <div class="flex items-start gap-4">
+                                    <div class="flex-shrink-0 w-12 h-12 bg-amber-100 rounded-lg flex flex-col items-center justify-center">
+                                        <span class="text-xs font-bold text-amber-600">{{ menu.short_day_name }}</span>
+                                        <span class="text-sm font-semibold text-amber-700">{{ menu.formatted_date }}</span>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-slate-900">{{ menu.day_name }}</p>
+                                        <p class="text-sm text-slate-600 mt-1 line-clamp-2">
+                                            {{ menu.content.replace(/<[^>]*>/g, '').substring(0, 100) }}{{ menu.content.length > 100 ? '...' : '' }}
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
+                        </div>
+                        <div v-else class="p-6 text-center">
+                            <ClipboardDocumentListIcon class="mx-auto h-12 w-12 text-slate-300" />
+                            <p class="mt-2 text-sm text-slate-500">No lunch menus posted for this week yet.</p>
                         </div>
                     </div>
 

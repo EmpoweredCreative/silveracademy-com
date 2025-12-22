@@ -2,6 +2,7 @@
 import { Head, Link, useForm, router } from '@inertiajs/vue3';
 import PortalLayout from '@/Layouts/PortalLayout.vue';
 import { ref } from 'vue';
+import { ArrowLeftIcon, TrashIcon } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
     menu: {
@@ -11,7 +12,7 @@ const props = defineProps({
 });
 
 const form = useForm({
-    week_start: props.menu.week_start,
+    menu_date: props.menu.menu_date,
     content: props.menu.content,
 });
 
@@ -47,33 +48,34 @@ const formatDate = (dateStr) => {
             <!-- Header -->
             <div class="mb-8">
                 <Link
-                    href="/portal/lunch"
+                    href="/portal/calendar?view=lunch"
                     class="inline-flex items-center text-sm text-slate-600 hover:text-slate-900 mb-4"
                 >
-                    <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                    </svg>
-                    Back to Lunch Menus
+                    <ArrowLeftIcon class="w-4 h-4 mr-1" />
+                    Back to Calendar
                 </Link>
-                <p class="text-slate-600">Update the lunch menu for week of {{ formatDate(menu.week_start) }}.</p>
+                <p class="text-slate-600">Update the lunch menu for {{ formatDate(menu.menu_date) }}.</p>
             </div>
 
             <!-- Form -->
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
                 <form @submit.prevent="submit" class="space-y-6">
-                    <!-- Week Start Date -->
+                    <!-- Menu Date -->
                     <div>
-                        <label for="week_start" class="block text-sm font-medium text-slate-700 mb-1">
-                            Week Starting (Monday) <span class="text-red-500">*</span>
+                        <label for="menu_date" class="block text-sm font-medium text-slate-700 mb-1">
+                            Menu Date <span class="text-red-500">*</span>
                         </label>
                         <input
-                            id="week_start"
+                            id="menu_date"
                             type="date"
-                            v-model="form.week_start"
+                            v-model="form.menu_date"
                             class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                             required
                         />
-                        <p v-if="form.errors.week_start" class="mt-1 text-sm text-red-600">{{ form.errors.week_start }}</p>
+                        <p class="mt-1 text-sm text-slate-500">
+                            Selected: {{ formatDate(form.menu_date) }}
+                        </p>
+                        <p v-if="form.errors.menu_date" class="mt-1 text-sm text-red-600">{{ form.errors.menu_date }}</p>
                     </div>
 
                     <!-- Menu Content -->
@@ -84,11 +86,11 @@ const formatDate = (dateStr) => {
                         <textarea
                             id="content"
                             v-model="form.content"
-                            rows="12"
+                            rows="8"
                             class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                             required
                         ></textarea>
-                        <p class="mt-1 text-sm text-slate-500">Enter the lunch menu for each day of the week. HTML formatting is supported.</p>
+                        <p class="mt-1 text-sm text-slate-500">Describe the lunch menu for this day. HTML formatting is supported.</p>
                         <p v-if="form.errors.content" class="mt-1 text-sm text-red-600">{{ form.errors.content }}</p>
                     </div>
 
@@ -99,8 +101,9 @@ const formatDate = (dateStr) => {
                                 v-if="!confirmingDelete"
                                 type="button"
                                 @click="confirmingDelete = true"
-                                class="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700"
+                                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700"
                             >
+                                <TrashIcon class="w-4 h-4" />
                                 Delete Menu
                             </button>
                             <div v-else class="flex items-center gap-2">
@@ -123,7 +126,7 @@ const formatDate = (dateStr) => {
                         
                         <div class="flex items-center gap-4">
                             <Link
-                                href="/portal/lunch"
+                                href="/portal/calendar?view=lunch"
                                 class="px-4 py-2 text-sm font-medium text-slate-700 hover:text-slate-900"
                             >
                                 Cancel
@@ -131,7 +134,7 @@ const formatDate = (dateStr) => {
                             <button
                                 type="submit"
                                 :disabled="form.processing"
-                                class="px-6 py-2 bg-brand-600 text-white font-semibold rounded-lg hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                class="px-6 py-2 bg-amber-500 text-white font-semibold rounded-lg hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
                                 <span v-if="form.processing">Saving...</span>
                                 <span v-else>Save Changes</span>
@@ -143,6 +146,3 @@ const formatDate = (dateStr) => {
         </div>
     </PortalLayout>
 </template>
-
-
-

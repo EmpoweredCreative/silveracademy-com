@@ -52,6 +52,7 @@ class PostController extends Controller
     {
         $validated = $request->validate([
             'type' => 'required|in:news,event',
+            'is_school_closure' => 'boolean',
             'audience' => 'nullable|in:all,teachers_only,grade_teachers,specific_teacher',
             'target_grade_id' => 'nullable|exists:grades,id',
             'target_teacher_id' => 'nullable|exists:users,id',
@@ -82,10 +83,19 @@ class PostController extends Controller
             $targetTeacherId = $validated['target_teacher_id'];
         }
 
+        // For school closures, force audience to 'all'
+        $audience = $validated['audience'] ?? 'all';
+        if ($request->boolean('is_school_closure')) {
+            $audience = 'all';
+            $targetGradeId = null;
+            $targetTeacherId = null;
+        }
+
         $post = Post::create([
             'user_id' => $request->user()->id,
             'type' => $validated['type'],
-            'audience' => $validated['audience'] ?? 'all',
+            'is_school_closure' => $request->boolean('is_school_closure'),
+            'audience' => $audience,
             'target_grade_id' => $targetGradeId,
             'target_teacher_id' => $targetTeacherId,
             'title' => $validated['title'],
@@ -129,6 +139,7 @@ class PostController extends Controller
     {
         $validated = $request->validate([
             'type' => 'required|in:news,event',
+            'is_school_closure' => 'boolean',
             'audience' => 'nullable|in:all,teachers_only,grade_teachers,specific_teacher',
             'target_grade_id' => 'nullable|exists:grades,id',
             'target_teacher_id' => 'nullable|exists:users,id',
@@ -171,9 +182,18 @@ class PostController extends Controller
             $targetTeacherId = $validated['target_teacher_id'];
         }
 
+        // For school closures, force audience to 'all'
+        $audience = $validated['audience'] ?? 'all';
+        if ($request->boolean('is_school_closure')) {
+            $audience = 'all';
+            $targetGradeId = null;
+            $targetTeacherId = null;
+        }
+
         $post->update([
             'type' => $validated['type'],
-            'audience' => $validated['audience'] ?? 'all',
+            'is_school_closure' => $request->boolean('is_school_closure'),
+            'audience' => $audience,
             'target_grade_id' => $targetGradeId,
             'target_teacher_id' => $targetTeacherId,
             'title' => $validated['title'],
