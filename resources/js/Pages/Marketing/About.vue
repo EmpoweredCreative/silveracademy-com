@@ -1,5 +1,5 @@
 <script setup>
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import MarketingLayout from '@/Layouts/MarketingLayout.vue';
 
 const values = [
@@ -15,7 +15,7 @@ const cards = [
     {
         title: 'WHY THE SILVER ACADEMY',
         image: 'https://images.unsplash.com/photo-1577896335477-28d5d43603c4?auto=format&fit=crop&w=800&q=80',
-        link: '#'
+        link: '/why-silver-academy'
     },
     {
         title: 'MEET OUR AMAZING TEAM',
@@ -74,7 +74,7 @@ const cards = [
                                 class="w-full h-full object-cover"
                             />
                             <!-- Blue Overlay -->
-                            <div class="absolute inset-0 bg-brand-500/80 mix-blend-multiply"></div>
+                            <div class="absolute inset-0 bg-brand-900/90 mix-blend-multiply"></div>
                         </div>
                         
                         <!-- Content -->
@@ -103,7 +103,7 @@ const cards = [
                                 class="w-full h-full object-cover"
                             />
                             <!-- Blue Overlay -->
-                            <div class="absolute inset-0 bg-brand-500/80 mix-blend-multiply"></div>
+                            <div class="absolute inset-0 bg-brand-900/90 mix-blend-multiply"></div>
                         </div>
                         
                         <!-- Content -->
@@ -203,10 +203,11 @@ const cards = [
         <section id="why-silver-academy" class="py-24 bg-white">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
                 <div class="grid md:grid-cols-3 gap-8 mb-24">
-                    <div 
+                    <Link
                         v-for="card in cards" 
                         :key="card.title"
-                        class="relative aspect-[3/4] group overflow-hidden cursor-pointer"
+                        :href="card.link"
+                        class="relative aspect-[3/4] group overflow-hidden cursor-pointer block"
                     >
                         <img 
                             :src="card.image" 
@@ -218,7 +219,7 @@ const cards = [
                                 {{ card.title }}
                             </h3>
                         </div>
-                    </div>
+                    </Link>
                 </div>
 
                 <!-- Final Group Photo -->

@@ -7,11 +7,26 @@ const activeGrade = ref(0);
 const isHoveringGrades = ref(false);
 
 const pillars = [
-    { title: 'Dual Excellence', description: 'Fully integrated general and Judaic curriculum ensures students are academically prepared and deeply connected to Jewish values.' },
-    { title: 'Small Class Sizes', description: 'Maximum 12 students per class ensures individualized attention.' },
-    { title: 'Holistic Learning', description: 'Hands-on experiences in art, music, STEM, and project-based learning foster curiosity and collaboration.' },
-    { title: 'Character & Values', description: 'Restorative practices cultivate empathy, integrity, and responsibility.' },
-    { title: 'Jewish Identity & Pride', description: 'Daily engagement with Torah, tradition, and Jewish holidays builds confidence and connection.' },
+    { 
+        title: 'Dual Excellence', 
+        description: 'Fully integrated general and Judaic curriculum ensures students are academically prepared and deeply connected to Jewish values.'
+    },
+    { 
+        title: 'Small Class Sizes', 
+        description: 'Maximum 12 students per class ensures individualized attention.'
+    },
+    { 
+        title: 'Holistic Learning', 
+        description: 'Hands-on experiences in art, music, STEM, and project-based learning foster curiosity and collaboration.'
+    },
+    { 
+        title: 'Character & Values', 
+        description: 'Restorative practices cultivate empathy, integrity, and responsibility.'
+    },
+    { 
+        title: 'Jewish Identity & Pride', 
+        description: 'Daily engagement with Torah, tradition, and Jewish holidays builds confidence and connection.'
+    }
 ];
 
 const gradeLevels = [
@@ -99,9 +114,18 @@ const enrichment = [
                 </div>
 
                 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <div v-for="pillar in pillars" :key="pillar.title" class="bg-white p-8 rounded-xl shadow-sm border border-slate-100">
-                        <h3 class="font-bold text-brand-600 text-xl mb-3">{{ pillar.title }}</h3>
-                        <p class="text-slate-600 leading-relaxed">{{ pillar.description }}</p>
+                    <div v-for="(pillar, index) in pillars" :key="pillar.title" class="relative bg-white p-8 rounded-xl shadow-sm border-t-4 border-brand-500 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group overflow-hidden">
+                        <!-- Logo Watermark -->
+                        <img 
+                            src="/img/icons/safavicon.png" 
+                            alt=""
+                            class="absolute -right-6 -bottom-6 w-40 h-40 opacity-5 group-hover:opacity-10 transition-opacity duration-300 pointer-events-none select-none z-0 grayscale"
+                        />
+
+                        <div class="relative z-10">
+                            <h3 class="font-serif font-bold text-brand-700 text-2xl mb-3 group-hover:text-brand-600 transition-colors duration-300">{{ pillar.title }}</h3>
+                            <p class="text-slate-600 leading-relaxed">{{ pillar.description }}</p>
+                        </div>
                     </div>
                 </div>
             </div>

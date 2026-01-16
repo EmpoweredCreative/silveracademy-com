@@ -17,6 +17,19 @@ return new class extends Migration
         // Check if week_start column exists (it might already be renamed)
         $columns = Schema::getColumnListing('lunch_menus');
         
+        // If menu_date already exists, migration has already run - just ensure unique constraint
+        if (in_array('menu_date', $columns)) {
+            // Add unique constraint on menu_date if it doesn't exist
+            try {
+                Schema::table('lunch_menus', function (Blueprint $table) {
+                    $table->unique('menu_date');
+                });
+            } catch (\Exception $e) {
+                // Index might already exist, ignore
+            }
+            return;
+        }
+        
         if (in_array('week_start', $columns)) {
             // Drop unique constraint on week_start if it exists
             try {
@@ -28,9 +41,13 @@ return new class extends Migration
             }
 
             // Rename column
-            Schema::table('lunch_menus', function (Blueprint $table) {
-                $table->renameColumn('week_start', 'menu_date');
-            });
+            try {
+                Schema::table('lunch_menus', function (Blueprint $table) {
+                    $table->renameColumn('week_start', 'menu_date');
+                });
+            } catch (\Exception $e) {
+                // Column might already be renamed, ignore
+            }
         }
 
         // Add unique constraint on menu_date if it doesn't exist

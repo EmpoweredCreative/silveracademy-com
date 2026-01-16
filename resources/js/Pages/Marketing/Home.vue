@@ -133,7 +133,7 @@ const stats = [
                     </div>
                     
                     <!-- Main Headline - Serif Font -->
-                    <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl text-slate-800 leading-tight tracking-tight">
+                    <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl text-slate-600 leading-tight tracking-tight font-bold">
                         Igniting a Lifelong Love of Learning, Jewish Identity, and Purposeful Living
                     </h1>
                     
@@ -144,8 +144,14 @@ const stats = [
                         here in Central Pennsylvania.
                     </p>
                     
-                    <!-- CTA Button -->
-                    <div class="mt-10">
+                    <!-- CTA Buttons -->
+                    <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <Link
+                            href="/admissions"
+                            class="inline-block rounded bg-accent-500 px-8 py-4 text-base font-semibold uppercase tracking-wide text-white shadow-lg hover:bg-accent-600 transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5"
+                        >
+                            Learn about Admissions
+                        </Link>
                         <Link
                             href="/contact"
                             class="inline-block rounded bg-accent-500 px-8 py-4 text-base font-semibold uppercase tracking-wide text-white shadow-lg hover:bg-accent-600 transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5"
@@ -255,7 +261,7 @@ const stats = [
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
                 <!-- Stats Row -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-12 text-center mb-24">
-                    <div v-for="stat in stats" :key="stat.label">
+                    <div v-for="stat in stats" :key="stat.label" class="bg-brand-50 rounded-lg p-6">
                         <div class="text-5xl md:text-6xl font-serif font-bold text-brand-500 mb-4">{{ stat.value }}</div>
                         <div class="text-brand-500 font-medium text-lg leading-tight max-w-[200px] mx-auto">{{ stat.label }}</div>
                     </div>
@@ -298,8 +304,9 @@ const stats = [
                             <div class="transform transition-all duration-300"
                                  :class="activeGrade === index ? 'translate-y-0' : 'translate-y-4'">
                                 <!-- Background Bar for Title - Blue when collapsed, Yellow when expanded -->
-                                <div 
-                                    class="inline-block px-4 py-2 mb-2 rounded transition-colors duration-300"
+                                <Link 
+                                    :href="grade.link"
+                                    class="inline-block px-4 py-2 mb-2 rounded transition-colors duration-300 hover:opacity-90 cursor-pointer"
                                     :class="activeGrade === index ? 'bg-accent-500/90' : 'bg-brand-500/90'"
                                 >
                                     <h3 
@@ -308,7 +315,7 @@ const stats = [
                                     >
                                         {{ grade.title }}
                                     </h3>
-                                </div>
+                                </Link>
                                 <p 
                                     class="text-white/90 text-xs md:text-sm font-medium uppercase tracking-widest mb-4 transition-opacity duration-300"
                                     :class="activeGrade === index ? 'opacity-100' : 'opacity-100 md:opacity-0'"

@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/about', [HomeController::class, 'about'])->name('about');
+Route::get('/why-silver-academy', [HomeController::class, 'whySilverAcademy'])->name('why-silver-academy');
 Route::get('/admissions', [HomeController::class, 'admissions'])->name('admissions');
 Route::get('/services', [HomeController::class, 'services'])->name('services');
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
