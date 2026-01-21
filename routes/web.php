@@ -72,7 +72,7 @@ Route::get('/events/{post:slug}', [EventController::class, 'show'])->name('event
 |
 */
 
-Route::middleware(['auth', 'verified', 'approved'])->prefix('portal')->name('portal.')->group(function () {
+Route::middleware(['auth', 'approved'])->prefix('portal')->name('portal.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Settings
@@ -126,7 +126,7 @@ Route::middleware(['auth', 'verified', 'approved'])->prefix('portal')->name('por
 |
 */
 
-Route::middleware(['auth', 'verified', 'admin'])->prefix('portal/admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'admin'])->prefix('portal/admin')->name('admin.')->group(function () {
     // Approval Management (PARENTS ONLY - staff are imported)
     Route::get('/approvals', [ApprovalController::class, 'index'])->name('approvals.index');
     Route::get('/approvals/{user}', [ApprovalController::class, 'show'])->name('approvals.show');
