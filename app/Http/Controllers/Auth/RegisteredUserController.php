@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Notifications\RegistrationReceived;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -39,13 +40,19 @@ class RegisteredUserController extends Controller
         ]);
 
         // Create parent user without password - password will be generated on approval
-        $user = User::create([
+        $userData = [
             'name' => $request->name,
             'email' => $request->email,
             'password' => null, // No password until approved
             'role' => User::ROLE_PARENT,
-            'is_approved' => false,
-        ]);
+        ];
+
+        // Only set is_approved if the column exists
+        if (Schema::hasColumn('users', 'is_approved')) {
+            $userData['is_approved'] = false;
+        }
+
+        $user = User::create($userData);
 
         // Send registration received notification
         $user->notify(new RegistrationReceived());

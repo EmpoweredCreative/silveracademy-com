@@ -4,6 +4,7 @@ namespace App\Imports;
 
 use App\Models\User;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Schema;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
@@ -61,13 +62,19 @@ class StaffImport implements ToCollection, WithHeadingRow
 
         // Create the user WITHOUT a password
         // Password will be generated when welcome email is sent
-        $user = User::create([
+        $userData = [
             'name' => $name,
             'email' => $email,
             'password' => null,
             'role' => $role,
-            'is_approved' => true, // Staff are auto-approved
-        ]);
+        ];
+
+        // Only set is_approved if the column exists
+        if (Schema::hasColumn('users', 'is_approved')) {
+            $userData['is_approved'] = true;
+        }
+
+        $user = User::create($userData);
 
         // Track imported user IDs
         $this->results['imported_ids'][] = $user->id;

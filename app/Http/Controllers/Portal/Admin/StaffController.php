@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Notifications\AccountApproved;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
@@ -90,13 +91,20 @@ class StaffController extends Controller
         // Generate password
         $password = Str::password(12);
 
-        $user = User::create([
+        // Build user data
+        $userData = [
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($password),
             'role' => $validated['role'],
-            'is_approved' => true, // Staff created by admin are auto-approved
-        ]);
+        ];
+
+        // Only set is_approved if the column exists
+        if (Schema::hasColumn('users', 'is_approved')) {
+            $userData['is_approved'] = true;
+        }
+
+        $user = User::create($userData);
 
         // Assign grades if provided
         if (!empty($validated['grade_ids'])) {
