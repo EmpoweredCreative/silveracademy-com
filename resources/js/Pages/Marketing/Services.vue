@@ -204,24 +204,24 @@ const enrichment = [
         </section>
 
         <!-- Special Programs & Enrichment -->
-        <section class="py-24 bg-brand-900 text-white">
+        <section class="py-24 bg-brand-500 text-white">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
                 <div class="text-center mb-16">
                     <h2 class="font-serif text-3xl sm:text-4xl font-bold mb-4">Special Programs & Enrichment</h2>
-                    <p class="text-brand-100 max-w-2xl mx-auto">
+                    <p class="text-white/90 max-w-2xl mx-auto">
                         We develop essential human capacities for a rapidly changing world through diverse enrichment opportunities.
                     </p>
                 </div>
 
                 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-                    <div v-for="program in enrichment" :key="program.title" class="bg-brand-800 p-8 rounded-xl hover:bg-brand-700 transition-colors duration-300">
-                        <h3 class="text-xl font-bold text-accent-400 mb-3">{{ program.title }}</h3>
-                        <p class="text-brand-50 leading-relaxed">{{ program.description }}</p>
+                    <div v-for="program in enrichment" :key="program.title" class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer">
+                        <h3 class="text-xl font-bold text-brand-600 mb-3">{{ program.title }}</h3>
+                        <p class="text-slate-600 leading-relaxed">{{ program.description }}</p>
                     </div>
                 </div>
 
                 <div class="text-center">
-                    <a href="#" class="inline-block px-8 py-3 text-sm font-semibold uppercase tracking-wider text-brand-900 bg-accent-500 rounded hover:bg-accent-400 transition-colors duration-200">
+                    <a href="#" class="inline-block px-8 py-3 text-sm font-semibold uppercase tracking-wider text-white bg-accent-500 rounded hover:bg-accent-600 transition-colors duration-200 shadow-lg hover:shadow-xl">
                         Explore Enrichment Programs
                     </a>
                 </div>

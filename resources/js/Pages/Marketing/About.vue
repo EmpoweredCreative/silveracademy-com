@@ -3,29 +3,29 @@ import { Head, Link } from '@inertiajs/vue3';
 import MarketingLayout from '@/Layouts/MarketingLayout.vue';
 
 const values = [
-    { title: 'Jewish Identity', icon: '✡️' },
-    { title: 'Community Responsibility', icon: '🤝' },
-    { title: 'Compassionate Empathy', icon: '❤️' },
-    { title: 'Intellectual Curiosity', icon: '💡' },
-    { title: 'Unwavering Integrity', icon: '⚖️' },
-    { title: 'Intentional Action', icon: '🎯' },
+    { title: 'Jewish Identity', icon: '/img/icons/Jewish Identity.png' },
+    { title: 'Community Responsibility', icon: '/img/icons/Community.png' },
+    { title: 'Compassionate Empathy', icon: '/img/icons/Empathy.png' },
+    { title: 'Intellectual Curiosity', icon: '/img/icons/Intellectual.png' },
+    { title: 'Unwavering Integrity', icon: '/img/icons/integrity.png' },
+    { title: 'Intentional Action', icon: '/img/icons/Action.png' },
 ];
 
 const cards = [
     {
         title: 'WHY THE SILVER ACADEMY',
-        image: 'https://images.unsplash.com/photo-1577896335477-28d5d43603c4?auto=format&fit=crop&w=800&q=80',
+        image: '/img/graphics/about/web-silveracademyWhy Silver.jpg',
         link: '/why-silver-academy'
     },
     {
         title: 'MEET OUR AMAZING TEAM',
-        image: 'https://images.unsplash.com/photo-1544531586-fde5298cdd40?auto=format&fit=crop&w=800&q=80',
+        image: '/img/graphics/about/web-silveracademyAmazing Team.jpg',
         link: '#'
     },
     {
         title: 'LEARN ABOUT OUR COMMUNITY',
-        image: 'https://images.unsplash.com/photo-1587654780291-39c9404d746b?auto=format&fit=crop&w=800&q=80',
-        link: '#'
+        image: '/img/graphics/about/web-silveracademyCommunity 2.jpg',
+        link: '/our-community'
     }
 ];
 </script>
@@ -38,7 +38,7 @@ const cards = [
         <section class="relative h-[400px] overflow-hidden">
             <div class="absolute inset-0">
                 <img 
-                    src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1920&q=80" 
+                    src="/img/graphics/about/web-silveracademyCommunity.jpg" 
                     alt="Students smiling" 
                     class="w-full h-full object-cover object-center"
                 />
@@ -69,7 +69,7 @@ const cards = [
                         <!-- Background Image -->
                         <div class="absolute inset-0">
                             <img 
-                                src="https://images.unsplash.com/photo-1541829070764-84a7d30dd3f3?auto=format&fit=crop&w=800&q=80" 
+                                src="/img/graphics/mission-vision/web-silveracademyIMG_3010.jpg" 
                                 alt="School Building" 
                                 class="w-full h-full object-cover"
                             />
@@ -98,7 +98,7 @@ const cards = [
                         <!-- Background Image -->
                         <div class="absolute inset-0">
                             <img 
-                                src="https://images.unsplash.com/photo-1541829070764-84a7d30dd3f3?auto=format&fit=crop&w=800&q=80" 
+                                src="/img/graphics/mission-vision/web-silveracademyIMG_3013.jpg" 
                                 alt="School Building" 
                                 class="w-full h-full object-cover"
                             />
@@ -145,11 +145,13 @@ const cards = [
                         :key="value.title"
                         class="flex flex-col items-center text-center"
                     >
-                        <!-- Icon Placeholder (Teacher/Presentation Style) -->
-                        <div class="w-20 h-20 mb-6 text-brand-500">
-                            <svg class="w-full h-full" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
-                            </svg>
+                        <!-- Icon Image -->
+                        <div class="w-20 h-20 mb-6 flex items-center justify-center">
+                            <img 
+                                :src="value.icon" 
+                                :alt="value.title"
+                                class="w-full h-full object-contain"
+                            />
                         </div>
                         
                         <h3 class="text-xl font-semibold text-slate-700 leading-tight max-w-[200px]">
@@ -166,7 +168,7 @@ const cards = [
                 <!-- Large Image -->
                 <div class="relative w-full h-[500px] rounded-t-lg overflow-hidden mb-0">
                     <img 
-                        src="https://images.unsplash.com/photo-1541829070764-84a7d30dd3f3?auto=format&fit=crop&w=1920&q=80" 
+                        src="/img/graphics/about/web-silveracademyHistory.jpg" 
                         alt="The Silver Academy Building" 
                         class="w-full h-full object-cover"
                     />
@@ -225,7 +227,7 @@ const cards = [
                 <!-- Final Group Photo -->
                 <div class="w-full h-[600px] overflow-hidden">
                     <img 
-                        src="https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&w=1920&q=80" 
+                        src="/img/graphics/about/web-silveracademyFooter.jpg" 
                         alt="Silver Academy Community" 
                         class="w-full h-full object-cover"
                     />

@@ -23,6 +23,11 @@ class HomeController extends Controller
         return Inertia::render('Marketing/WhySilverAcademy');
     }
 
+    public function ourCommunity(): Response
+    {
+        return Inertia::render('Marketing/OurCommunity');
+    }
+
     public function admissions(): Response
     {
         return Inertia::render('Marketing/Admissions');

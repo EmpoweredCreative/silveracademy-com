@@ -9,25 +9,25 @@ const panels = [
     {
         title: 'Small Class Sizes',
         description: 'With a maximum of 12 students per class, every child receives individualized attention.',
-        image: 'https://images.unsplash.com/photo-1544531586-fde5298cdd40?auto=format&fit=crop&w=800&q=80',
+        image: '/img/graphics/home/web-silveracademySmall Class Sizes(1).jpg',
         link: '/about'
     },
     {
         title: 'Dual Excellence',
         description: 'Integrated general and Judaic curriculum prepares students academically and spiritually.',
-        image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80',
+        image: '/img/graphics/home/web-silveracademyDual Curriculum.jpg',
         link: '/programs'
     },
     {
         title: 'Holistic Development',
         description: 'Students explore art, music, STEM, and project-based learning.',
-        image: 'https://images.unsplash.com/photo-1488998427799-e3362cec87c3?auto=format&fit=crop&w=800&q=80',
+        image: '/img/graphics/admissions/web-silveracademyHolistic Development.jpg',
         link: '/programs'
     },
     {
         title: 'Jewish Identity & Pride',
         description: 'Torah, tradition, and values guide daily life, fostering confidence and connection.',
-        image: 'https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&w=800&q=80',
+        image: '/img/graphics/admissions/web-silveracademyJewish Pride.jpg',
         link: '/about'
     },
     {
@@ -39,13 +39,13 @@ const panels = [
     {
         title: 'Family Partnership',
         description: 'Transparent communication ensures parents are active partners in education.',
-        image: 'https://images.unsplash.com/photo-1536640712-4d4c36ff0e4e?auto=format&fit=crop&w=800&q=80',
+        image: '/img/graphics/home/web-silveracademyFamily Parntership.jpg',
         link: '#'
     },
     {
         title: 'Accessible Education',
         description: 'Generous financial aid and EITC programs ensure every family has access.',
-        image: 'https://images.unsplash.com/photo-1571260899304-425eee4c7efc?auto=format&fit=crop&w=800&q=80',
+        image: '/img/graphics/home/web-silveracademyAccessible.jpg',
         link: '#tuition'
     }
 ];
@@ -104,7 +104,7 @@ const testimonials = [
         <section class="relative h-[400px] overflow-hidden">
             <div class="absolute inset-0">
                 <img 
-                    src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=1920&q=80" 
+                    src="/img/graphics/admissions/web-silveracademyWhy A Jewish Day School.jpg" 
                     alt="Students" 
                     class="w-full h-full object-cover opacity-100" 
                 />
@@ -204,19 +204,39 @@ const testimonials = [
                             Children of all backgrounds gain the tools, confidence, and resilience they need to succeed in school and in life.
                         </p>
                         
-                        <div class="space-y-6">
-                            <div v-for="benefit in benefits.slice(0, 3)" :key="benefit.title">
-                                <h4 class="font-bold text-slate-800 mb-1">{{ benefit.title }}</h4>
-                                <p class="text-slate-600 text-sm">{{ benefit.description }}</p>
+                        <div class="space-y-6 mb-8">
+                            <div>
+                                <h4 class="font-bold text-slate-800 mb-1">Integrated Academic Excellence</h4>
+                                <p class="text-slate-600 text-sm">A connected general and Judaic curriculum, small class sizes, and hands-on learning ensure every student is supported, challenged, and engaged.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-800 mb-1">Character & Values That Matter</h4>
+                                <p class="text-slate-600 text-sm">Jewish values and restorative practices foster empathy, integrity, accountability, and emotional intelligence, skills that benefit all children.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-800 mb-1">An Inclusive, Supportive Community</h4>
+                                <p class="text-slate-600 text-sm">A welcoming environment for families of all backgrounds, built on strong partnerships, mentorship, and meaningful relationships.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-800 mb-1">Prepared for What's Next</h4>
+                                <p class="text-slate-600 text-sm">Students graduate with confidence, resilience, leadership skills, and a love of learning—ready for high school and beyond.</p>
                             </div>
                         </div>
+                        
+                        <Link 
+                            href="/contact"
+                            class="inline-block bg-accent-500 text-white px-8 py-3 rounded font-semibold uppercase tracking-wider hover:bg-accent-600 transition-colors"
+                        >
+                            Schedule A Visit
+                        </Link>
                     </div>
                     <div class="relative h-full min-h-[500px]">
                         <div class="absolute inset-0 bg-brand-500 rounded-2xl transform rotate-3"></div>
                         <img 
-                            src="https://images.unsplash.com/photo-1587654780291-39c9404d746b?auto=format&fit=crop&w=800&q=80" 
+                            src="/img/graphics/admissions/web-silveracademyWhy A Jewish Day School(2).jpg" 
                             alt="Students learning" 
                             class="absolute inset-0 w-full h-full object-cover rounded-2xl transform -rotate-3 hover:rotate-0 transition-transform duration-500 shadow-xl"
+                            style="object-position: center 25%;"
                         />
                     </div>
                 </div>
@@ -270,74 +290,96 @@ const testimonials = [
                     </p>
                 </div>
 
-                <div class="grid lg:grid-cols-2 gap-12">
-                    <!-- Pricing Card -->
-                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
-                        <h3 class="text-xl font-bold text-brand-600 mb-6 uppercase tracking-wide">Full-Cost Tuition</h3>
-                        <div class="space-y-4">
-                            <div v-for="item in tuition" :key="item.grade" class="flex justify-between items-center py-4 border-b border-slate-100 last:border-0">
-                                <span class="font-medium text-slate-700">{{ item.grade }}</span>
-                                <span class="font-bold text-slate-900">{{ item.price }}</span>
+                <div class="max-w-4xl mx-auto">
+                    <!-- Financial Aid Statistics - Prominent -->
+                    <div class="bg-brand-500 text-white p-10 md:p-12 rounded-2xl shadow-xl mb-8">
+                        <div class="text-center mb-8">
+                            <h3 class="font-serif text-3xl md:text-4xl font-bold text-white mb-2">
+                                Making Education Accessible
+                            </h3>
+                            <p class="text-white/90 text-lg">
+                                Most families receive significant financial assistance
+                            </p>
+                        </div>
+                        <div class="grid md:grid-cols-3 gap-8 text-center mb-8">
+                            <div>
+                                <div class="text-5xl md:text-6xl font-bold mb-3">61%</div>
+                                <div class="text-white/90 text-base font-medium">of students receive financial aid</div>
+                            </div>
+                            <div>
+                                <div class="text-5xl md:text-6xl font-bold mb-3">60%</div>
+                                <div class="text-white/90 text-base font-medium">Average scholarship award</div>
+                            </div>
+                            <div>
+                                <div class="text-5xl md:text-6xl font-bold mb-3">$17,105</div>
+                                <div class="text-white/90 text-base font-medium">Average scholarship amount</div>
+                            </div>
+                        </div>
+                        <div class="bg-white/20 backdrop-blur-sm rounded-xl p-6 text-center">
+                            <p class="text-white text-sm uppercase tracking-wider mb-2">Average Tuition Paid</p>
+                            <p class="text-white text-4xl font-bold">$8,178</p>
+                        </div>
+                    </div>
+
+                    <!-- Full-Cost Tuition - De-emphasized -->
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 mb-8">
+                        <h3 class="font-serif text-lg text-slate-600 mb-4 text-center">Full-Cost Tuition (Before Financial Aid)</h3>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div 
+                                v-for="item in tuition" 
+                                :key="item.grade"
+                                class="border-b border-slate-100 pb-3"
+                            >
+                                <div class="flex justify-between items-center">
+                                    <span class="text-slate-500 text-sm">{{ item.grade }}</span>
+                                    <span class="text-slate-400 font-medium text-sm">{{ item.price }}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Aid Stats -->
-                    <div class="space-y-8">
-                        <div class="bg-brand-500 p-8 rounded-2xl text-white text-center">
-                            <h3 class="text-2xl font-serif font-bold mb-2">Scholarships Available</h3>
-                            <p class="text-white/90">Through scholarships, tuition assistance, and community programs, we ensure access for all.</p>
-                        </div>
-                        
-                        <div class="grid sm:grid-cols-3 gap-4">
-                            <div v-for="stat in stats" :key="stat.label" class="bg-white p-6 rounded-xl text-center shadow-sm border border-slate-100">
-                                <div class="text-3xl font-bold text-brand-600 mb-2">{{ stat.value }}</div>
-                                <div class="text-xs text-slate-500 uppercase tracking-wide">{{ stat.label }}</div>
-                            </div>
-                        </div>
-
-                        <div class="bg-white p-8 rounded-2xl border-l-4 border-accent-500 shadow-sm">
-                            <h4 class="font-bold text-slate-800 mb-2">EITC & OSTC Programs</h4>
-                            <p class="text-slate-600 text-sm mb-4">Redirect PA state taxes to support scholarships.</p>
-                            <a href="#" class="text-brand-600 font-semibold hover:text-brand-700 text-sm flex items-center">
-                                Learn more about EITC
-                                <svg class="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                                </svg>
-                            </a>
-                        </div>
+                    <!-- EITC & OSTC Programs -->
+                    <div class="bg-white p-8 rounded-2xl border-l-4 border-accent-500 shadow-sm">
+                        <h4 class="font-bold text-slate-800 mb-2">EITC & OSTC Programs</h4>
+                        <p class="text-slate-600 text-sm mb-4">Redirect PA state taxes to support scholarships.</p>
+                        <a href="#" class="text-brand-600 font-semibold hover:text-brand-700 text-sm flex items-center">
+                            Learn more about EITC
+                            <svg class="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </a>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- Alumni & Testimonials -->
-        <section class="py-24 bg-brand-900 text-white">
+        <section class="py-24 bg-brand-500 text-white">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
                 <div class="text-center mb-16">
                     <h2 class="font-serif text-3xl sm:text-4xl font-bold mb-4">Celebrating Generations of Lifelong Learners</h2>
-                    <p class="text-brand-100 max-w-3xl mx-auto">
+                    <p class="text-white/90 max-w-3xl mx-auto">
                         For more than 80 years, The Silver Academy has nurtured students who thrive academically, socially, and spiritually.
                     </p>
                 </div>
 
                 <div class="grid md:grid-cols-3 gap-8">
-                    <div v-for="(testimonial, index) in testimonials" :key="index" class="bg-brand-800 p-8 rounded-xl relative">
-                        <svg class="w-10 h-10 text-accent-500 mb-4 opacity-50" fill="currentColor" viewBox="0 0 24 24">
+                    <div v-for="(testimonial, index) in testimonials" :key="index" class="bg-white p-8 rounded-xl relative shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer">
+                        <svg class="w-10 h-10 text-brand-500 mb-4 opacity-50" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.996 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.984zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
                         </svg>
-                        <p class="text-brand-50 mb-6 italic leading-relaxed">"{{ testimonial.quote }}"</p>
-                        <div class="text-accent-400 font-bold text-sm tracking-wide uppercase">{{ testimonial.author }}</div>
+                        <p class="text-slate-700 mb-6 italic leading-relaxed">"{{ testimonial.quote }}"</p>
+                        <div class="text-brand-600 font-bold text-sm tracking-wide uppercase">{{ testimonial.author }}</div>
                     </div>
                 </div>
 
                 <div class="mt-16 text-center">
-                    <div class="bg-white/10 p-8 rounded-2xl max-w-4xl mx-auto backdrop-blur-sm">
+                    <div class="bg-white p-8 rounded-2xl max-w-4xl mx-auto shadow-lg">
                         <div class="flex flex-col md:flex-row items-center gap-8">
                             <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=200&h=200&q=80" alt="Student" class="w-24 h-24 rounded-full object-cover border-4 border-accent-500" />
                             <div class="text-left">
-                                <h3 class="text-xl font-bold text-white mb-2">Student Story: Alexandra</h3>
-                                <p class="text-brand-100 text-sm leading-relaxed">
+                                <h3 class="text-xl font-bold text-slate-800 mb-2">Student Story: Alexandra</h3>
+                                <p class="text-slate-600 text-sm leading-relaxed">
                                     Alexandra joined The Silver Academy as the youngest of four siblings. Initially shy, she thrived thanks to nurturing teachers. Now a first grader, Alexandra is a top reader, confident in her abilities, and proud of her Jewish identity.
                                 </p>
                             </div>
