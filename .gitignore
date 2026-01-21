@@ -22,3 +22,6 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Large video files (hosted externally)
+/public/vid/Silver Academy Full Video V3.mp4

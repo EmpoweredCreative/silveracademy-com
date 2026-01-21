@@ -115,18 +115,22 @@ const environment = [
         </section>
 
         <!-- Values & CTA -->
-        <section class="py-20 bg-brand-900 text-white text-center">
-            <div class="mx-auto max-w-4xl px-6 lg:px-8">
-                <h2 class="font-serif text-3xl font-bold mb-8">Inclusive & Values-Driven</h2>
-                <p class="text-xl text-brand-100 mb-12">
-                    The Silver Academy Middle School program is open to students from all backgrounds, providing a strong 
-                    foundation in Jewish values while emphasizing ethical behavior, curiosity, and collaboration. Our students 
-                    graduate with confidence, pride in their identity, and the tools to thrive in any environment.
-                </p>
+        <section class="py-24 bg-brand-500 text-white text-center">
+            <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="font-serif text-3xl sm:text-4xl font-bold mb-4">Inclusive & Values-Driven</h2>
+                    <p class="text-white/90 max-w-2xl mx-auto text-lg">
+                        The Silver Academy Middle School program is open to students from all backgrounds, providing a strong 
+                        foundation in Jewish values while emphasizing ethical behavior, curiosity, and collaboration. Our students 
+                        graduate with confidence, pride in their identity, and the tools to thrive in any environment.
+                    </p>
+                </div>
                 
-                <Link href="/contact" class="inline-block rounded bg-accent-500 px-8 py-4 text-base font-semibold uppercase tracking-wide text-white shadow-lg hover:bg-accent-600 transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5">
-                    Learn More About Upper School Programs
-                </Link>
+                <div class="text-center">
+                    <Link href="/contact" class="inline-block rounded bg-accent-500 px-8 py-4 text-base font-semibold uppercase tracking-wide text-white shadow-lg hover:bg-accent-600 transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5">
+                        Learn More About Upper School Programs
+                    </Link>
+                </div>
             </div>
         </section>
 

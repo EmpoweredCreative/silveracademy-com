@@ -87,17 +87,21 @@ const judaicStudies = [
         </section>
 
         <!-- Inclusivity & CTA -->
-        <section class="py-20 bg-brand-900 text-white text-center">
-            <div class="mx-auto max-w-4xl px-6 lg:px-8">
-                <h2 class="font-serif text-3xl font-bold mb-8">Inclusivity</h2>
-                <p class="text-xl text-brand-100 mb-12">
-                    Kindergarten at The Silver Academy is open to all students, regardless of background, 
-                    fostering a welcoming and diverse learning community.
-                </p>
+        <section class="py-24 bg-brand-500 text-white text-center">
+            <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="font-serif text-3xl sm:text-4xl font-bold mb-4">Inclusivity</h2>
+                    <p class="text-white/90 max-w-2xl mx-auto text-lg">
+                        Kindergarten at The Silver Academy is open to all students, regardless of background, 
+                        fostering a welcoming and diverse learning community.
+                    </p>
+                </div>
                 
-                <Link href="/contact" class="inline-block rounded bg-accent-500 px-8 py-4 text-base font-semibold uppercase tracking-wide text-white shadow-lg hover:bg-accent-600 transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5">
-                    Learn More About Kindergarten
-                </Link>
+                <div class="text-center">
+                    <Link href="/contact" class="inline-block rounded bg-accent-500 px-8 py-4 text-base font-semibold uppercase tracking-wide text-white shadow-lg hover:bg-accent-600 transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5">
+                        Learn More About Kindergarten
+                    </Link>
+                </div>
             </div>
         </section>
 

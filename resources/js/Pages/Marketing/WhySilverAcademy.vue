@@ -81,7 +81,7 @@ const schoolHighlights = {
         <section class="relative h-[400px] overflow-hidden">
             <div class="absolute inset-0">
                 <img 
-                    src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1920&q=80" 
+                    src="/img/graphics/about/web-silveracademyWhy Silver.jpg" 
                     alt="Students at The Silver Academy" 
                     class="w-full h-full object-cover"
                 />
@@ -183,48 +183,50 @@ const schoolHighlights = {
                         </p>
                     </div>
 
-                    <!-- Full-Cost Tuition -->
-                    <div class="bg-white p-8 rounded-xl shadow-sm mb-8">
-                        <h3 class="font-serif text-2xl text-slate-800 mb-6 text-center">Full-Cost Tuition</h3>
-                        <div class="grid md:grid-cols-2 gap-6">
-                            <div 
-                                v-for="(item, index) in tuitionInfo" 
-                                :key="index"
-                                class="border-b border-slate-200 pb-4"
-                            >
-                                <div class="flex justify-between items-center">
-                                    <span class="text-slate-700 font-semibold">{{ item.grade }}</span>
-                                    <span class="text-brand-600 font-bold text-lg">{{ item.price }}</span>
-                                </div>
+                    <!-- Financial Aid Statistics - Prominent -->
+                    <div class="bg-brand-500 text-white p-10 md:p-12 rounded-2xl shadow-xl mb-8">
+                        <div class="text-center mb-8">
+                            <h3 class="font-serif text-3xl md:text-4xl font-bold text-white mb-2">
+                                Making Education Accessible
+                            </h3>
+                            <p class="text-white/90 text-lg">
+                                Most families receive significant financial assistance
+                            </p>
+                        </div>
+                        <div class="grid md:grid-cols-3 gap-8 text-center mb-8">
+                            <div>
+                                <div class="text-5xl md:text-6xl font-bold mb-3">61%</div>
+                                <div class="text-white/90 text-base font-medium">of students receive a scholarship</div>
                             </div>
+                            <div>
+                                <div class="text-5xl md:text-6xl font-bold mb-3">60.2%</div>
+                                <div class="text-white/90 text-base font-medium">Average scholarship award</div>
+                            </div>
+                            <div>
+                                <div class="text-5xl md:text-6xl font-bold mb-3">$17,105</div>
+                                <div class="text-white/90 text-base font-medium">Average scholarship amount</div>
+                            </div>
+                        </div>
+                        <div class="bg-white/20 backdrop-blur-sm rounded-xl p-6 text-center">
+                            <p class="text-white text-sm uppercase tracking-wider mb-2">Average Tuition Paid</p>
+                            <p class="text-white text-4xl font-bold">$8,178.90</p>
                         </div>
                     </div>
 
-                    <!-- Financial Aid Statistics -->
-                    <div class="bg-brand-500 text-white p-8 rounded-xl shadow-sm">
-                        <div class="text-center mb-6">
-                            <p class="text-white/90 mb-2">
-                                Graphics from the annual report (these will need to be updated regularly). Or we can link to the report and highlight that:
-                            </p>
-                        </div>
-                        <div class="grid md:grid-cols-3 gap-6 text-center">
-                            <div>
-                                <div class="text-4xl font-bold mb-2">61%</div>
-                                <div class="text-white/90 text-sm">of students receive a scholarship</div>
+                    <!-- Full-Cost Tuition - De-emphasized -->
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                        <h3 class="font-serif text-lg text-slate-600 mb-4 text-center">Full-Cost Tuition (Before Financial Aid)</h3>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div 
+                                v-for="(item, index) in tuitionInfo" 
+                                :key="index"
+                                class="border-b border-slate-100 pb-3"
+                            >
+                                <div class="flex justify-between items-center">
+                                    <span class="text-slate-500 text-sm">{{ item.grade }}</span>
+                                    <span class="text-slate-400 font-medium text-sm">{{ item.price }}</span>
+                                </div>
                             </div>
-                            <div>
-                                <div class="text-4xl font-bold mb-2">60.2%</div>
-                                <div class="text-white/90 text-sm">Average scholarship award</div>
-                            </div>
-                            <div>
-                                <div class="text-4xl font-bold mb-2">$17,105</div>
-                                <div class="text-white/90 text-sm">Average scholarship amount</div>
-                            </div>
-                        </div>
-                        <div class="mt-6 text-center">
-                            <p class="text-white/90 text-sm">
-                                Average Tuition Paid: <span class="font-bold">$8,178.90</span>
-                            </p>
                         </div>
                     </div>
                 </div>

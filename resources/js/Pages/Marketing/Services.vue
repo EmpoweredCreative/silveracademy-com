@@ -213,17 +213,11 @@ const enrichment = [
                     </p>
                 </div>
 
-                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                     <div v-for="program in enrichment" :key="program.title" class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer">
                         <h3 class="text-xl font-bold text-brand-600 mb-3">{{ program.title }}</h3>
                         <p class="text-slate-600 leading-relaxed">{{ program.description }}</p>
                     </div>
-                </div>
-
-                <div class="text-center">
-                    <a href="#" class="inline-block px-8 py-3 text-sm font-semibold uppercase tracking-wider text-white bg-accent-500 rounded hover:bg-accent-600 transition-colors duration-200 shadow-lg hover:shadow-xl">
-                        Explore Enrichment Programs
-                    </a>
                 </div>
             </div>
         </section>

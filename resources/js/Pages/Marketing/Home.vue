@@ -6,18 +6,39 @@ import MarketingLayout from '@/Layouts/MarketingLayout.vue';
 const activePanel = ref(5); // Default to Family Partnership (index 5)
 const activeGrade = ref(0); // Default to Ganeinu (index 0)
 const isHoveringGrades = ref(false);
+const storyVideo = ref(null);
+const isVideoPlaying = ref(false);
+
+const playVideo = () => {
+    if (storyVideo.value) {
+        storyVideo.value.play();
+        isVideoPlaying.value = true;
+    }
+};
+
+const toggleVideo = () => {
+    if (storyVideo.value) {
+        if (storyVideo.value.paused) {
+            storyVideo.value.play();
+            isVideoPlaying.value = true;
+        } else {
+            storyVideo.value.pause();
+            isVideoPlaying.value = false;
+        }
+    }
+};
 
 const panels = [
     {
         title: 'Small Class Sizes',
         description: 'Our low student-to-teacher ratio ensures that every child is seen, heard, and valued. Teachers tailor instruction to meet individual needs, fostering deep understanding and academic confidence.',
-        image: 'https://images.unsplash.com/photo-1544531586-fde5298cdd40?auto=format&fit=crop&w=800&q=80',
+        image: '/img/graphics/home/web-silveracademySmall Class Sizes(1).jpg',
         link: '/about#why-silver-academy'
     },
     {
         title: 'Dual Curriculum',
         description: 'We seamlessly integrate rigorous general studies with rich Jewish education, empowering students to navigate the world with intellectual depth and spiritual grounding.',
-        image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80',
+        image: '/img/graphics/home/web-silveracademyDual Curriculum.jpg',
         link: '/services#our-approach'
     },
     {
@@ -29,19 +50,19 @@ const panels = [
     {
         title: 'Joyful Learning',
         description: 'Education should be exciting. We create a dynamic environment where curiosity thrives, questions are encouraged, and learning is a daily adventure.',
-        image: 'https://images.unsplash.com/photo-1488998427799-e3362cec87c3?auto=format&fit=crop&w=800&q=80',
+        image: '/img/graphics/home/web-silveracademyJoyful Learning 2.jpg',
         link: '/services'
     },
     {
         title: 'Accessible Education',
         description: 'We are committed to making a Silver Academy education reachable for every family through generous scholarship programs and tuition assistance.',
-        image: 'https://images.unsplash.com/photo-1571260899304-425eee4c7efc?auto=format&fit=crop&w=800&q=80',
+        image: '/img/graphics/home/web-silveracademyAccessible.jpg',
         link: '/admissions#tuition'
     },
     {
         title: 'Family Partnership',
         description: 'Transparent communication and shared decision-making create a welcoming, collaborative community where parents are true partners in their child’s journey.',
-        image: 'https://images.unsplash.com/photo-1536640712-4d4c36ff0e4e?auto=format&fit=crop&w=800&q=80',
+        image: '/img/graphics/home/web-silveracademyFamily Parntership.jpg',
         link: '/get-involved'
     }
 ];
@@ -51,28 +72,28 @@ const gradeLevels = [
         title: 'Ganeinu',
         subtitle: 'Preschool',
         description: 'Our early childhood program fosters creativity, socialization, and a love for Jewish traditions in a warm, nurturing environment.',
-        image: 'https://images.unsplash.com/photo-1587654780291-39c9404d746b?auto=format&fit=crop&w=800&q=80',
+        image: '/img/graphics/home/web-silveracademyGaneinu.jpg',
         link: '/programs/ganeinu'
     },
     {
         title: 'Kindergarten',
         subtitle: 'Foundations',
         description: 'Building strong foundations in literacy, numeracy, and Hebrew language through play-based and structured learning.',
-        image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=800&q=80',
+        image: '/img/graphics/home/web-silveracademyKindergarten.jpg',
         link: '/programs/kindergarten'
     },
     {
         title: 'Lower School',
         subtitle: 'Grades 1-4',
         description: 'Developing critical thinking skills and independence while deepening connection to Jewish identity and community.',
-        image: 'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=800&q=80',
+        image: '/img/graphics/home/web-silveracademyLower School2.jpg',
         link: '/programs/lower-school'
     },
     {
         title: 'Upper School',
         subtitle: 'Grades 5-8',
         description: 'Preparing students for high school and beyond with rigorous academics, leadership opportunities, and ethical growth.',
-        image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80',
+        image: '/img/graphics/home/web-silveracademyUpper School 2.jpg',
         link: '/programs/upper-school'
     }
 ];
@@ -113,14 +134,20 @@ const stats = [
     <MarketingLayout>
         <!-- Hero Section -->
         <section class="relative overflow-hidden bg-slate-50">
-            <!-- Hero Image Background -->
+            <!-- Hero Video Background -->
             <div class="absolute inset-0">
+                <video 
+                    autoplay 
+                    muted 
+                    loop 
+                    playsinline
+                    class="w-full h-full object-cover object-center"
+                >
+                    <source src="/vid/Broll Header.mp4" type="video/mp4">
+                </video>
+                <!-- White Overlay for Text Readability -->
+                <div class="absolute inset-0 bg-white/70 z-10"></div>
                 <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/90 z-10"></div>
-                <img 
-                    src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=1920&q=80" 
-                    alt="Students learning together" 
-                    class="w-full h-full object-cover object-top opacity-30"
-                />
             </div>
             
             <div class="relative z-20 mx-auto max-w-7xl px-6 py-20 sm:py-28 lg:px-8 lg:py-36">
@@ -167,23 +194,35 @@ const stats = [
         <section class="w-full bg-white">
             <div class="mx-auto max-w-7xl px-6 lg:px-8 py-12">
                 <div class="aspect-video relative overflow-hidden group rounded-2xl shadow-xl">
-                    <div class="absolute inset-0 flex items-center justify-center bg-black/40 group-hover:bg-black/30 transition-colors duration-300 cursor-pointer">
+                    <video 
+                        ref="storyVideo"
+                        class="w-full h-full object-cover"
+                        poster="/vid/Silver Academy Full Video V3-poster.jpg"
+                        preload="metadata"
+                        @click="toggleVideo"
+                    >
+                        <source src="/vid/Silver Academy Full Video V3.mp4" type="video/mp4">
+                    </video>
+                    <!-- Black Overlay for Text Readability -->
+                    <div 
+                        v-if="!isVideoPlaying"
+                        class="absolute inset-0 bg-black/50 z-0"
+                    ></div>
+                    <div 
+                        v-if="!isVideoPlaying"
+                        class="absolute inset-0 flex items-center justify-center cursor-pointer z-10"
+                        @click="playVideo"
+                    >
                         <div class="text-center">
                             <div class="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform duration-300 border-2 border-white/50">
                                 <svg class="w-10 h-10 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M8 5v14l11-7z" />
                                 </svg>
                             </div>
-                            <h3 class="text-white text-xl font-semibold tracking-wider uppercase">Watch Our Story</h3>
-                            <p class="text-white/80 mt-2 font-serif text-lg">Life at Silver Academy</p>
+                            <h3 class="text-white text-xl font-semibold tracking-wider uppercase drop-shadow-lg">Watch Our Story</h3>
+                            <p class="text-white/90 mt-2 font-serif text-lg drop-shadow-md">Life at Silver Academy</p>
                         </div>
                     </div>
-                    <!-- Placeholder Image -->
-                    <img 
-                        src="https://images.unsplash.com/photo-1577896335477-28d5d43603c4?auto=format&fit=crop&w=1920&q=80" 
-                        alt="Silver Academy Video Placeholder" 
-                        class="w-full h-full object-cover -z-10"
-                    />
                 </div>
             </div>
         </section>
@@ -396,7 +435,7 @@ const stats = [
             <div class="relative h-[600px] md:h-[700px]">
                 <!-- Background Image -->
                 <img 
-                    src="https://images.unsplash.com/photo-1587654780291-39c9404d746b?auto=format&fit=crop&w=1920&q=80" 
+                    src="/img/graphics/home/web-silveracademyQuote.jpg" 
                     alt="Happy student at Silver Academy" 
                     class="absolute inset-0 w-full h-full object-cover"
                 />

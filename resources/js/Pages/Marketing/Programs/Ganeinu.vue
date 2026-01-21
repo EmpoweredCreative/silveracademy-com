@@ -109,24 +109,30 @@ const outcomes = [
         </section>
 
         <!-- Learning Outcomes & CTA -->
-        <section class="py-20 bg-brand-900 text-white text-center">
-            <div class="mx-auto max-w-4xl px-6 lg:px-8">
-                <h2 class="font-serif text-3xl font-bold mb-8">Learning Outcomes</h2>
-                <p class="text-xl text-brand-100 mb-12">
+        <section class="py-24 bg-brand-500 text-white text-center">
+            <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="font-serif text-3xl sm:text-4xl font-bold mb-4">Learning Outcomes</h2>
+                    <p class="text-white/90 max-w-2xl mx-auto text-lg">
                     Ganeinu offers a taste of the Silver Academy’s Judaic education at the early childhood level, helping children:
                 </p>
-                <div class="grid sm:grid-cols-2 gap-6 mb-16 text-left">
-                    <div v-for="outcome in outcomes" :key="outcome" class="flex items-start gap-3 bg-brand-800 p-6 rounded-lg">
-                        <svg class="w-6 h-6 text-accent-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                        <span class="text-brand-50">{{ outcome }}</span>
+                </div>
+                <div class="grid sm:grid-cols-2 gap-8 mb-16">
+                    <div v-for="outcome in outcomes" :key="outcome" class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer text-left">
+                        <div class="flex items-start gap-4">
+                            <svg class="w-6 h-6 text-brand-500 flex-shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            <span class="text-slate-700 text-lg">{{ outcome }}</span>
+                        </div>
                     </div>
                 </div>
                 
-                <Link href="/contact" class="inline-block rounded bg-accent-500 px-8 py-4 text-base font-semibold uppercase tracking-wide text-white shadow-lg hover:bg-accent-600 transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5">
-                    Learn more about Ganeinu
-                </Link>
+                <div class="text-center">
+                    <Link href="/contact" class="inline-block rounded bg-accent-500 px-8 py-4 text-base font-semibold uppercase tracking-wide text-white shadow-lg hover:bg-accent-600 transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5">
+                        Learn more about Ganeinu
+                    </Link>
+                </div>
             </div>
         </section>
 

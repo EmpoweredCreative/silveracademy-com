@@ -90,15 +90,20 @@ const reasons = [
         </section>
 
         <!-- CTA -->
-        <section class="py-20 bg-brand-900 text-white text-center">
-            <div class="mx-auto max-w-4xl px-6 lg:px-8">
-                <h3 class="text-3xl font-serif font-bold mb-6">Ready to Join?</h3>
-                <p class="text-xl text-brand-100 mb-8">
-                    Complete the form below to register for the year, month, or a drop-in day!
-                </p>
-                <Link href="/contact" class="inline-block rounded bg-accent-500 px-8 py-4 text-base font-semibold uppercase tracking-wide text-white shadow-lg hover:bg-accent-600 transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5">
-                    Sign Up for After School
-                </Link>
+        <section class="py-24 bg-brand-500 text-white text-center">
+            <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h3 class="text-3xl sm:text-4xl font-serif font-bold mb-4">Ready to Join?</h3>
+                    <p class="text-white/90 max-w-2xl mx-auto text-lg">
+                        Complete the form below to register for the year, month, or a drop-in day!
+                    </p>
+                </div>
+                
+                <div class="text-center">
+                    <Link href="/contact" class="inline-block rounded bg-accent-500 px-8 py-4 text-base font-semibold uppercase tracking-wide text-white shadow-lg hover:bg-accent-600 transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5">
+                        Sign Up for After School
+                    </Link>
+                </div>
             </div>
         </section>
 
