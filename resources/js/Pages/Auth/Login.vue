@@ -29,6 +29,19 @@ const submit = () => {
             <p class="text-slate-600 mt-2">Sign in to access your parent portal</p>
         </div>
 
+        <!-- Coming Soon Notice -->
+        <div class="mb-6 p-4 bg-accent-50 border border-accent-200 rounded-lg">
+            <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-accent-600 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div>
+                    <p class="text-sm font-semibold text-accent-900 mb-1">Family Portal Coming Soon</p>
+                    <p class="text-sm text-accent-700">The Family Portal is currently under development. We're working hard to bring you this feature soon. Thank you for your patience!</p>
+                </div>
+            </div>
+        </div>
+
         <div v-if="status" class="mb-4 font-medium text-sm text-green-600 text-center">
             {{ status }}
         </div>
