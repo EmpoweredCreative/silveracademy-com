@@ -28,16 +28,20 @@ return new class extends Migration
         if (!Schema::hasColumn('users', 'approved_by')) {
             Schema::table('users', function (Blueprint $table) {
                 $table->unsignedBigInteger('approved_by')->nullable()->after('approved_at');
-                $table->foreign('approved_by')->references('id')->on('users')->nullOnDelete();
             });
+            
+            // Add foreign key separately to avoid issues
+            try {
+                Schema::table('users', function (Blueprint $table) {
+                    $table->foreign('approved_by')->references('id')->on('users')->nullOnDelete();
+                });
+            } catch (\Exception $e) {
+                // Foreign key might already exist or fail - that's okay
+            }
         }
 
-        // Make password nullable using raw SQL (avoids doctrine/dbal requirement)
-        // This works for MySQL/MariaDB
-        DB::statement('ALTER TABLE users MODIFY password VARCHAR(255) NULL');
-
         // Set existing users as approved
-        DB::table('users')->whereNull('is_approved')->update(['is_approved' => true]);
+        DB::table('users')->where('is_approved', false)->orWhereNull('is_approved')->update(['is_approved' => true]);
     }
 
     /**
@@ -47,7 +51,11 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             if (Schema::hasColumn('users', 'approved_by')) {
-                $table->dropForeign(['approved_by']);
+                try {
+                    $table->dropForeign(['approved_by']);
+                } catch (\Exception $e) {
+                    // Ignore if foreign key doesn't exist
+                }
                 $table->dropColumn('approved_by');
             }
             if (Schema::hasColumn('users', 'approved_at')) {
@@ -57,8 +65,5 @@ return new class extends Migration
                 $table->dropColumn('is_approved');
             }
         });
-
-        // Make password not nullable again
-        DB::statement('ALTER TABLE users MODIFY password VARCHAR(255) NOT NULL');
     }
 };

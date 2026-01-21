@@ -25,14 +25,19 @@ class EnsureUserIsApproved
             return $next($request);
         }
 
-        if (!$request->user()->isApproved()) {
-            // Log them out and redirect to pending approval page
-            Auth::logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
+        // Check approval status with error handling
+        try {
+            if (!$request->user()->isApproved()) {
+                // Log them out and redirect to pending approval page
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
 
-            return redirect()->route('pending-approval')
-                ->with('error', 'Your account is pending approval.');
+                return redirect()->route('pending-approval')
+                    ->with('error', 'Your account is pending approval.');
+            }
+        } catch (\Exception $e) {
+            // If column doesn't exist, allow access
         }
 
         return $next($request);

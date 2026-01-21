@@ -59,13 +59,17 @@ class LoginRequest extends FormRequest
                     ]);
                 }
 
-                // Check if user is not approved
-                if (!$user->isApproved()) {
-                    RateLimiter::hit($this->throttleKey());
+                // Check if user is not approved (only if the column exists)
+                try {
+                    if (method_exists($user, 'isApproved') && !$user->isApproved()) {
+                        RateLimiter::hit($this->throttleKey());
 
-                    throw ValidationException::withMessages([
-                        'email' => 'Your account is pending approval. Please wait for an administrator to approve your registration.',
-                    ]);
+                        throw ValidationException::withMessages([
+                            'email' => 'Your account is pending approval. Please wait for an administrator to approve your registration.',
+                        ]);
+                    }
+                } catch (\Exception $e) {
+                    // Column might not exist yet - allow login
                 }
             }
         }

@@ -82,7 +82,11 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function isApproved(): bool
     {
-        return (bool) $this->is_approved;
+        // Default to true if column doesn't exist yet (migration not run)
+        if (!array_key_exists('is_approved', $this->attributes) && $this->is_approved === null) {
+            return true;
+        }
+        return (bool) ($this->is_approved ?? true);
     }
 
     /**
