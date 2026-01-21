@@ -335,7 +335,6 @@ const formatWeekDate = (dateStr) => {
                         </div>
                         <div class="p-6 grid grid-cols-2 lg:grid-cols-4 gap-4">
                             <Link
-                                v-if="teacherGrades && teacherGrades.length > 0"
                                 href="/portal/teacher-news/create"
                                 class="flex flex-col items-center justify-center p-6 bg-emerald-50 rounded-xl hover:bg-emerald-100 transition-colors group border-2 border-emerald-200"
                             >
