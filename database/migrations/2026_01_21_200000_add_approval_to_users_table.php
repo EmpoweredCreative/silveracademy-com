@@ -12,19 +12,32 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->boolean('is_approved')->default(false)->after('role');
-            $table->timestamp('approved_at')->nullable()->after('is_approved');
-            $table->foreignId('approved_by')->nullable()->after('approved_at')->constrained('users')->nullOnDelete();
-        });
+        // Add approval columns if they don't exist
+        if (!Schema::hasColumn('users', 'is_approved')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->boolean('is_approved')->default(true)->after('role');
+            });
+        }
 
-        // Make password nullable for registration without password
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('password')->nullable()->change();
-        });
+        if (!Schema::hasColumn('users', 'approved_at')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->timestamp('approved_at')->nullable()->after('is_approved');
+            });
+        }
+
+        if (!Schema::hasColumn('users', 'approved_by')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->unsignedBigInteger('approved_by')->nullable()->after('approved_at');
+                $table->foreign('approved_by')->references('id')->on('users')->nullOnDelete();
+            });
+        }
+
+        // Make password nullable using raw SQL (avoids doctrine/dbal requirement)
+        // This works for MySQL/MariaDB
+        DB::statement('ALTER TABLE users MODIFY password VARCHAR(255) NULL');
 
         // Set existing users as approved
-        DB::table('users')->update(['is_approved' => true]);
+        DB::table('users')->whereNull('is_approved')->update(['is_approved' => true]);
     }
 
     /**
@@ -33,12 +46,19 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropForeign(['approved_by']);
-            $table->dropColumn(['is_approved', 'approved_at', 'approved_by']);
+            if (Schema::hasColumn('users', 'approved_by')) {
+                $table->dropForeign(['approved_by']);
+                $table->dropColumn('approved_by');
+            }
+            if (Schema::hasColumn('users', 'approved_at')) {
+                $table->dropColumn('approved_at');
+            }
+            if (Schema::hasColumn('users', 'is_approved')) {
+                $table->dropColumn('is_approved');
+            }
         });
 
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('password')->nullable(false)->change();
-        });
+        // Make password not nullable again
+        DB::statement('ALTER TABLE users MODIFY password VARCHAR(255) NOT NULL');
     }
 };
