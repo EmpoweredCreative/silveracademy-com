@@ -17,6 +17,11 @@ class GradeController extends Controller
      */
     public function index(): Response
     {
+        // Auto-seed grades if table is empty
+        if (Grade::count() === 0) {
+            $this->seedGrades();
+        }
+
         $grades = Grade::withCount('students')
             ->with(['teachers' => function ($query) {
                 $query->select('users.id', 'users.name', 'users.email');
@@ -31,6 +36,32 @@ class GradeController extends Controller
             'grades' => $grades,
             'totalStudents' => $totalStudents,
         ]);
+    }
+
+    /**
+     * Seed default grade levels.
+     */
+    protected function seedGrades(): void
+    {
+        $grades = [
+            ['name' => 'Ganeinu (Preschool)', 'sort_order' => 1],
+            ['name' => 'Kindergarten', 'sort_order' => 2],
+            ['name' => '1st Grade', 'sort_order' => 3],
+            ['name' => '2nd Grade', 'sort_order' => 4],
+            ['name' => '3rd Grade', 'sort_order' => 5],
+            ['name' => '4th Grade', 'sort_order' => 6],
+            ['name' => '5th Grade', 'sort_order' => 7],
+            ['name' => '6th Grade', 'sort_order' => 8],
+            ['name' => '7th Grade', 'sort_order' => 9],
+            ['name' => '8th Grade', 'sort_order' => 10],
+        ];
+
+        foreach ($grades as $grade) {
+            Grade::updateOrCreate(
+                ['name' => $grade['name']],
+                $grade
+            );
+        }
     }
 
     /**
