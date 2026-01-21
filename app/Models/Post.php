@@ -17,6 +17,7 @@ class Post extends Model
         'user_id',
         'type',
         'is_school_closure',
+        'is_public',
         'audience',
         'target_grade_id',
         'target_teacher_id',
@@ -38,6 +39,7 @@ class Post extends Model
         'recurrence_end_date' => 'date',
         'published_at' => 'datetime',
         'is_school_closure' => 'boolean',
+        'is_public' => 'boolean',
     ];
 
     /**
@@ -196,6 +198,14 @@ class Post extends Model
             $q->where('audience', 'all')
                 ->orWhereNull('audience');
         });
+    }
+
+    /**
+     * Scope to only public events (visible on public website).
+     */
+    public function scopePublicEvents(Builder $query): Builder
+    {
+        return $query->where('is_public', true);
     }
 
     /**

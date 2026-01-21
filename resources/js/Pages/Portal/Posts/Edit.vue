@@ -34,6 +34,7 @@ const formatDate = (dateString) => {
 const form = useForm({
     type: props.post.type,
     is_school_closure: props.post.is_school_closure || false,
+    is_public: props.post.is_public || false,
     audience: props.post.audience || 'all',
     target_grade_id: props.post.target_grade_id || null,
     target_teacher_id: props.post.target_teacher_id || null,

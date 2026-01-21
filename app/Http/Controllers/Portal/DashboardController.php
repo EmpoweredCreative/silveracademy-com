@@ -33,12 +33,11 @@ class DashboardController extends Controller
                 ];
             });
 
-        // Get upcoming events (from Posts) - public events only
+        // Get upcoming events (from Posts) - show all events in portal (both public and private)
         $upcomingEvents = Post::where('type', 'event')
             ->whereNotNull('published_at')
             ->where('published_at', '<=', now())
             ->where('event_start_date', '>=', now())
-            ->publicAudience()
             ->orderBy('event_start_date', 'asc')
             ->take(5)
             ->get();

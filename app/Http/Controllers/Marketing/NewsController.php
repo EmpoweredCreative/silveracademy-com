@@ -23,11 +23,11 @@ class NewsController extends Controller
             ->take(10)
             ->get();
 
-        // Events are always public
+        // Only show public events
         $events = Post::with('author')
             ->published()
             ->upcoming()
-            ->publicAudience()
+            ->publicEvents()
             ->orderBy('event_start_date', 'asc')
             ->take(10)
             ->get();

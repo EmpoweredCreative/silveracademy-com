@@ -14,15 +14,16 @@ class EventController extends Controller
      */
     public function show(Post $post): Response
     {
-        // Ensure it's an event post and is published
-        if ($post->type !== 'event' || !$post->published_at) {
+        // Ensure it's an event post, is published, and is public
+        if ($post->type !== 'event' || !$post->published_at || !$post->is_public) {
             abort(404);
         }
 
-        // Get other upcoming events
+        // Get other upcoming public events
         $upcomingEvents = Post::with('author')
             ->published()
             ->upcoming()
+            ->publicEvents()
             ->where('id', '!=', $post->id)
             ->orderBy('event_start_date', 'asc')
             ->take(3)

@@ -64,6 +64,7 @@ watch(() => props.form.type, (newType) => {
         props.form.button_url = '';
         props.form.recurrence_type = 'none';
         props.form.recurrence_end_date = '';
+        props.form.is_public = false;
     }
 });
 
@@ -381,6 +382,23 @@ const audienceDescription = computed(() => {
         <template v-if="isEvent">
             <div class="border-t border-slate-200 pt-6">
                 <h3 class="text-lg font-serif font-semibold text-slate-900 mb-4">Event Details</h3>
+                
+                <!-- Public Event Toggle -->
+                <div class="bg-brand-50 border border-brand-200 rounded-lg p-4 mb-4">
+                    <label class="flex items-center cursor-pointer">
+                        <input
+                            type="checkbox"
+                            v-model="form.is_public"
+                            class="h-5 w-5 text-brand-600 focus:ring-brand-500 border-slate-300 rounded"
+                        />
+                        <div class="ml-3">
+                            <span class="font-medium text-brand-700">Public Event</span>
+                            <p class="text-sm text-brand-600 mt-0.5">
+                                Check this box to make this event visible on the public News & Events page. Unchecked events will only be visible in the portal.
+                            </p>
+                        </div>
+                    </label>
+                </div>
                 
                 <!-- School Closure Toggle -->
                 <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">

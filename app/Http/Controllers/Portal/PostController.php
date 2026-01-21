@@ -53,6 +53,7 @@ class PostController extends Controller
         $validated = $request->validate([
             'type' => 'required|in:news,event',
             'is_school_closure' => 'boolean',
+            'is_public' => 'boolean',
             'audience' => 'nullable|in:all,teachers_only,grade_teachers,specific_teacher',
             'target_grade_id' => 'nullable|exists:grades,id',
             'target_teacher_id' => 'nullable|exists:users,id',
@@ -95,6 +96,7 @@ class PostController extends Controller
             'user_id' => $request->user()->id,
             'type' => $validated['type'],
             'is_school_closure' => $request->boolean('is_school_closure'),
+            'is_public' => $request->boolean('is_public', false),
             'audience' => $audience,
             'target_grade_id' => $targetGradeId,
             'target_teacher_id' => $targetTeacherId,
@@ -140,6 +142,7 @@ class PostController extends Controller
         $validated = $request->validate([
             'type' => 'required|in:news,event',
             'is_school_closure' => 'boolean',
+            'is_public' => 'boolean',
             'audience' => 'nullable|in:all,teachers_only,grade_teachers,specific_teacher',
             'target_grade_id' => 'nullable|exists:grades,id',
             'target_teacher_id' => 'nullable|exists:users,id',
@@ -193,6 +196,7 @@ class PostController extends Controller
         $post->update([
             'type' => $validated['type'],
             'is_school_closure' => $request->boolean('is_school_closure'),
+            'is_public' => $request->boolean('is_public', false),
             'audience' => $audience,
             'target_grade_id' => $targetGradeId,
             'target_teacher_id' => $targetTeacherId,
