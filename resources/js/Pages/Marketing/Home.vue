@@ -39,7 +39,7 @@ const panels = [
         title: 'Dual Curriculum',
         description: 'We seamlessly integrate rigorous general studies with rich Jewish education, empowering students to navigate the world with intellectual depth and spiritual grounding.',
         image: '/img/graphics/home/web-silveracademyDual Curriculum.jpg',
-        link: '/services#our-approach'
+        link: '/programs#our-approach'
     },
     {
         title: 'Restorative Culture',
@@ -51,7 +51,7 @@ const panels = [
         title: 'Joyful Learning',
         description: 'Education should be exciting. We create a dynamic environment where curiosity thrives, questions are encouraged, and learning is a daily adventure.',
         image: '/img/graphics/home/web-silveracademyJoyful Learning 2.jpg',
-        link: '/services'
+        link: '/programs'
     },
     {
         title: 'Accessible Education',
@@ -63,7 +63,7 @@ const panels = [
         title: 'Family Partnership',
         description: 'Transparent communication and shared decision-making create a welcoming, collaborative community where parents are true partners in their child’s journey.',
         image: '/img/graphics/home/web-silveracademyFamily Parntership.jpg',
-        link: '/get-involved'
+        link: '/programs/parent-circle'
     }
 ];
 
@@ -179,12 +179,14 @@ const stats = [
                         >
                             Learn about Admissions
                         </Link>
-                        <Link
-                            href="/contact"
+                        <a
+                            href="https://calendar.app.google/Y5NrAjA9RooWgwZ98"
+                            target="_blank"
+                            rel="noopener noreferrer"
                             class="inline-block rounded bg-accent-500 px-8 py-4 text-base font-semibold uppercase tracking-wide text-white shadow-lg hover:bg-accent-600 transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5"
                         >
                             Schedule a Visit
-                        </Link>
+                        </a>
                     </div>
                 </div>
             </div>

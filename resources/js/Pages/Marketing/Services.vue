@@ -32,30 +32,30 @@ const pillars = [
 const gradeLevels = [
     {
         title: 'Ganeinu',
-        subtitle: 'Early Childhood Program',
-        description: 'Early literacy and numeracy, creative play, social-emotional development, and introduction to Jewish stories, songs, and traditions.',
-        image: 'https://images.unsplash.com/photo-1587654780291-39c9404d746b?auto=format&fit=crop&w=800&q=80',
+        subtitle: 'Preschool',
+        description: 'Our early childhood program fosters creativity, socialization, and a love for Jewish traditions in a warm, nurturing environment.',
+        image: '/img/graphics/home/web-silveracademyGaneinu.jpg',
         link: '/programs/ganeinu'
     },
     {
         title: 'Kindergarten',
-        subtitle: 'Foundational Skills',
-        description: 'Foundational skills in reading, math, and science alongside art, music, and movement. Jewish values and Torah studies integrated into daily lessons.',
-        image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=800&q=80',
+        subtitle: 'Foundations',
+        description: 'Building strong foundations in literacy, numeracy, and Hebrew language through play-based and structured learning.',
+        image: '/img/graphics/home/web-silveracademyKindergarten.jpg',
         link: '/programs/kindergarten'
     },
     {
         title: 'Lower School',
         subtitle: 'Grades 1-4',
-        description: 'Strong academic foundation, project-based learning, STEAM enrichment, and Hebrew language. Focus on social-emotional learning and character building.',
-        image: 'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=800&q=80',
+        description: 'Developing critical thinking skills and independence while deepening connection to Jewish identity and community.',
+        image: '/img/graphics/home/web-silveracademyLower School2.jpg',
         link: '/programs/lower-school'
     },
     {
         title: 'Upper School',
         subtitle: 'Grades 5-8',
-        description: 'Advanced academics with critical thinking focus. Leadership opportunities, continued Judaic studies, and hands-on technology projects.',
-        image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80',
+        description: 'Preparing students for high school and beyond with rigorous academics, leadership opportunities, and ethical growth.',
+        image: '/img/graphics/home/web-silveracademyUpper School 2.jpg',
         link: '/programs/upper-school'
     }
 ];
@@ -131,15 +131,10 @@ const enrichment = [
             </div>
         </section>
 
-        <!-- Interactive Programs Section -->
-        <section class="py-24 bg-white">
+        <!-- Grade Levels Interactive Accordion -->
+        <section class="py-8 bg-slate-100">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
-                <div class="text-center mb-12">
-                    <h2 class="font-serif text-3xl sm:text-4xl text-slate-800 font-bold">Explore Our Programs</h2>
-                </div>
-
-                <!-- Grade Levels Interactive Accordion -->
-                <div class="h-[500px] flex w-full gap-2" @mouseenter="isHoveringGrades = true" @mouseleave="isHoveringGrades = false">
+                <div class="h-[500px] flex w-full gap-4 rounded-2xl overflow-hidden" @mouseenter="isHoveringGrades = true" @mouseleave="isHoveringGrades = false">
                     <div 
                         v-for="(grade, index) in gradeLevels" 
                         :key="index"
@@ -155,7 +150,7 @@ const enrichment = [
                             :class="activeGrade === index ? 'scale-100' : 'scale-110'"
                         />
                         <div class="absolute inset-0 bg-black transition-opacity duration-300"
-                             :class="isHoveringGrades ? 'opacity-70' : (activeGrade === index ? 'opacity-60' : 'opacity-50')"></div>
+                             :class="isHoveringGrades ? 'opacity-50' : (activeGrade === index ? 'opacity-40' : 'opacity-30')"></div>
                         
                         <!-- Content -->
                         <div class="absolute bottom-0 left-0 right-0 p-4 md:p-8 flex flex-col justify-end h-full z-10">
@@ -190,7 +185,7 @@ const enrichment = [
                                         :href="grade.link"
                                         class="inline-flex items-center text-white font-semibold text-sm uppercase tracking-wider hover:text-accent-300 transition-colors"
                                     >
-                                        Learn More
+                                        Discover More
                                         <svg class="ml-2 w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                                         </svg>
@@ -232,12 +227,14 @@ const enrichment = [
                         Daily interactions, enrichment programs, and school-wide events help students thrive academically, 
                         socially, and spiritually while exploring passions and developing meaningful friendships.
                     </p>
-                    <Link
-                        href="/contact"
+                    <a
+                        href="https://calendar.app.google/Y5NrAjA9RooWgwZ98"
+                        target="_blank"
+                        rel="noopener noreferrer"
                         class="inline-block px-8 py-3 text-sm font-semibold uppercase tracking-wider text-slate-800 bg-white border-2 border-slate-300 rounded hover:bg-accent-500 hover:text-white hover:border-accent-500 transition-colors duration-200"
                     >
                         Schedule a Visit
-                    </Link>
+                    </a>
                 </div>
             </div>
         </section>

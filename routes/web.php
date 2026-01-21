@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Marketing\HomeController;
+use App\Http\Controllers\Marketing\ContactController;
 use App\Http\Controllers\Marketing\NewsController;
 use App\Http\Controllers\Marketing\EventController;
 use App\Http\Controllers\Portal\DashboardController;
@@ -28,8 +29,9 @@ Route::get('/about', [HomeController::class, 'about'])->name('about');
 Route::get('/why-silver-academy', [HomeController::class, 'whySilverAcademy'])->name('why-silver-academy');
 Route::get('/our-community', [HomeController::class, 'ourCommunity'])->name('our-community');
 Route::get('/admissions', [HomeController::class, 'admissions'])->name('admissions');
-Route::get('/services', [HomeController::class, 'services'])->name('services');
+Route::get('/programs', [HomeController::class, 'services'])->name('programs');
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
+Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
 Route::prefix('programs')->name('programs.')->group(function () {
     Route::get('/ganeinu', [HomeController::class, 'ganeinu'])->name('ganeinu');

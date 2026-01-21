@@ -32,7 +32,7 @@ const environment = [
         <section class="relative h-[400px] overflow-hidden">
             <div class="absolute inset-0">
                 <img 
-                    src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1920&q=80" 
+                    src="/img/graphics/programs/upper school/web-silveracademy524347888_1336777831616096_6995516925783677283_n.jpg" 
                     alt="Upper School Students" 
                     class="w-full h-full object-cover" 
                 />
@@ -47,16 +47,66 @@ const environment = [
             </div>
         </section>
 
-        <!-- Overview -->
-        <section class="py-20 bg-white">
+        <!-- Overview Section - Two Column Layout -->
+        <section class="py-20 bg-slate-50">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
-                <div class="max-w-3xl mx-auto text-center">
-                    <p class="text-xl text-slate-600 leading-relaxed">
-                        Our Grades 5–8 program at The Silver Academy challenges students academically, socially, and spiritually, 
-                        equipping them with the skills, confidence, and ethical grounding to succeed in high school and beyond. 
-                        Middle School students engage in rigorous coursework while exploring leadership, Jewish identity, and 
-                        real-world applications of learning.
-                    </p>
+                <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+                    <!-- Left Content -->
+                    <div>
+                        <p class="text-brand-500 font-semibold uppercase tracking-widest text-sm mb-4">Why Upper School at Silver</p>
+                        <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl text-slate-800 leading-tight mb-6">
+                            Preparing Students for High School and Beyond
+                        </h2>
+                        <p class="text-slate-600 text-lg leading-relaxed mb-4">
+                            Our Grades 5–8 program at The Silver Academy challenges students academically, socially, and spiritually, 
+                            equipping them with the skills, confidence, and ethical grounding to succeed in high school and beyond.
+                        </p>
+                        <p class="text-slate-600 leading-relaxed mb-8">
+                            Middle School students engage in rigorous coursework while exploring leadership, Jewish identity, and 
+                            real-world applications of learning.
+                        </p>
+
+                        <!-- Feature List -->
+                        <div class="space-y-6 mb-8">
+                            <div>
+                                <h3 class="font-bold text-slate-800 mb-1">Advanced Academics</h3>
+                                <p class="text-slate-600 text-sm">Rigorous coursework in language arts, mathematics, STEM, and humanities prepares students for high school.</p>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-800 mb-1">Jewish Leadership</h3>
+                                <p class="text-slate-600 text-sm">Elective tracks and advanced text study develop deep Jewish knowledge and identity.</p>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-800 mb-1">Critical Thinking & Inquiry</h3>
+                                <p class="text-slate-600 text-sm">Students develop reasoned opinions and explore complex ideas through discussion and analysis.</p>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-800 mb-1">High School Readiness</h3>
+                                <p class="text-slate-600 text-sm">Curriculum and electives ensure students are academically prepared and socially confident.</p>
+                            </div>
+                        </div>
+
+                        <a 
+                            href="https://calendar.app.google/Y5NrAjA9RooWgwZ98"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="inline-block rounded bg-accent-500 px-8 py-4 text-sm font-semibold uppercase tracking-wide text-white shadow-lg hover:bg-accent-600 transition-all duration-300"
+                        >
+                            Schedule a Visit
+                        </a>
+                    </div>
+
+                    <!-- Right Image with Decorative Background -->
+                    <div class="relative h-full min-h-[500px]">
+                        <!-- Decorative angled background -->
+                        <div class="absolute inset-0 bg-brand-500 rounded-2xl transform rotate-3"></div>
+                        <!-- Main image -->
+                        <img 
+                            src="/img/graphics/programs/upper school/web-silveracademy2025_Silver Academy-934.jpg" 
+                            alt="Upper School students learning" 
+                            class="absolute inset-0 w-full h-full object-cover rounded-2xl transform -rotate-3 hover:rotate-0 transition-transform duration-500 shadow-xl"
+                        />
+                    </div>
                 </div>
             </div>
         </section>
@@ -64,10 +114,7 @@ const environment = [
         <!-- General Studies -->
         <section class="py-20 bg-brand-50">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
-                <div class="mb-12">
-                    <h2 class="font-serif text-3xl font-bold text-slate-800 mb-4">General Studies</h2>
-                    <p class="text-lg text-slate-600">Middle School students continue to develop a strong academic foundation across core subjects:</p>
-                </div>
+                <h2 class="font-serif text-3xl font-bold text-slate-800 mb-12 border-b border-brand-200 pb-4">General Studies</h2>
                 <div class="grid md:grid-cols-2 gap-8">
                     <div v-for="item in generalStudies" :key="item.title" class="bg-white p-8 rounded-xl shadow-sm">
                         <h3 class="font-serif text-2xl font-bold text-slate-800 mb-6">{{ item.title }}</h3>

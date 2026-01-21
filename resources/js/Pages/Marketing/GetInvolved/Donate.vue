@@ -17,9 +17,10 @@ import {
         <section class="relative h-[400px] overflow-hidden">
             <div class="absolute inset-0">
                 <img 
-                    src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=1920&q=80" 
+                    src="/img/graphics/programs/lower school/web-silveracademy2025_Silver Academy-718.jpg" 
                     alt="Children learning" 
-                    class="w-full h-full object-cover object-center"
+                    class="w-full h-full object-cover"
+                    style="object-position: center 30%;"
                 />
                 <div class="absolute inset-0 bg-brand-900/70 mix-blend-multiply"></div>
             </div>

@@ -8,16 +8,63 @@ import {
 } from '@heroicons/vue/24/outline';
 
 const form = useForm({
-    name: '',
+    parent_name: '',
+    student_name: '',
     email: '',
-    subject: '',
+    phone: '',
+    grade_interest: '',
+    school_year: '',
+    how_heard: '',
+    schedule_tour: '',
     message: '',
+    subscribe: false,
 });
 
+const gradeOptions = [
+    'Pre-K',
+    'Kindergarten',
+    '1st Grade',
+    '2nd Grade',
+    '3rd Grade',
+    '4th Grade',
+    '5th Grade',
+    '6th Grade',
+    '7th Grade',
+    '8th Grade',
+    'Undecided',
+];
+
+const schoolYearOptions = [
+    '2025-2026',
+    '2026-2027',
+    '2027-2028',
+    'Not sure',
+];
+
+const howHeardOptions = [
+    'Website Search (Google, etc.)',
+    'Facebook',
+    'Instagram',
+    'Referral – Current Family',
+    'Referral – Alumni Family',
+    'Referral – Staff Member',
+    'Word of Mouth',
+    'Synagogue or Community Organization',
+    'Event or School Fair',
+    'Printed Materials',
+    'Direct Email',
+    'Phone Call',
+    'Walk-In',
+    'Other',
+];
+
 const submit = () => {
-    // Form submission will be implemented later
-    alert('Thank you for your message! We will get back to you soon.');
-    form.reset();
+    form.post('/contact', {
+        preserveScroll: true,
+        onSuccess: () => {
+            form.reset();
+        },
+    });
 };
 </script>
 
@@ -25,70 +72,69 @@ const submit = () => {
     <Head title="Contact Us" />
 
     <MarketingLayout>
-        <section class="py-24 sm:py-32">
+        <!-- Hero Section -->
+        <section class="bg-brand-600 py-16 sm:py-20">
+            <div class="mx-auto max-w-7xl px-6 lg:px-8 text-center">
+                <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl text-white leading-tight tracking-tight">
+                    Contact Us
+                </h1>
+                <p class="mt-4 text-lg text-brand-100 max-w-2xl mx-auto">
+                    We'd love to hear from you. Reach out with questions or request more information about The Silver Academy.
+                </p>
+            </div>
+        </section>
+
+        <section class="py-16 sm:py-20 bg-slate-50">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
-                <div class="grid lg:grid-cols-2 gap-16">
-                    <!-- Contact Info -->
-                    <div>
-                        <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl text-slate-800 leading-tight tracking-tight">
-                            Get in Touch
-                        </h1>
-                        <p class="mt-6 text-lg leading-8 text-slate-600">
-                            Have questions about Silver Academy? We'd love to hear from you. 
-                            Send us a message and we'll respond as soon as possible.
-                        </p>
-
-                        <div class="mt-12 space-y-8">
-                            <div class="flex items-start gap-4">
-                                <div class="w-14 h-14 bg-brand-100 rounded-full flex items-center justify-center text-2xl shrink-0">
-                                    <EnvelopeIcon class="w-8 h-8 text-brand-600" />
-                                </div>
-                                <div>
-                                    <h3 class="font-semibold text-slate-900">Email</h3>
-                                    <p class="text-slate-600">office@silveracademypa.org</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start gap-4">
-                                <div class="w-14 h-14 bg-brand-100 rounded-full flex items-center justify-center text-2xl shrink-0">
-                                    <PhoneIcon class="w-8 h-8 text-brand-600" />
-                                </div>
-                                <div>
-                                    <h3 class="font-semibold text-slate-900">Phone</h3>
-                                    <p class="text-slate-600">717-238-8775</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start gap-4">
-                                <div class="w-14 h-14 bg-brand-100 rounded-full flex items-center justify-center text-2xl shrink-0">
-                                    <MapPinIcon class="w-8 h-8 text-brand-600" />
-                                </div>
-                                <div>
-                                    <h3 class="font-semibold text-slate-900">Address</h3>
-                                    <p class="text-slate-600">3301 N Front St<br>Harrisburg, PA 17110</p>
-                                </div>
-                            </div>
+                <div class="grid lg:grid-cols-5 gap-12">
+                    <!-- Contact Form (Left - Larger) -->
+                    <div class="lg:col-span-3 bg-white rounded-2xl p-8 shadow-lg border border-slate-200">
+                        <h2 class="font-serif text-2xl text-slate-800 mb-2">Request More Information</h2>
+                        <p class="text-slate-600 text-sm mb-6">Please complete this brief form and our admissions team will reach out with information, next steps, and an invitation to schedule a tour.</p>
+                        
+                        <!-- Success Message -->
+                        <div v-if="$page.props.flash?.success" class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                            <p class="text-green-800">{{ $page.props.flash.success }}</p>
                         </div>
-                    </div>
-
-                    <!-- Contact Form -->
-                    <div class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
-                        <form @submit.prevent="submit" class="space-y-6">
+                        
+                        <!-- Error Message -->
+                        <div v-if="$page.props.flash?.error" class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                            <p class="text-red-800">{{ $page.props.flash.error }}</p>
+                        </div>
+                        
+                        <form @submit.prevent="submit" class="space-y-5">
+                            <!-- Parent/Guardian Name -->
                             <div>
-                                <label for="name" class="block text-sm font-medium text-slate-700 mb-2">
-                                    Name
+                                <label for="parent_name" class="block text-sm font-medium text-slate-700 mb-2">
+                                    Parent/Guardian Name <span class="text-red-500">*</span>
                                 </label>
                                 <input
-                                    id="name"
-                                    v-model="form.name"
+                                    id="parent_name"
+                                    v-model="form.parent_name"
                                     type="text"
                                     required
                                     class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 px-4 py-3 border"
-                                    placeholder="Your name"
                                 />
                             </div>
 
+                            <!-- Student Name -->
+                            <div>
+                                <label for="student_name" class="block text-sm font-medium text-slate-700 mb-2">
+                                    Student Name <span class="text-red-500">*</span>
+                                </label>
+                                <input
+                                    id="student_name"
+                                    v-model="form.student_name"
+                                    type="text"
+                                    required
+                                    class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 px-4 py-3 border"
+                                />
+                            </div>
+
+                            <!-- Email -->
                             <div>
                                 <label for="email" class="block text-sm font-medium text-slate-700 mb-2">
-                                    Email
+                                    Parent/Guardian Email <span class="text-red-500">*</span>
                                 </label>
                                 <input
                                     id="email"
@@ -96,27 +142,103 @@ const submit = () => {
                                     type="email"
                                     required
                                     class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 px-4 py-3 border"
-                                    placeholder="you@example.com"
                                 />
                             </div>
 
+                            <!-- Phone -->
                             <div>
-                                <label for="subject" class="block text-sm font-medium text-slate-700 mb-2">
-                                    Subject
+                                <label for="phone" class="block text-sm font-medium text-slate-700 mb-2">
+                                    Parent/Guardian Phone Number <span class="text-red-500">*</span>
                                 </label>
                                 <input
-                                    id="subject"
-                                    v-model="form.subject"
-                                    type="text"
+                                    id="phone"
+                                    v-model="form.phone"
+                                    type="tel"
                                     required
                                     class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 px-4 py-3 border"
-                                    placeholder="How can we help?"
                                 />
                             </div>
 
+                            <!-- Grade of Interest -->
+                            <div>
+                                <label for="grade_interest" class="block text-sm font-medium text-slate-700 mb-2">
+                                    Grade of Interest <span class="text-red-500">*</span>
+                                </label>
+                                <select
+                                    id="grade_interest"
+                                    v-model="form.grade_interest"
+                                    required
+                                    class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 px-4 py-3 border"
+                                >
+                                    <option value="" disabled>Choose</option>
+                                    <option v-for="grade in gradeOptions" :key="grade" :value="grade">{{ grade }}</option>
+                                </select>
+                            </div>
+
+                            <!-- School Year Interested In -->
+                            <div>
+                                <label for="school_year" class="block text-sm font-medium text-slate-700 mb-2">
+                                    School Year Interested In <span class="text-red-500">*</span>
+                                </label>
+                                <select
+                                    id="school_year"
+                                    v-model="form.school_year"
+                                    required
+                                    class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 px-4 py-3 border"
+                                >
+                                    <option value="" disabled>Choose</option>
+                                    <option v-for="year in schoolYearOptions" :key="year" :value="year">{{ year }}</option>
+                                </select>
+                            </div>
+
+                            <!-- How did you hear about us? -->
+                            <div>
+                                <label for="how_heard" class="block text-sm font-medium text-slate-700 mb-2">
+                                    How did you hear about us? <span class="text-red-500">*</span>
+                                </label>
+                                <select
+                                    id="how_heard"
+                                    v-model="form.how_heard"
+                                    required
+                                    class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 px-4 py-3 border"
+                                >
+                                    <option value="" disabled>Choose</option>
+                                    <option v-for="option in howHeardOptions" :key="option" :value="option">{{ option }}</option>
+                                </select>
+                            </div>
+
+                            <!-- Would you like to schedule a tour? -->
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-3">
+                                    Would you like to schedule a tour? <span class="text-red-500">*</span>
+                                </label>
+                                <div class="space-y-2">
+                                    <label class="flex items-center gap-3 cursor-pointer">
+                                        <input
+                                            type="radio"
+                                            v-model="form.schedule_tour"
+                                            value="Yes, please send me the link."
+                                            required
+                                            class="w-4 h-4 text-brand-600 border-slate-300 focus:ring-brand-500"
+                                        />
+                                        <span class="text-slate-700">Yes, please send me the link.</span>
+                                    </label>
+                                    <label class="flex items-center gap-3 cursor-pointer">
+                                        <input
+                                            type="radio"
+                                            v-model="form.schedule_tour"
+                                            value="Not yet — I'd like more information first."
+                                            class="w-4 h-4 text-brand-600 border-slate-300 focus:ring-brand-500"
+                                        />
+                                        <span class="text-slate-700">Not yet — I'd like more information first.</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Questions or Anything You'd Like Us to Know -->
                             <div>
                                 <label for="message" class="block text-sm font-medium text-slate-700 mb-2">
-                                    Message
+                                    Questions or Anything You'd Like Us to Know <span class="text-red-500">*</span>
                                 </label>
                                 <textarea
                                     id="message"
@@ -124,8 +246,20 @@ const submit = () => {
                                     rows="4"
                                     required
                                     class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 px-4 py-3 border resize-none"
-                                    placeholder="Your message..."
+                                    placeholder="Share any specific questions or details you'd like us to be aware of."
                                 ></textarea>
+                            </div>
+
+                            <!-- Subscribe to email list -->
+                            <div>
+                                <label class="flex items-start gap-3 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        v-model="form.subscribe"
+                                        class="w-4 h-4 mt-1 text-brand-600 border-slate-300 rounded focus:ring-brand-500"
+                                    />
+                                    <span class="text-slate-700 text-sm">Yes, please add me to the email list to receive occasional updates from The Silver Academy.</span>
+                                </label>
                             </div>
 
                             <button
@@ -133,9 +267,63 @@ const submit = () => {
                                 :disabled="form.processing"
                                 class="w-full rounded-lg bg-brand-600 px-6 py-4 text-base font-semibold text-white shadow-sm hover:bg-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 transition-colors disabled:opacity-50"
                             >
-                                Send Message
+                                {{ form.processing ? 'Submitting...' : 'Submit' }}
                             </button>
                         </form>
+                    </div>
+
+                    <!-- Contact Info (Right - Smaller) -->
+                    <div class="lg:col-span-2">
+                        <div class="sticky top-8">
+                            <h2 class="font-serif text-2xl text-slate-800 mb-2">Information</h2>
+                            <p class="text-slate-600 text-sm mb-8">
+                                Have questions? Reach out directly or fill out the form.
+                            </p>
+
+                            <div class="space-y-6">
+                                <div class="flex items-start gap-4">
+                                    <div class="w-12 h-12 bg-brand-100 rounded-full flex items-center justify-center shrink-0">
+                                        <EnvelopeIcon class="w-6 h-6 text-brand-600" />
+                                    </div>
+                                    <div>
+                                        <h3 class="font-semibold text-slate-900 text-sm">Email</h3>
+                                        <a href="mailto:office@silveracademypa.org" class="text-brand-600 hover:text-brand-700 transition-colors">office@silveracademypa.org</a>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-4">
+                                    <div class="w-12 h-12 bg-brand-100 rounded-full flex items-center justify-center shrink-0">
+                                        <PhoneIcon class="w-6 h-6 text-brand-600" />
+                                    </div>
+                                    <div>
+                                        <h3 class="font-semibold text-slate-900 text-sm">Phone</h3>
+                                        <a href="tel:717-238-8775" class="text-brand-600 hover:text-brand-700 transition-colors">717-238-8775</a>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-4">
+                                    <div class="w-12 h-12 bg-brand-100 rounded-full flex items-center justify-center shrink-0">
+                                        <MapPinIcon class="w-6 h-6 text-brand-600" />
+                                    </div>
+                                    <div>
+                                        <h3 class="font-semibold text-slate-900 text-sm">Address</h3>
+                                        <p class="text-slate-600">3301 N Front St<br>Harrisburg, PA 17110</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Schedule a Tour CTA -->
+                            <div class="mt-8 p-6 bg-brand-50 rounded-xl">
+                                <h3 class="font-semibold text-slate-800 mb-2">Ready to Visit?</h3>
+                                <p class="text-slate-600 text-sm mb-4">Schedule a tour to see our campus and meet our team.</p>
+                                <a 
+                                    href="https://calendar.app.google/Y5NrAjA9RooWgwZ98"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="inline-block w-full text-center rounded-lg bg-accent-500 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-accent-600 transition-colors"
+                                >
+                                    Schedule a Tour
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

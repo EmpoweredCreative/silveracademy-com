@@ -16,8 +16,8 @@ const portalLink = computed(() => isAuthenticated.value ? '/portal/dashboard' : 
 const mobileMenuOpen = ref(false);
 
 const utilityNav = computed(() => [
-    { name: 'Schedule a Visit', href: '/contact' },
-    { name: 'Apply', href: '#' },
+    { name: 'Schedule a Visit', href: 'https://calendar.app.google/Y5NrAjA9RooWgwZ98', external: true },
+    { name: 'Apply', href: 'https://app.simpletuitionsolutions.org/thesilveracademy/admissions', external: true },
     { name: 'Family Portal', href: portalLink.value },
     { name: 'Give', href: 'https://wl.donorperfect.net/weblink/WebLink.aspx?name=E341196&id=36' },
 ]);
@@ -28,7 +28,7 @@ const utilityNav = computed(() => [
         { name: 'Admissions', href: '/admissions' },
         { 
             name: 'Programs', 
-            href: '/services',
+            href: '/programs',
             children: [
                 { name: 'Ganeinu (Preschool)', href: '/programs/ganeinu' },
                 { name: 'Kindergarten', href: '/programs/kindergarten' },
@@ -55,7 +55,7 @@ const utilityNav = computed(() => [
 const footerNav = [
     { name: 'Why Choose Us', href: '/about' },
     { name: 'Admissions & Tours', href: '#' },
-    { name: 'Student Life & Programs', href: '/services' },
+    { name: 'Student Life & Programs', href: '/programs' },
     { name: 'Tuition & Scholarships', href: '#' },
     { name: 'News & Events', href: '/news-events' },
 ];
@@ -81,14 +81,24 @@ const socialLinks = [
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-end h-8 text-xs">
                     <nav class="hidden md:flex items-center space-x-4">
-                        <Link
-                            v-for="item in utilityNav"
-                            :key="item.name"
-                            :href="item.href"
-                            class="uppercase tracking-wide hover:text-accent-300 transition-colors duration-200"
-                        >
-                            {{ item.name }}
-                        </Link>
+                        <template v-for="item in utilityNav" :key="item.name">
+                            <a
+                                v-if="item.external"
+                                :href="item.href"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="uppercase tracking-wide hover:text-accent-300 transition-colors duration-200"
+                            >
+                                {{ item.name }}
+                            </a>
+                            <Link
+                                v-else
+                                :href="item.href"
+                                class="uppercase tracking-wide hover:text-accent-300 transition-colors duration-200"
+                            >
+                                {{ item.name }}
+                            </Link>
+                        </template>
                         <!-- Social Icons -->
                         <div class="flex items-center space-x-2 ml-2 pl-2 border-l border-brand-500">
                             <a
@@ -222,15 +232,26 @@ const socialLinks = [
                     </div>
                     <div class="mt-4 pt-4 border-t border-slate-200">
                         <div class="space-y-1">
-                            <Link
-                                v-for="item in utilityNav"
-                                :key="item.name"
-                                :href="item.href"
-                                class="block px-3 py-2 text-sm text-slate-500 hover:bg-brand-50 hover:text-brand-600 rounded-md"
-                                @click="mobileMenuOpen = false"
-                            >
-                                {{ item.name }}
-                            </Link>
+                            <template v-for="item in utilityNav" :key="item.name">
+                                <a
+                                    v-if="item.external"
+                                    :href="item.href"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="block px-3 py-2 text-sm text-slate-500 hover:bg-brand-50 hover:text-brand-600 rounded-md"
+                                    @click="mobileMenuOpen = false"
+                                >
+                                    {{ item.name }}
+                                </a>
+                                <Link
+                                    v-else
+                                    :href="item.href"
+                                    class="block px-3 py-2 text-sm text-slate-500 hover:bg-brand-50 hover:text-brand-600 rounded-md"
+                                    @click="mobileMenuOpen = false"
+                                >
+                                    {{ item.name }}
+                                </Link>
+                            </template>
                         </div>
                     </div>
                     <div class="mt-4">

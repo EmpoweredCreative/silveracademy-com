@@ -24,9 +24,10 @@ const reasons = [
         <section class="relative h-[400px] overflow-hidden">
             <div class="absolute inset-0">
                 <img 
-                    src="https://images.unsplash.com/photo-1577896335477-28d5d43603c4?auto=format&fit=crop&w=1920&q=80" 
+                    src="/img/graphics/programs/upper school/web-silveracademy2025_Silver Academy-894.jpg" 
                     alt="After School Activities" 
                     class="w-full h-full object-cover" 
+                    style="object-position: center 30%;"
                 />
                 <div class="absolute inset-0 bg-brand-900/60 mix-blend-multiply"></div>
             </div>

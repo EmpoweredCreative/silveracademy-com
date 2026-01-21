@@ -160,12 +160,14 @@ const getExcerpt = (content, length = 100) => {
                 <p class="text-brand-100 mb-8">
                     Want to learn more about The Silver Academy? Schedule a visit today.
                 </p>
-                <Link
-                    href="/contact"
+                <a
+                    href="https://calendar.app.google/Y5NrAjA9RooWgwZ98"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     class="inline-block px-8 py-3 bg-accent-500 text-white font-semibold rounded-lg hover:bg-accent-600 transition-colors"
                 >
-                    Contact Us
-                </Link>
+                    Schedule a Visit
+                </a>
             </div>
         </section>
     </MarketingLayout>

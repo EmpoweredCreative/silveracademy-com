@@ -19,9 +19,10 @@ import {
         <section class="relative h-[350px] overflow-hidden">
             <div class="absolute inset-0">
                 <img 
-                    src="https://images.unsplash.com/photo-1577896335477-28d5d43603c4?auto=format&fit=crop&w=1920&q=80" 
+                    src="/img/graphics/header/web-silveracademyHeader option1.jpg" 
                     alt="Individual EITC Giving" 
-                    class="w-full h-full object-cover object-center"
+                    class="w-full h-full object-cover"
+                    style="object-position: center 40%;"
                 />
                 <div class="absolute inset-0 bg-brand-900/80 mix-blend-multiply"></div>
             </div>

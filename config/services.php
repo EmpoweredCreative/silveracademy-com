@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    'sendgrid' => [
+        'api_key' => env('SENDGRID_API_KEY'),
+        'from_email' => env('SENDGRID_FROM_EMAIL', 'noreply@silveracademypa.org'),
+        'from_name' => env('SENDGRID_FROM_NAME', 'Silver Academy Website'),
+        'to_email' => env('SENDGRID_TO_EMAIL', 'info@silveracademypa.org'),
+        'to_name' => env('SENDGRID_TO_NAME', 'Silver Academy'),
+    ],
+
 ];

@@ -29,9 +29,10 @@ const outcomes = [
         <section class="relative h-[400px] overflow-hidden">
             <div class="absolute inset-0">
                 <img 
-                    src="https://images.unsplash.com/photo-1587654780291-39c9404d746b?auto=format&fit=crop&w=1920&q=80" 
+                    src="/img/graphics/programs/ganeinu/web-silveracademyIMG_6289%202.jpg" 
                     alt="Ganeinu Early Childhood" 
-                    class="w-full h-full object-cover" 
+                    class="w-full h-full object-cover"
+                    style="object-position: center 30%;"
                 />
                 <div class="absolute inset-0 bg-brand-900/60 mix-blend-multiply"></div>
             </div>
@@ -44,16 +45,67 @@ const outcomes = [
             </div>
         </section>
 
-        <!-- Overview -->
-        <section class="py-20 bg-white">
+        <!-- Overview Section - Two Column Layout -->
+        <section class="py-20 bg-slate-50">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
-                <div class="max-w-3xl mx-auto text-center">
-                    <p class="text-xl text-slate-600 leading-relaxed">
-                        Ganeinu is our early childhood program designed for our youngest learners to cultivate curiosity, 
-                        confidence, and a love of learning. Students engage in hands-on experiences that build foundational 
-                        academic, social, and emotional skills while exploring Jewish heritage, traditions, and values in a 
-                        warm, nurturing environment.
-                    </p>
+                <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+                    <!-- Left Content -->
+                    <div>
+                        <p class="text-brand-500 font-semibold uppercase tracking-widest text-sm mb-4">Why Ganeinu</p>
+                        <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl text-slate-800 leading-tight mb-6">
+                            A Joyful Start to Jewish Learning
+                        </h2>
+                        <p class="text-slate-600 text-lg leading-relaxed mb-4">
+                            Ganeinu is our early childhood program designed for our youngest learners to cultivate curiosity, 
+                            confidence, and a love of learning. Students engage in hands-on experiences that build foundational 
+                            academic, social, and emotional skills.
+                        </p>
+                        <p class="text-slate-600 leading-relaxed mb-8">
+                            Children explore Jewish heritage, traditions, and values in a warm, nurturing environment—gaining 
+                            the tools they need to thrive in school and beyond.
+                        </p>
+
+                        <!-- Feature List -->
+                        <div class="space-y-6 mb-8">
+                            <div>
+                                <h3 class="font-bold text-slate-800 mb-1">Early Literacy & Language</h3>
+                                <p class="text-slate-600 text-sm">Hebrew letters, vocabulary, and foundational reading skills introduced through play and song.</p>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-800 mb-1">Jewish Identity & Values</h3>
+                                <p class="text-slate-600 text-sm">Weekly Parsha stories, holiday celebrations, and daily rituals build connection to heritage.</p>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-800 mb-1">Social-Emotional Growth</h3>
+                                <p class="text-slate-600 text-sm">Circle time, tzedakah, and collaborative activities foster empathy and community.</p>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-800 mb-1">Hands-On Exploration</h3>
+                                <p class="text-slate-600 text-sm">Curiosity-driven learning through science, art, music, and creative play.</p>
+                            </div>
+                        </div>
+
+                        <a 
+                            href="https://calendar.app.google/Y5NrAjA9RooWgwZ98"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="inline-block rounded bg-accent-500 px-8 py-4 text-sm font-semibold uppercase tracking-wide text-white shadow-lg hover:bg-accent-600 transition-all duration-300"
+                        >
+                            Schedule a Visit
+                        </a>
+                    </div>
+
+                    <!-- Right Image with Decorative Background -->
+                    <div class="relative h-full min-h-[500px]">
+                        <!-- Decorative angled background -->
+                        <div class="absolute inset-0 bg-brand-500 rounded-2xl transform rotate-3"></div>
+                        <!-- Main image -->
+                        <img 
+                            src="/img/graphics/programs/ganeinu/web-silveracademyIMG_6136.jpg" 
+                            alt="Ganeinu students learning" 
+                            class="absolute inset-0 w-full h-full object-cover rounded-2xl transform -rotate-3 hover:rotate-0 transition-transform duration-500 shadow-xl"
+                        />
+                    </div>
                 </div>
             </div>
         </section>

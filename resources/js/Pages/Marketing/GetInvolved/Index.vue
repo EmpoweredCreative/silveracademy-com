@@ -51,12 +51,13 @@ const opportunities = [
 
     <MarketingLayout>
         <!-- Hero Section -->
-        <section class="relative h-[400px] overflow-hidden">
+        <section class="relative h-[500px] overflow-hidden">
             <div class="absolute inset-0">
                 <img 
-                    src="https://images.unsplash.com/photo-1559027615-cd4628902d4a?auto=format&fit=crop&w=1920&q=80" 
+                    src="/img/graphics/get-involved/web-silveracademy2025_Silver Academy-326.jpg" 
                     alt="Community support" 
-                    class="w-full h-full object-cover object-center"
+                    class="w-full h-full object-cover"
+                    style="object-position: center -102px;"
                 />
                 <div class="absolute inset-0 bg-brand-900/60 mix-blend-multiply"></div>
             </div>

@@ -18,9 +18,10 @@ const reasons = [
         <section class="relative h-[400px] overflow-hidden">
             <div class="absolute inset-0">
                 <img 
-                    src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1920&q=80" 
+                    src="/img/graphics/home/web-silveracademyFamily Parntership.jpg" 
                     alt="Families Connecting" 
                     class="w-full h-full object-cover" 
+                    style="object-position: center top;"
                 />
                 <div class="absolute inset-0 bg-brand-900/60 mix-blend-multiply"></div>
             </div>

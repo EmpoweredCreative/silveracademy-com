@@ -23,9 +23,10 @@ const judaicStudies = [
         <section class="relative h-[400px] overflow-hidden">
             <div class="absolute inset-0">
                 <img 
-                    src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=1920&q=80" 
+                    src="/img/graphics/programs/kindergarten/web-silveracademy2025_Silver Academy-831.jpg" 
                     alt="Kindergarten Classroom" 
-                    class="w-full h-full object-cover" 
+                    class="w-full h-full object-cover"
+                    style="object-position: center 35%;"
                 />
                 <div class="absolute inset-0 bg-brand-900/60 mix-blend-multiply"></div>
             </div>
@@ -38,16 +39,67 @@ const judaicStudies = [
             </div>
         </section>
 
-        <!-- Overview -->
-        <section class="py-20 bg-white">
+        <!-- Overview Section - Two Column Layout -->
+        <section class="py-20 bg-slate-50">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
-                <div class="max-w-3xl mx-auto text-center">
-                    <p class="text-xl text-slate-600 leading-relaxed">
-                        Our full-day Kindergarten program gives young learners the opportunity to reach their full potential 
-                        through curiosity, creativity, and collaboration. Students engage in a rigorous, values-driven curriculum 
-                        that balances academic achievement with Jewish identity, social-emotional development, and hands-on discovery. 
-                        Each child receives individualized attention, fostering confidence, independence, and a love of learning.
-                    </p>
+                <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+                    <!-- Left Content -->
+                    <div>
+                        <p class="text-brand-500 font-semibold uppercase tracking-widest text-sm mb-4">Why Kindergarten at Silver</p>
+                        <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl text-slate-800 leading-tight mb-6">
+                            Building Strong Foundations for Lifelong Learning
+                        </h2>
+                        <p class="text-slate-600 text-lg leading-relaxed mb-4">
+                            Our full-day Kindergarten program gives young learners the opportunity to reach their full potential 
+                            through curiosity, creativity, and collaboration. Students engage in a rigorous, values-driven curriculum 
+                            that balances academic achievement with Jewish identity.
+                        </p>
+                        <p class="text-slate-600 leading-relaxed mb-8">
+                            Each child receives individualized attention, fostering confidence, independence, and a love of learning 
+                            that prepares them for success in school and beyond.
+                        </p>
+
+                        <!-- Feature List -->
+                        <div class="space-y-6 mb-8">
+                            <div>
+                                <h3 class="font-bold text-slate-800 mb-1">Rigorous Academics</h3>
+                                <p class="text-slate-600 text-sm">Strong foundations in reading, writing, and mathematics through engaging, hands-on instruction.</p>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-800 mb-1">Integrated Jewish Learning</h3>
+                                <p class="text-slate-600 text-sm">Hebrew language, values, and traditions woven into daily experiences.</p>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-800 mb-1">Social-Emotional Development</h3>
+                                <p class="text-slate-600 text-sm">Building empathy, responsibility, and collaboration through restorative practices.</p>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-800 mb-1">Individualized Attention</h3>
+                                <p class="text-slate-600 text-sm">Small class sizes ensure every child is seen, supported, and challenged.</p>
+                            </div>
+                        </div>
+
+                        <a 
+                            href="https://calendar.app.google/Y5NrAjA9RooWgwZ98"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="inline-block rounded bg-accent-500 px-8 py-4 text-sm font-semibold uppercase tracking-wide text-white shadow-lg hover:bg-accent-600 transition-all duration-300"
+                        >
+                            Schedule a Visit
+                        </a>
+                    </div>
+
+                    <!-- Right Image with Decorative Background -->
+                    <div class="relative h-full min-h-[500px]">
+                        <!-- Decorative angled background -->
+                        <div class="absolute inset-0 bg-brand-500 rounded-2xl transform rotate-3"></div>
+                        <!-- Main image -->
+                        <img 
+                            src="/img/graphics/home/web-silveracademyKindergarten.jpg" 
+                            alt="Kindergarten students learning" 
+                            class="absolute inset-0 w-full h-full object-cover rounded-2xl transform -rotate-3 hover:rotate-0 transition-transform duration-500 shadow-xl"
+                        />
+                    </div>
                 </div>
             </div>
         </section>

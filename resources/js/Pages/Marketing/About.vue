@@ -61,7 +61,7 @@ const cards = [
         </section>
 
         <!-- Mission & Vision Section -->
-        <section class="pb-24 bg-white">
+        <section class="pb-8 bg-white">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
                 <div class="grid md:grid-cols-2 gap-8">
                     <!-- Mission Card -->
@@ -126,7 +126,7 @@ const cards = [
         </section>
 
         <!-- Values Section -->
-        <section class="py-24 bg-white">
+        <section class="pt-8 pb-24 bg-white">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
                 <div class="text-center mb-16">
                     <!-- Icon -->

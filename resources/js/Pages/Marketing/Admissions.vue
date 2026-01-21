@@ -223,12 +223,14 @@ const testimonials = [
                             </div>
                         </div>
                         
-                        <Link 
-                            href="/contact"
+                        <a 
+                            href="https://calendar.app.google/Y5NrAjA9RooWgwZ98"
+                            target="_blank"
+                            rel="noopener noreferrer"
                             class="inline-block bg-accent-500 text-white px-8 py-3 rounded font-semibold uppercase tracking-wider hover:bg-accent-600 transition-colors"
                         >
                             Schedule A Visit
-                        </Link>
+                        </a>
                     </div>
                     <div class="relative h-full min-h-[500px]">
                         <div class="absolute inset-0 bg-brand-500 rounded-2xl transform rotate-3"></div>
@@ -270,7 +272,7 @@ const testimonials = [
                     </div>
                     
                     <div class="mt-16 text-center">
-                        <a href="#" class="inline-block bg-accent-500 text-white px-10 py-4 rounded font-bold uppercase tracking-wider hover:bg-accent-600 transition-colors shadow-lg hover:shadow-xl">
+                        <a href="https://app.simpletuitionsolutions.org/thesilveracademy/admissions" target="_blank" rel="noopener noreferrer" class="inline-block bg-accent-500 text-white px-10 py-4 rounded font-bold uppercase tracking-wider hover:bg-accent-600 transition-colors shadow-lg hover:shadow-xl">
                             Apply Now
                         </a>
                         <p class="mt-4 text-sm text-slate-500">Start your online application today</p>
