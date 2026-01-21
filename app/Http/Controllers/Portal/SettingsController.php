@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Portal;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -79,19 +80,25 @@ class SettingsController extends Controller
 
         // Delete old avatar if exists
         if ($user->avatar_url) {
-            $oldPath = public_path($user->avatar_url);
-            if (file_exists($oldPath)) {
-                unlink($oldPath);
+            // Handle both old path format and new storage format
+            $oldPath = str_replace('/storage/', '', $user->avatar_url);
+            if (Storage::disk('public')->exists($oldPath)) {
+                Storage::disk('public')->delete($oldPath);
+            }
+            // Also try the old public path format
+            $oldPublicPath = public_path($user->avatar_url);
+            if (file_exists($oldPublicPath)) {
+                @unlink($oldPublicPath);
             }
         }
 
-        // Store new avatar
+        // Store new avatar in storage/app/public/avatars (persists across deployments)
         $file = $request->file('avatar');
         $filename = 'avatar-' . $user->id . '-' . time() . '.' . $file->getClientOriginalExtension();
-        $file->move(public_path('img/avatars'), $filename);
+        $path = $file->storeAs('avatars', $filename, 'public');
 
         $user->update([
-            'avatar_url' => '/img/avatars/' . $filename,
+            'avatar_url' => '/storage/' . $path,
         ]);
 
         return back()->with('success', 'Avatar updated successfully.');
@@ -105,9 +112,15 @@ class SettingsController extends Controller
         $user = auth()->user();
 
         if ($user->avatar_url) {
-            $oldPath = public_path($user->avatar_url);
-            if (file_exists($oldPath)) {
-                unlink($oldPath);
+            // Handle both old path format and new storage format
+            $oldPath = str_replace('/storage/', '', $user->avatar_url);
+            if (Storage::disk('public')->exists($oldPath)) {
+                Storage::disk('public')->delete($oldPath);
+            }
+            // Also try the old public path format
+            $oldPublicPath = public_path($user->avatar_url);
+            if (file_exists($oldPublicPath)) {
+                @unlink($oldPublicPath);
             }
 
             $user->update(['avatar_url' => null]);
