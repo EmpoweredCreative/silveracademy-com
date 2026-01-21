@@ -21,6 +21,7 @@ class Post extends Model
         'audience',
         'target_grade_id',
         'target_teacher_id',
+        'target_classroom_id',
         'title',
         'content',
         'image_path',
@@ -153,6 +154,15 @@ class Post extends Model
     }
 
     /**
+     * Get the target classroom for this post (if classroom-targeted).
+     * @deprecated Classrooms are being removed - use targetGrade() instead
+     */
+    public function targetClassroom(): BelongsTo
+    {
+        return $this->belongsTo(Classroom::class, 'target_classroom_id');
+    }
+
+    /**
      * Scope to only published posts.
      */
     public function scopePublished(Builder $query): Builder
@@ -258,11 +268,54 @@ class Post extends Model
     }
 
     /**
+     * Scope to posts for a specific classroom.
+     * @deprecated Classrooms are being removed - use scopeForGrade() instead
+     */
+    public function scopeForClassroom(Builder $query, int $classroomId): Builder
+    {
+        return $query->where('audience', 'classroom')
+            ->where('target_classroom_id', $classroomId);
+    }
+
+    /**
+     * Scope to posts visible to a specific parent (based on their children's grades).
+     */
+    public function scopeVisibleToParent(Builder $query, User $parent): Builder
+    {
+        $childrenGradeIds = $parent->children()->pluck('grade_id')->unique()->filter()->toArray();
+
+        return $query->where(function ($q) use ($childrenGradeIds) {
+            // All-school posts (audience = 'all' or null)
+            $q->where(function ($subQ) {
+                $subQ->where('audience', 'all')
+                    ->orWhereNull('audience');
+            });
+
+            // Grade-level posts for their children's grades
+            if (!empty($childrenGradeIds)) {
+                $q->orWhere(function ($subQ) use ($childrenGradeIds) {
+                    $subQ->where('audience', 'grade')
+                        ->whereIn('target_grade_id', $childrenGradeIds);
+                });
+            }
+        });
+    }
+
+    /**
      * Check if this post is for teachers only (any staff-only type).
      */
     public function isTeachersOnly(): bool
     {
         return in_array($this->audience, ['teachers_only', 'grade_teachers', 'specific_teacher']);
+    }
+
+    /**
+     * Check if this post is for a specific classroom.
+     * @deprecated Classrooms are being removed
+     */
+    public function isForClassroom(): bool
+    {
+        return $this->audience === 'classroom';
     }
 
     /**

@@ -8,9 +8,14 @@ use App\Http\Controllers\Portal\DashboardController;
 use App\Http\Controllers\Portal\PostController;
 use App\Http\Controllers\Portal\CalendarController;
 use App\Http\Controllers\Portal\LunchMenuController;
-use App\Http\Controllers\Portal\Admin\ClassroomController;
+use App\Http\Controllers\Portal\SettingsController;
+use App\Http\Controllers\Portal\TeacherNewsController;
+use App\Http\Controllers\Portal\HelpController;
+use App\Http\Controllers\Portal\Admin\ApprovalController;
+use App\Http\Controllers\Portal\Admin\GradeController;
 use App\Http\Controllers\Portal\Admin\StudentImportController;
 use App\Http\Controllers\Portal\Admin\StaffController;
+use App\Http\Controllers\Portal\Admin\StaffImportController;
 use App\Http\Controllers\Portal\Admin\ParentController;
 use App\Http\Controllers\Portal\Admin\LunchMenuImportController;
 use Illuminate\Support\Facades\Route;
@@ -31,7 +36,9 @@ Route::get('/our-community', [HomeController::class, 'ourCommunity'])->name('our
 Route::get('/admissions', [HomeController::class, 'admissions'])->name('admissions');
 Route::get('/programs', [HomeController::class, 'services'])->name('programs');
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
-Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
+Route::post('/contact', [ContactController::class, 'store'])
+    ->middleware('throttle:3,10')
+    ->name('contact.store');
 
 Route::prefix('programs')->name('programs.')->group(function () {
     Route::get('/ganeinu', [HomeController::class, 'ganeinu'])->name('ganeinu');
@@ -65,8 +72,18 @@ Route::get('/events/{post:slug}', [EventController::class, 'show'])->name('event
 |
 */
 
-Route::middleware(['auth', 'verified'])->prefix('portal')->name('portal.')->group(function () {
+Route::middleware(['auth', 'verified', 'approved'])->prefix('portal')->name('portal.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Settings
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
+    Route::put('/settings/profile', [SettingsController::class, 'updateProfile'])->name('settings.profile');
+    Route::put('/settings/password', [SettingsController::class, 'updatePassword'])->name('settings.password');
+    Route::post('/settings/avatar', [SettingsController::class, 'updateAvatar'])->name('settings.avatar');
+    Route::delete('/settings/avatar', [SettingsController::class, 'removeAvatar'])->name('settings.avatar.remove');
+
+    // Help
+    Route::get('/help', [HelpController::class, 'index'])->name('help');
 
     // Calendar (accessible to all authenticated users)
     Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar');
@@ -92,26 +109,46 @@ Route::middleware(['auth', 'verified'])->prefix('portal')->name('portal.')->grou
         Route::post('/posts/{post}/toggle-publish', [PostController::class, 'togglePublish'])
             ->name('posts.toggle-publish');
     });
+
+    // Teacher routes for posting grade-specific news
+    Route::get('/teacher-news', [TeacherNewsController::class, 'index'])->name('teacher-news.index');
+    Route::get('/teacher-news/create', [TeacherNewsController::class, 'create'])->name('teacher-news.create');
+    Route::post('/teacher-news', [TeacherNewsController::class, 'store'])->name('teacher-news.store');
+    Route::delete('/teacher-news/{post}', [TeacherNewsController::class, 'destroy'])->name('teacher-news.destroy');
 });
 
 /*
 |--------------------------------------------------------------------------
-| Admin Routes (Classroom & Student Management)
+| Admin Routes (Grade & Student Management)
 |--------------------------------------------------------------------------
 |
-| These routes are for admin management of classrooms, students, and teachers.
+| These routes are for admin management of grades, students, and teachers.
 |
 */
 
 Route::middleware(['auth', 'verified', 'admin'])->prefix('portal/admin')->name('admin.')->group(function () {
+    // Approval Management (PARENTS ONLY - staff are imported)
+    Route::get('/approvals', [ApprovalController::class, 'index'])->name('approvals.index');
+    Route::get('/approvals/{user}', [ApprovalController::class, 'show'])->name('approvals.show');
+    Route::post('/approvals/{user}/approve', [ApprovalController::class, 'approve'])->name('approvals.approve');
+    Route::post('/approvals/{user}/reject', [ApprovalController::class, 'reject'])->name('approvals.reject');
+    Route::post('/approvals/bulk-approve', [ApprovalController::class, 'bulkApprove'])->name('approvals.bulk-approve');
+
     // Staff Management
     Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');
     Route::get('/staff/create', [StaffController::class, 'create'])->name('staff.create');
     Route::post('/staff', [StaffController::class, 'store'])->name('staff.store');
+    Route::get('/staff/import', [StaffImportController::class, 'showImport'])->name('staff.import');
+    Route::post('/staff/import', [StaffImportController::class, 'import'])->name('staff.import.process');
+    Route::get('/staff/template', [StaffImportController::class, 'downloadTemplate'])->name('staff.template');
+    Route::get('/staff/export-credentials', [StaffImportController::class, 'exportCredentials'])->name('staff.export-credentials');
     Route::get('/staff/{staff}/edit', [StaffController::class, 'edit'])->name('staff.edit');
     Route::put('/staff/{staff}', [StaffController::class, 'update'])->name('staff.update');
     Route::delete('/staff/{staff}', [StaffController::class, 'destroy'])->name('staff.destroy');
     Route::post('/staff/{staff}/toggle-role', [StaffController::class, 'toggleRole'])->name('staff.toggle-role');
+    Route::post('/staff/{staff}/send-welcome', [StaffController::class, 'sendWelcomeEmail'])->name('staff.send-welcome');
+    Route::post('/staff/send-bulk-welcome', [StaffController::class, 'sendBulkWelcomeEmails'])->name('staff.send-bulk-welcome');
+    Route::post('/staff/send-all-pending-welcome', [StaffController::class, 'sendAllPendingWelcomeEmails'])->name('staff.send-all-pending-welcome');
 
     // Parent Management
     Route::get('/parents', [ParentController::class, 'index'])->name('parents.index');
@@ -121,29 +158,20 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('portal/admin')->name('
     Route::post('/parents/{parent}/resend-verification', [ParentController::class, 'resendVerification'])->name('parents.resend-verification');
     Route::post('/parents/{parent}/verify-email', [ParentController::class, 'verifyEmail'])->name('parents.verify-email');
 
-    // Import/Export (must be before {classroom} parameter routes)
-    Route::get('/classrooms/import', [StudentImportController::class, 'showImport'])->name('classrooms.import');
-    Route::post('/classrooms/import', [StudentImportController::class, 'import'])->name('classrooms.import.process');
-    Route::get('/classrooms/template', [StudentImportController::class, 'downloadTemplate'])->name('classrooms.template');
-    Route::get('/classrooms/export', [StudentImportController::class, 'export'])->name('classrooms.export');
+    // Student Import/Export
+    Route::get('/students/import', [StudentImportController::class, 'showImport'])->name('students.import');
+    Route::post('/students/import', [StudentImportController::class, 'import'])->name('students.import.process');
+    Route::get('/students/template', [StudentImportController::class, 'downloadTemplate'])->name('students.template');
+    Route::get('/students/export', [StudentImportController::class, 'export'])->name('students.export');
 
-    // Classroom Management
-    Route::get('/classrooms', [ClassroomController::class, 'index'])->name('classrooms.index');
-    Route::get('/classrooms/grade/{grade}', [ClassroomController::class, 'gradeDetail'])->name('classrooms.grade.show');
-    Route::post('/classrooms', [ClassroomController::class, 'store'])->name('classrooms.store');
-    Route::get('/classrooms/{classroom}', [ClassroomController::class, 'show'])->name('classrooms.show');
-    Route::put('/classrooms/{classroom}', [ClassroomController::class, 'update'])->name('classrooms.update');
-    Route::delete('/classrooms/{classroom}', [ClassroomController::class, 'destroy'])->name('classrooms.destroy');
-
-    // Student Assignment
-    Route::post('/classrooms/{classroom}/assign-students', [ClassroomController::class, 'assignStudents'])
-        ->name('classrooms.assign-students');
-    Route::post('/classrooms/{classroom}/remove-students', [ClassroomController::class, 'removeStudents'])
-        ->name('classrooms.remove-students');
-    Route::post('/classrooms/{classroom}/assign-all', [ClassroomController::class, 'assignAllStudents'])
-        ->name('classrooms.assign-all');
-    Route::post('/classrooms/move-students', [ClassroomController::class, 'moveStudents'])
-        ->name('classrooms.move-students');
+    // Grade Management (replaces Classroom Management)
+    Route::get('/grades', [GradeController::class, 'index'])->name('grades.index');
+    Route::get('/grades/{grade}', [GradeController::class, 'show'])->name('grades.show');
+    Route::put('/grades/{grade}/teachers', [GradeController::class, 'updateTeachers'])->name('grades.update-teachers');
+    Route::post('/grades/{grade}/students', [GradeController::class, 'storeStudent'])->name('grades.students.store');
+    Route::put('/grades/{grade}/students/{student}', [GradeController::class, 'updateStudent'])->name('grades.students.update');
+    Route::delete('/grades/{grade}/students/{student}', [GradeController::class, 'destroyStudent'])->name('grades.students.destroy');
+    Route::post('/grades/move-students', [GradeController::class, 'moveStudents'])->name('grades.move-students');
 });
 
 /*

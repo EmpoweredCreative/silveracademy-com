@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Portal\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Classroom;
+use App\Models\Grade;
 use App\Models\User;
-use Illuminate\Auth\Events\Registered;
+use App\Notifications\AccountApproved;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -20,7 +21,7 @@ class StaffController extends Controller
     public function index(): Response
     {
         $staff = User::whereIn('role', [User::ROLE_TEACHER, User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN])
-            ->with('classrooms.grade')
+            ->with('grades')
             ->orderBy('name')
             ->get()
             ->map(function ($user) {
@@ -30,11 +31,11 @@ class StaffController extends Controller
                     'email' => $user->email,
                     'role' => $user->role,
                     'role_label' => $this->getRoleLabel($user->role),
-                    'classrooms' => $user->classrooms->map(fn($c) => [
-                        'id' => $c->id,
-                        'name' => $c->name,
-                        'grade_name' => $c->grade?->name,
+                    'grades' => $user->grades->map(fn($g) => [
+                        'id' => $g->id,
+                        'name' => $g->name,
                     ]),
+                    'has_credentials' => $user->password !== null,
                     'email_verified_at' => $user->email_verified_at,
                     'created_at' => $user->created_at,
                 ];
@@ -45,6 +46,7 @@ class StaffController extends Controller
             'total' => $staff->count(),
             'teachers' => $staff->where('role', User::ROLE_TEACHER)->count(),
             'admins' => $staff->whereIn('role', [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN])->count(),
+            'pending_credentials' => $staff->where('has_credentials', false)->count(),
         ];
 
         return Inertia::render('Portal/Admin/Staff/Index', [
@@ -58,57 +60,59 @@ class StaffController extends Controller
      */
     public function create(): Response
     {
-        $classrooms = Classroom::with('grade')
-            ->orderBy('grade_id')
+        $grades = Grade::orderBy('sort_order')
             ->get()
-            ->map(fn($c) => [
-                'id' => $c->id,
-                'name' => $c->name,
-                'grade_name' => $c->grade?->name,
-                'display_name' => $c->grade?->name . ' - ' . $c->name,
+            ->map(fn($g) => [
+                'id' => $g->id,
+                'name' => $g->name,
             ]);
 
         return Inertia::render('Portal/Admin/Staff/Create', [
-            'classrooms' => $classrooms,
+            'grades' => $grades,
             'staffEmailDomain' => config('app.staff_email_domain'),
         ]);
     }
 
     /**
      * Store a newly created staff member.
+     * Automatically generates password and sends welcome email.
      */
     public function store(Request $request)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:users',
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'role' => 'required|in:teacher,admin',
-            'classroom_ids' => 'nullable|array',
-            'classroom_ids.*' => 'exists:classrooms,id',
-            'send_welcome_email' => 'boolean',
+            'grade_ids' => 'nullable|array',
+            'grade_ids.*' => 'exists:grades,id',
         ]);
+
+        // Generate password
+        $password = Str::password(12);
 
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
+            'password' => Hash::make($password),
             'role' => $validated['role'],
+            'is_approved' => true, // Staff created by admin are auto-approved
         ]);
 
-        // Assign classrooms if teacher role
-        if ($validated['role'] === User::ROLE_TEACHER && !empty($validated['classroom_ids'])) {
-            Classroom::whereIn('id', $validated['classroom_ids'])
-                ->update(['teacher_id' => $user->id]);
+        // Assign grades if provided
+        if (!empty($validated['grade_ids'])) {
+            $user->grades()->sync($validated['grade_ids']);
         }
 
-        // Send welcome email if requested
-        if ($request->boolean('send_welcome_email')) {
-            event(new Registered($user));
-        }
+        // Send welcome email with credentials
+        $user->notify(new AccountApproved($password));
 
         return redirect()->route('admin.staff.index')
-            ->with('success', 'Staff member created successfully.');
+            ->with('success', "Staff member created successfully. Welcome email sent to {$user->email}.")
+            ->with('credentials', [[
+                'name' => $user->name,
+                'email' => $user->email,
+                'password' => $password,
+            ]]);
     }
 
     /**
@@ -121,17 +125,14 @@ class StaffController extends Controller
             abort(404);
         }
 
-        $classrooms = Classroom::with('grade')
-            ->orderBy('grade_id')
+        $grades = Grade::orderBy('sort_order')
             ->get()
-            ->map(fn($c) => [
-                'id' => $c->id,
-                'name' => $c->name,
-                'grade_name' => $c->grade?->name,
-                'display_name' => $c->grade?->name . ' - ' . $c->name,
+            ->map(fn($g) => [
+                'id' => $g->id,
+                'name' => $g->name,
             ]);
 
-        $staff->load('classrooms');
+        $staff->load('grades');
 
         return Inertia::render('Portal/Admin/Staff/Edit', [
             'staff' => [
@@ -139,10 +140,11 @@ class StaffController extends Controller
                 'name' => $staff->name,
                 'email' => $staff->email,
                 'role' => $staff->role,
-                'classroom_ids' => $staff->classrooms->pluck('id')->toArray(),
+                'grade_ids' => $staff->grades->pluck('id')->toArray(),
+                'has_credentials' => $staff->password !== null,
                 'email_verified_at' => $staff->email_verified_at,
             ],
-            'classrooms' => $classrooms,
+            'grades' => $grades,
         ]);
     }
 
@@ -166,8 +168,8 @@ class StaffController extends Controller
             'email' => 'required|string|lowercase|email|max:255|unique:users,email,' . $staff->id,
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
             'role' => 'required|in:teacher,admin',
-            'classroom_ids' => 'nullable|array',
-            'classroom_ids.*' => 'exists:classrooms,id',
+            'grade_ids' => 'nullable|array',
+            'grade_ids.*' => 'exists:grades,id',
         ]);
 
         // Don't allow changing super admin role
@@ -186,15 +188,8 @@ class StaffController extends Controller
             $staff->update(['password' => Hash::make($validated['password'])]);
         }
 
-        // Update classroom assignments
-        // First, remove this teacher from all classrooms
-        Classroom::where('teacher_id', $staff->id)->update(['teacher_id' => null]);
-
-        // Then assign new classrooms if teacher role
-        if (($validated['role'] ?? $staff->role) === User::ROLE_TEACHER && !empty($validated['classroom_ids'])) {
-            Classroom::whereIn('id', $validated['classroom_ids'])
-                ->update(['teacher_id' => $staff->id]);
-        }
+        // Update grade assignments
+        $staff->grades()->sync($validated['grade_ids'] ?? []);
 
         return redirect()->route('admin.staff.index')
             ->with('success', 'Staff member updated successfully.');
@@ -220,8 +215,8 @@ class StaffController extends Controller
             return back()->with('error', 'You cannot delete your own account.');
         }
 
-        // Remove from classrooms
-        Classroom::where('teacher_id', $staff->id)->update(['teacher_id' => null]);
+        // Remove grade assignments
+        $staff->grades()->detach();
 
         $staff->delete();
 
@@ -246,6 +241,107 @@ class StaffController extends Controller
     }
 
     /**
+     * Send welcome email to a single staff member.
+     * Generates password and sends email with credentials.
+     */
+    public function sendWelcomeEmail(User $staff)
+    {
+        // Ensure we're working with a staff member
+        if (!in_array($staff->role, [User::ROLE_TEACHER, User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN])) {
+            abort(404);
+        }
+
+        // Generate password
+        $password = Str::password(12);
+        $staff->update(['password' => Hash::make($password)]);
+
+        // Send welcome email with credentials
+        $staff->notify(new AccountApproved($password));
+
+        return back()
+            ->with('success', "Welcome email sent to {$staff->name}.")
+            ->with('credentials', [[
+                'name' => $staff->name,
+                'email' => $staff->email,
+                'password' => $password,
+            ]]);
+    }
+
+    /**
+     * Send welcome emails to multiple staff members.
+     * Generates passwords and sends emails with credentials.
+     */
+    public function sendBulkWelcomeEmails(Request $request)
+    {
+        $validated = $request->validate([
+            'user_ids' => 'required|array|min:1',
+            'user_ids.*' => 'exists:users,id',
+        ]);
+
+        $users = User::whereIn('id', $validated['user_ids'])
+            ->whereIn('role', [User::ROLE_TEACHER, User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN])
+            ->get();
+
+        $credentials = [];
+        $sent = 0;
+
+        foreach ($users as $user) {
+            // Generate password
+            $password = Str::password(12);
+            $user->update(['password' => Hash::make($password)]);
+
+            // Send welcome email
+            $user->notify(new AccountApproved($password));
+
+            $credentials[] = [
+                'name' => $user->name,
+                'email' => $user->email,
+                'password' => $password,
+            ];
+            $sent++;
+        }
+
+        return back()
+            ->with('success', "Welcome emails sent to {$sent} staff member(s).")
+            ->with('credentials', $credentials);
+    }
+
+    /**
+     * Send welcome emails to ALL staff members without credentials.
+     */
+    public function sendAllPendingWelcomeEmails()
+    {
+        $users = User::whereIn('role', [User::ROLE_TEACHER, User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN])
+            ->whereNull('password')
+            ->get();
+
+        if ($users->isEmpty()) {
+            return back()->with('info', 'No staff members pending credentials.');
+        }
+
+        $credentials = [];
+
+        foreach ($users as $user) {
+            // Generate password
+            $password = Str::password(12);
+            $user->update(['password' => Hash::make($password)]);
+
+            // Send welcome email
+            $user->notify(new AccountApproved($password));
+
+            $credentials[] = [
+                'name' => $user->name,
+                'email' => $user->email,
+                'password' => $password,
+            ];
+        }
+
+        return back()
+            ->with('success', "Welcome emails sent to {$users->count()} staff member(s).")
+            ->with('credentials', $credentials);
+    }
+
+    /**
      * Get human-readable role label.
      */
     private function getRoleLabel(string $role): string
@@ -258,4 +354,3 @@ class StaffController extends Controller
         };
     }
 }
-

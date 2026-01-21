@@ -2,13 +2,73 @@
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/vue/24/outline'
 import { Link, router, usePage } from '@inertiajs/vue3'
-import { computed } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
 
 const page = usePage()
 const user = page.props.auth?.user
 
-const isAdmin = computed(() => {
+const previewRoles = ['admin', 'teacher', 'parent']
+
+// Read preview role from localStorage
+const storedPreviewRole = ref('admin')
+
+const updatePreviewRole = () => {
+    if (typeof window !== 'undefined') {
+        const stored = localStorage.getItem('portal_preview_role')
+        if (stored && previewRoles.includes(stored)) {
+            storedPreviewRole.value = stored
+        }
+    }
+}
+
+const handlePreviewRoleChanged = (event) => {
+    if (event.detail && previewRoles.includes(event.detail)) {
+        storedPreviewRole.value = event.detail
+    }
+}
+
+onMounted(() => {
+    updatePreviewRole()
+    
+    // Listen for storage changes (in case another tab changes it)
+    window.addEventListener('storage', updatePreviewRole)
+    
+    // Listen for preview role changes from Dashboard/Calendar
+    window.addEventListener('preview-role-changed', handlePreviewRoleChanged)
+    
+    // Also update on Inertia navigation
+    router.on('navigate', updatePreviewRole)
+})
+
+onUnmounted(() => {
+    if (typeof window !== 'undefined') {
+        window.removeEventListener('storage', updatePreviewRole)
+        window.removeEventListener('preview-role-changed', handlePreviewRoleChanged)
+    }
+})
+
+const isSuperAdmin = computed(() => {
+    return user?.role === 'super_admin'
+})
+
+const isActualAdmin = computed(() => {
     return user?.role === 'admin' || user?.role === 'super_admin'
+})
+
+const isActualTeacher = computed(() => {
+    return user?.role === 'teacher'
+})
+
+// Determine effective role for navigation (respects preview mode)
+const effectiveRole = computed(() => {
+    // If super admin is previewing, use the stored preview role
+    if (isSuperAdmin.value && storedPreviewRole.value) {
+        return storedPreviewRole.value
+    }
+    // Otherwise use actual role
+    if (user?.role === 'super_admin' || user?.role === 'admin') return 'admin'
+    if (user?.role === 'teacher') return 'teacher'
+    return 'parent'
 })
 
 const navigation = computed(() => {
@@ -17,22 +77,37 @@ const navigation = computed(() => {
         { name: 'Calendar', href: '/portal/calendar' },
     ]
 
-    if (isAdmin.value) {
+    if (effectiveRole.value === 'admin') {
+        // Admin sees full management
         items.push({ name: 'News & Events', href: '/portal/posts' })
         items.push({ name: 'Parents', href: '/portal/admin/parents' })
         items.push({ name: 'Staff', href: '/portal/admin/staff' })
-        items.push({ name: 'Classrooms', href: '/portal/admin/classrooms' })
+        items.push({ name: 'Grades', href: '/portal/admin/grades' })
+    } else if (effectiveRole.value === 'teacher') {
+        // Teachers see link to public News & Events page (view only)
+        items.push({ name: 'News & Events', href: '/news-events', external: true })
     }
+    // Parents just see Dashboard, Calendar, Settings
 
     items.push({ name: 'Settings', href: '/portal/settings' })
 
     return items
 })
 
-const userNavigation = [
-    { name: 'Your profile', href: '/portal/profile' },
-    { name: 'Settings', href: '/portal/settings' },
-]
+const userNavigation = computed(() => {
+    const items = [
+        { name: 'Settings', href: '/portal/settings' },
+    ]
+    
+    // For super admins in preview mode, pass the preview role to help page
+    if (isSuperAdmin.value && storedPreviewRole.value && storedPreviewRole.value !== 'admin') {
+        items.push({ name: 'Help', href: `/portal/help?preview=${storedPreviewRole.value}` })
+    } else {
+        items.push({ name: 'Help', href: '/portal/help' })
+    }
+    
+    return items
+})
 
 const logout = () => {
     router.post('/logout')
@@ -66,19 +141,31 @@ const isActive = (href) => {
                             </Link>
                         </div>
                         <div class="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8">
-                            <Link 
-                                v-for="item in navigation" 
-                                :key="item.name" 
-                                :href="item.href" 
-                                :class="[
-                                    isActive(item.href)
-                                        ? 'border-brand-600 text-slate-900 dark:border-brand-500 dark:text-white' 
-                                        : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 dark:text-slate-400 dark:hover:border-white/20 dark:hover:text-slate-200', 
-                                    'inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium'
-                                ]"
-                            >
-                                {{ item.name }}
-                            </Link>
+                            <template v-for="item in navigation" :key="item.name">
+                                <a 
+                                    v-if="item.external"
+                                    :href="item.href"
+                                    target="_blank"
+                                    :class="[
+                                        'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 dark:text-slate-400 dark:hover:border-white/20 dark:hover:text-slate-200', 
+                                        'inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium'
+                                    ]"
+                                >
+                                    {{ item.name }}
+                                </a>
+                                <Link 
+                                    v-else
+                                    :href="item.href" 
+                                    :class="[
+                                        isActive(item.href)
+                                            ? 'border-brand-600 text-slate-900 dark:border-brand-500 dark:text-white' 
+                                            : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 dark:text-slate-400 dark:hover:border-white/20 dark:hover:text-slate-200', 
+                                        'inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium'
+                                    ]"
+                                >
+                                    {{ item.name }}
+                                </Link>
+                            </template>
                         </div>
                     </div>
                     <div class="hidden sm:ml-6 sm:flex sm:items-center">
@@ -96,7 +183,13 @@ const isActive = (href) => {
                             <MenuButton class="relative flex rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 dark:focus-visible:outline-brand-500">
                                 <span class="absolute -inset-1.5"></span>
                                 <span class="sr-only">Open user menu</span>
-                                <div class="size-8 rounded-full bg-brand-600 flex items-center justify-center outline -outline-offset-1 outline-black/5 dark:outline-white/10">
+                                <img 
+                                    v-if="user?.avatar_url" 
+                                    :src="user.avatar_url" 
+                                    alt="Profile" 
+                                    class="size-8 rounded-full object-cover outline -outline-offset-1 outline-black/5 dark:outline-white/10"
+                                />
+                                <div v-else class="size-8 rounded-full bg-brand-600 flex items-center justify-center outline -outline-offset-1 outline-black/5 dark:outline-white/10">
                                     <span class="text-sm font-medium text-white">{{ userInitials }}</span>
                                 </div>
                             </MenuButton>
@@ -150,28 +243,41 @@ const isActive = (href) => {
 
             <DisclosurePanel class="sm:hidden">
                 <div class="space-y-1 pt-2 pb-3">
-                    <DisclosureButton 
-                        v-for="item in navigation" 
-                        :key="item.name" 
-                        as="template"
-                    >
-                        <Link 
-                            :href="item.href" 
-                            :class="[
-                                isActive(item.href)
-                                    ? 'border-brand-600 bg-brand-50 text-brand-700 dark:border-brand-500 dark:bg-brand-600/10 dark:text-brand-300' 
-                                    : 'border-transparent text-slate-600 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-800 dark:text-slate-400 dark:hover:border-white/20 dark:hover:bg-white/5 dark:hover:text-slate-200', 
-                                'block border-l-4 py-2 pr-4 pl-3 text-base font-medium'
-                            ]"
-                        >
-                            {{ item.name }}
-                        </Link>
-                    </DisclosureButton>
+                    <template v-for="item in navigation" :key="item.name">
+                        <DisclosureButton v-if="item.external" as="template">
+                            <a 
+                                :href="item.href"
+                                target="_blank"
+                                class="border-transparent text-slate-600 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-800 dark:text-slate-400 dark:hover:border-white/20 dark:hover:bg-white/5 dark:hover:text-slate-200 block border-l-4 py-2 pr-4 pl-3 text-base font-medium"
+                            >
+                                {{ item.name }}
+                            </a>
+                        </DisclosureButton>
+                        <DisclosureButton v-else as="template">
+                            <Link 
+                                :href="item.href" 
+                                :class="[
+                                    isActive(item.href)
+                                        ? 'border-brand-600 bg-brand-50 text-brand-700 dark:border-brand-500 dark:bg-brand-600/10 dark:text-brand-300' 
+                                        : 'border-transparent text-slate-600 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-800 dark:text-slate-400 dark:hover:border-white/20 dark:hover:bg-white/5 dark:hover:text-slate-200', 
+                                    'block border-l-4 py-2 pr-4 pl-3 text-base font-medium'
+                                ]"
+                            >
+                                {{ item.name }}
+                            </Link>
+                        </DisclosureButton>
+                    </template>
                 </div>
                 <div class="border-t border-slate-200 pt-4 pb-3 dark:border-slate-700">
                     <div class="flex items-center px-4">
                         <div class="shrink-0">
-                            <div class="size-10 rounded-full bg-brand-600 flex items-center justify-center outline -outline-offset-1 outline-black/5 dark:outline-white/10">
+                            <img 
+                                v-if="user?.avatar_url" 
+                                :src="user.avatar_url" 
+                                alt="Profile" 
+                                class="size-10 rounded-full object-cover outline -outline-offset-1 outline-black/5 dark:outline-white/10"
+                            />
+                            <div v-else class="size-10 rounded-full bg-brand-600 flex items-center justify-center outline -outline-offset-1 outline-black/5 dark:outline-white/10">
                                 <span class="text-sm font-medium text-white">{{ userInitials }}</span>
                             </div>
                         </div>

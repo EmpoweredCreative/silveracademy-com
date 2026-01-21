@@ -10,14 +10,17 @@ const props = defineProps({
 });
 
 // Format datetime for input fields (YYYY-MM-DDTHH:MM)
+// Converts UTC datetime from database to Eastern Time for display in form
 const formatDateTimeLocal = (dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
+    // Convert to Eastern Time
+    const etDate = new Date(date.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+    const year = etDate.getFullYear();
+    const month = String(etDate.getMonth() + 1).padStart(2, '0');
+    const day = String(etDate.getDate()).padStart(2, '0');
+    const hours = String(etDate.getHours()).padStart(2, '0');
+    const minutes = String(etDate.getMinutes()).padStart(2, '0');
     return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
 

@@ -1,16 +1,22 @@
 <script setup>
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import PortalLayout from '@/Layouts/PortalLayout.vue';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { 
     UserGroupIcon,
     AcademicCapIcon,
     ShieldCheckIcon,
     PlusIcon,
-    PencilIcon,
     TrashIcon,
     CheckCircleIcon,
     XCircleIcon,
+    ArrowUpTrayIcon,
+    ArrowDownTrayIcon,
+    EnvelopeIcon,
+    ClockIcon,
+    ClipboardDocumentIcon,
+    DocumentArrowDownIcon,
+    ExclamationTriangleIcon,
 } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
@@ -18,8 +24,23 @@ const props = defineProps({
     counts: Object,
 });
 
+const page = usePage();
+
+// Credentials from flash (after sending welcome emails)
+const credentials = computed(() => page.props.flash?.credentials || []);
+const hasCredentials = computed(() => credentials.value.length > 0);
+
+// Staff pending credentials
+const pendingStaff = computed(() => props.staff.filter(s => !s.has_credentials));
+const hasPendingStaff = computed(() => pendingStaff.value.length > 0);
+
+// Delete confirmation
 const confirmingDelete = ref(null);
 const deleteConfirmText = ref('');
+
+// Sending state
+const sendingWelcome = ref(null);
+const sendingAllWelcome = ref(false);
 
 const deleteStaff = (staffId) => {
     if (deleteConfirmText.value.toLowerCase() !== 'delete') {
@@ -38,6 +59,26 @@ const cancelDelete = () => {
     deleteConfirmText.value = '';
 };
 
+const sendWelcomeEmail = (staffId) => {
+    sendingWelcome.value = staffId;
+    router.post(`/portal/admin/staff/${staffId}/send-welcome`, {}, {
+        preserveScroll: true,
+        onFinish: () => {
+            sendingWelcome.value = null;
+        },
+    });
+};
+
+const sendAllPendingWelcomeEmails = () => {
+    sendingAllWelcome.value = true;
+    router.post('/portal/admin/staff/send-all-pending-welcome', {}, {
+        preserveScroll: true,
+        onFinish: () => {
+            sendingAllWelcome.value = false;
+        },
+    });
+};
+
 const getRoleBadgeClass = (role) => {
     switch (role) {
         case 'super_admin':
@@ -51,13 +92,20 @@ const getRoleBadgeClass = (role) => {
     }
 };
 
-const formatDate = (date) => {
-    if (!date) return 'Never';
-    return new Date(date).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-    });
+const copyCredentials = () => {
+    const text = credentials.value.map(c => `${c.name}\t${c.email}\t${c.password}`).join('\n');
+    navigator.clipboard.writeText(text);
+};
+
+const downloadCredentials = () => {
+    const csv = 'Name,Email,Password\n' + credentials.value.map(c => `"${c.name}","${c.email}","${c.password}"`).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `staff-credentials-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
 };
 </script>
 
@@ -71,19 +119,115 @@ const formatDate = (date) => {
             <!-- Header Actions -->
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-slate-600">Manage staff members, assign roles, and classroom assignments.</p>
+                    <p class="text-slate-600">Manage staff members, assign roles, and grade level assignments.</p>
                 </div>
-                <Link
-                    href="/portal/admin/staff/create"
-                    class="inline-flex items-center px-4 py-2 bg-brand-600 text-white font-semibold rounded-lg hover:bg-brand-700 transition-colors"
-                >
-                    <PlusIcon class="w-4 h-4 mr-2" />
-                    Add Staff Member
-                </Link>
+                <div class="flex items-center gap-3">
+                    <a 
+                        href="/portal/admin/staff/template"
+                        class="inline-flex items-center px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 transition-colors"
+                    >
+                        <ArrowDownTrayIcon class="w-4 h-4 mr-2" />
+                        Download Template
+                    </a>
+                    <Link
+                        href="/portal/admin/staff/import"
+                        class="inline-flex items-center px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 transition-colors"
+                    >
+                        <ArrowUpTrayIcon class="w-4 h-4 mr-2" />
+                        Import Staff
+                    </Link>
+                    <Link
+                        href="/portal/admin/staff/create"
+                        class="inline-flex items-center px-4 py-2 bg-brand-600 text-white font-semibold rounded-lg hover:bg-brand-700 transition-colors"
+                    >
+                        <PlusIcon class="w-4 h-4 mr-2" />
+                        Add Staff Member
+                    </Link>
+                </div>
+            </div>
+
+            <!-- Credentials Display (shown after sending welcome emails) -->
+            <div v-if="hasCredentials" class="bg-green-50 border border-green-200 rounded-xl overflow-hidden">
+                <div class="px-6 py-4 border-b border-green-200 flex items-center gap-3">
+                    <CheckCircleIcon class="w-5 h-5 text-green-600" />
+                    <div>
+                        <h3 class="font-semibold text-green-800">Welcome Emails Sent</h3>
+                        <p class="text-sm text-green-700">{{ credentials.length }} staff member(s) received their credentials</p>
+                    </div>
+                </div>
+                <div class="p-6 space-y-4">
+                    <div class="bg-white rounded-lg border border-green-200 overflow-hidden">
+                        <div class="max-h-48 overflow-y-auto">
+                            <table class="min-w-full text-sm">
+                                <thead class="bg-slate-50 sticky top-0">
+                                    <tr>
+                                        <th class="px-3 py-2 text-left font-medium text-slate-600">Name</th>
+                                        <th class="px-3 py-2 text-left font-medium text-slate-600">Email</th>
+                                        <th class="px-3 py-2 text-left font-medium text-slate-600">Password</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-200">
+                                    <tr v-for="cred in credentials" :key="cred.email">
+                                        <td class="px-3 py-2 text-slate-900">{{ cred.name }}</td>
+                                        <td class="px-3 py-2 text-slate-600">{{ cred.email }}</td>
+                                        <td class="px-3 py-2 font-mono text-slate-600">{{ cred.password }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="flex gap-3">
+                        <button
+                            @click="copyCredentials"
+                            class="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-white text-slate-700 font-medium rounded-lg border border-slate-300 hover:bg-slate-50 transition-colors"
+                        >
+                            <ClipboardDocumentIcon class="w-4 h-4" />
+                            Copy to Clipboard
+                        </button>
+                        <button
+                            @click="downloadCredentials"
+                            class="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors"
+                        >
+                            <DocumentArrowDownIcon class="w-4 h-4" />
+                            Download CSV
+                        </button>
+                    </div>
+                    <p class="text-xs text-green-700">
+                        <ExclamationTriangleIcon class="w-4 h-4 inline-block mr-1" />
+                        Save these credentials securely. Passwords are not stored in plain text and cannot be retrieved later.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Pending Credentials Alert -->
+            <div v-if="hasPendingStaff && !hasCredentials" class="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-amber-100 rounded-lg">
+                            <ClockIcon class="w-5 h-5 text-amber-700" />
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-amber-900">
+                                {{ counts.pending_credentials }} staff member{{ counts.pending_credentials > 1 ? 's' : '' }} pending credentials
+                            </p>
+                            <p class="text-sm text-amber-700">
+                                These staff members cannot log in until you send them their welcome email with login credentials.
+                            </p>
+                        </div>
+                    </div>
+                    <button
+                        @click="sendAllPendingWelcomeEmails"
+                        :disabled="sendingAllWelcome"
+                        class="inline-flex items-center px-4 py-2 bg-amber-600 text-white font-semibold rounded-lg hover:bg-amber-700 disabled:opacity-50 transition-colors"
+                    >
+                        <EnvelopeIcon class="w-4 h-4 mr-2" />
+                        {{ sendingAllWelcome ? 'Sending...' : 'Send All Welcome Emails' }}
+                    </button>
+                </div>
             </div>
 
             <!-- Stats -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
                     <div class="flex items-center gap-4">
                         <div class="p-3 bg-slate-50 rounded-lg">
@@ -117,6 +261,17 @@ const formatDate = (date) => {
                         </div>
                     </div>
                 </div>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                    <div class="flex items-center gap-4">
+                        <div :class="['p-3 rounded-lg', counts.pending_credentials > 0 ? 'bg-amber-50' : 'bg-green-50']">
+                            <ClockIcon :class="['w-6 h-6', counts.pending_credentials > 0 ? 'text-amber-600' : 'text-green-600']" />
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold text-slate-900">{{ counts.pending_credentials }}</p>
+                            <p class="text-sm text-slate-600">Pending Credentials</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Staff Table -->
@@ -146,10 +301,10 @@ const formatDate = (date) => {
                                 Role
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                                Classrooms
+                                Grade Levels
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                                Status
+                                Credentials
                             </th>
                             <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">
                                 Actions
@@ -184,42 +339,46 @@ const formatDate = (date) => {
                                 </span>
                             </td>
                             <td class="px-6 py-4">
-                                <div v-if="member.classrooms.length > 0" class="flex flex-wrap gap-1">
+                                <div v-if="member.grades && member.grades.length > 0" class="flex flex-wrap gap-1">
                                     <span 
-                                        v-for="classroom in member.classrooms.slice(0, 2)" 
-                                        :key="classroom.id"
+                                        v-for="grade in member.grades.slice(0, 3)" 
+                                        :key="grade.id"
                                         class="inline-flex items-center px-2 py-0.5 rounded text-xs bg-slate-100 text-slate-700"
                                     >
-                                        {{ classroom.grade_name }} - {{ classroom.name }}
+                                        {{ grade.name }}
                                     </span>
                                     <span 
-                                        v-if="member.classrooms.length > 2"
+                                        v-if="member.grades.length > 3"
                                         class="inline-flex items-center px-2 py-0.5 rounded text-xs bg-slate-100 text-slate-500"
                                     >
-                                        +{{ member.classrooms.length - 2 }} more
+                                        +{{ member.grades.length - 3 }} more
                                     </span>
                                 </div>
                                 <span v-else class="text-sm text-slate-400">—</span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center gap-1">
-                                    <CheckCircleIcon 
-                                        v-if="member.email_verified_at" 
-                                        class="w-4 h-4 text-emerald-500" 
-                                        title="Email verified"
-                                    />
-                                    <XCircleIcon 
-                                        v-else 
-                                        class="w-4 h-4 text-amber-500" 
-                                        title="Email not verified"
-                                    />
-                                    <span class="text-sm text-slate-500">
-                                        {{ member.email_verified_at ? 'Verified' : 'Pending' }}
-                                    </span>
+                                <div v-if="member.has_credentials" class="flex items-center gap-1">
+                                    <CheckCircleIcon class="w-4 h-4 text-emerald-500" />
+                                    <span class="text-sm text-slate-600">Sent</span>
+                                </div>
+                                <div v-else class="flex items-center gap-1">
+                                    <ClockIcon class="w-4 h-4 text-amber-500" />
+                                    <span class="text-sm text-amber-600">Pending</span>
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <div class="flex items-center justify-end gap-2">
+                                    <!-- Send Welcome Email (only for staff without credentials) -->
+                                    <button
+                                        v-if="!member.has_credentials && member.role !== 'super_admin'"
+                                        @click="sendWelcomeEmail(member.id)"
+                                        :disabled="sendingWelcome === member.id"
+                                        class="px-3 py-1 text-xs font-medium text-amber-700 bg-amber-50 hover:bg-amber-100 rounded-md transition-colors disabled:opacity-50"
+                                        :title="'Send welcome email to ' + member.name"
+                                    >
+                                        <EnvelopeIcon v-if="sendingWelcome !== member.id" class="w-4 h-4 inline mr-1" />
+                                        {{ sendingWelcome === member.id ? 'Sending...' : 'Send Email' }}
+                                    </button>
                                     <Link
                                         :href="`/portal/admin/staff/${member.id}/edit`"
                                         class="px-3 py-1 text-xs font-medium text-brand-700 bg-brand-50 hover:bg-brand-100 rounded-md transition-colors"
@@ -271,4 +430,3 @@ const formatDate = (date) => {
         </div>
     </PortalLayout>
 </template>
-

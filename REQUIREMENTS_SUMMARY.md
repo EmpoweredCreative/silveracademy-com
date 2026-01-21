@@ -1,0 +1,203 @@
+# Family Portal Requirements Summary
+
+## Overview
+This document summarizes the functional requirements identified during the client meeting for the Silver Academy family portal.
+
+---
+
+## 1. Teacher Email Visibility
+**Requirement:** Parents need to be able to see teacher email addresses to communicate with them.
+
+**Current State:** Teacher emails are not visible to parents in the portal.
+
+**Needed:** Display teacher email addresses in appropriate parent-facing views (likely where classroom/teacher information is shown).
+
+---
+
+## 2. Grade-Level Specific News for Teachers
+**Requirement:** Teachers need to be able to add grade-level specific news.
+
+**Current State:** Posts can target grade teachers via `audience: 'grade_teachers'` and `target_grade_id`, but teachers may not have the ability to create posts.
+
+**Needed:** 
+- Allow teachers to create news posts
+- Enable grade-level targeting when creating posts
+
+---
+
+## 3. Multiple Grade Level Selection for Teachers
+**Requirement:** Some teachers teach multiple grade levels and need to be able to select which grade they want to communicate under when creating posts.
+
+**Current State:** Teachers can be assigned to multiple classrooms (which have grades), but when creating posts they may only be able to target one grade at a time.
+
+**Needed:** 
+- Allow teachers to select from their assigned grade levels when creating posts
+- Support multi-grade targeting for teacher-created posts
+
+---
+
+## 4. Classroom-Specific News
+**Requirement:** Add the ability to create news by classroom.
+
+**Current State:** Posts can target grades or specific teachers, but not specific classrooms.
+
+**Needed:**
+- Add classroom targeting to posts
+- New audience type: `classroom` with `target_classroom_id`
+- Allow teachers to post to their assigned classrooms
+
+---
+
+## 5. Parents Attached to Students
+**Requirement:** Parents should be attached to students.
+
+**Current State:** ✅ Already implemented via `parent_student` pivot table. Parents can be linked to multiple students.
+
+**Needed:** No changes required - relationship already exists.
+
+---
+
+## 6. Grade Levels Attached to Parents
+**Requirement:** Grade levels should be attached to parents.
+
+**Current State:** Parents are linked to students, and students have `grade_id`. Parents can access grade information through their children, but there's no direct parent-grade relationship.
+
+**Needed:**
+- Add direct relationship between parents and grades (likely through their children's grades)
+- This will help with filtering events/news by grade level for parents
+
+---
+
+## 7. Event Filtering for Parents
+**Requirement:** Update events on parent view to distinguish between:
+- **ALL SCHOOL EVENTS** vs. **GRADE LEVEL EVENTS**
+- **PUBLIC EVENTS** vs. **PRIVATE EVENTS**
+
+**Current State:** 
+- Events have `is_public` flag (public vs private)
+- Events can target grades via `target_grade_id` but filtering for parents may not be implemented
+- Calendar shows all events without clear distinction
+
+**Needed:**
+- Add UI filters/toggles for parents to filter events by:
+  - Scope: All School vs Grade Level
+  - Visibility: Public vs Private
+- Filter events based on parent's children's grade levels
+- Display clear labels/indicators for event types
+
+---
+
+## 8. Admin Approval System
+**Requirement:** Admin needs to approve staff and family members before they can access the portal.
+
+**Current State:** Users can register and immediately log in. No approval workflow exists.
+
+**Needed:**
+- Add `is_approved` or `approved_at` field to users table
+- Prevent login for unapproved users
+- Admin interface to approve/reject pending users
+- **Email notifications:**
+  - Send email immediately after registration: "Registration received, awaiting admin approval"
+  - Send email when approved: Include auto-generated password for first login
+- Generate secure random password when admin approves account
+- Dashboard/notification for admins showing pending approvals
+
+---
+
+## 9. Registration Form Updates
+**Requirement:** ✅ CLARIFIED - Registration form should NOT include child information. Admin will link children after approval.
+
+**Current State:** Registration collects: name, email, password, account_type (parent/staff).
+
+**Needed:**
+- Registration is for PARENTS ONLY (remove account_type selection)
+- Keep registration form simple: name, email only (NO password field)
+- Add required checkboxes:
+  - Parent confirmation: "I hereby confirm that I am a parent of a student at Silver Academy" (always required)
+  - Terms acceptance: "I agree to adhere to the terms and conditions of using the Silver Academy website" (always required)
+- Staff must be added via bulk import (CSV/Excel) - they cannot self-register
+- Admin will assign children to parent accounts via admin interface
+- Send email notification after registration: "Registration received, awaiting admin approval"
+- Password will be generated by admin during approval process
+
+---
+
+## 10. Multiple Children Linking
+**Requirement:** **ADMIN ONLY** - Admin will link students with the parent. Parents need a dropdown to view whichever child's classroom they choose.
+
+**Current State:** Admin can already link students to parents via the parent edit interface.
+
+**Needed:**
+- **ADMIN ONLY** - Enhance admin interface to link multiple children to parent accounts
+- Parents CANNOT link students themselves - this is admin-only functionality
+- Add child selector dropdown for parents (if they have multiple children) - this is for VIEWING only, not linking
+- Parent can switch between children to view different classroom information
+- Dashboard and other views should update based on selected child
+- Ensure no parent-facing routes or UI allow student linking
+
+---
+
+## 11. Bulk Staff/Teacher Upload
+**Requirement:** Upload all staff (teachers, admins, etc.) and create accounts for them with login and password. Gila and staff will send that out to staff when they are onboarded. Staff CANNOT self-register - they must be imported.
+
+**Current State:** Teachers can be created individually via admin interface.
+
+**Needed:**
+- Bulk import functionality for staff (CSV/Excel upload)
+- Support importing teachers, admins, and other staff roles
+- Generate login credentials (email + auto-generated password)
+- Export credentials for distribution (CSV with email/password)
+- Support for assigning classrooms/grades during import
+- Imported staff accounts are auto-approved (no approval workflow needed)
+- Email notification option to send credentials to staff (future enhancement)
+- Remove staff self-registration option completely
+
+---
+
+## Technical Notes
+
+### Database Changes Needed:
+1. Add `is_approved` or `approved_at` to `users` table
+2. Add `target_classroom_id` to `posts` table (for classroom-specific posts)
+3. Possibly add `parent_grade` pivot table (or derive from children)
+4. Add registration data storage (pending registrations with child info)
+
+### Model Changes Needed:
+1. User model: Add approval status methods
+2. Post model: Add classroom targeting support
+3. Registration: Store child information during registration
+
+### Controller Changes Needed:
+1. Registration: Collect child information
+2. Login: Check approval status
+3. Admin: Approval workflow
+4. Teachers: Allow post creation with grade/classroom selection
+5. Parents: Filter events by grade/scope
+6. Bulk import: Teacher upload functionality
+
+### Frontend Changes Needed:
+1. Registration form: Add child name/grade fields
+2. Parent views: Show teacher emails
+3. Calendar: Add event filters (All School/Grade Level, Public/Private)
+4. Teacher post creation: Grade/classroom selection
+5. Admin: Approval interface
+6. Admin: Bulk teacher import interface
+
+---
+
+## Clarifications Received
+
+1. **Teacher Email Display:** ✅ Student profile/classroom view
+2. **Bulk Teacher Upload Format:** ✅ Both CSV and Excel
+3. **Event Filtering UI:** ✅ Automatic filtering based on children's grades (no UI controls needed)
+4. **Multiple Children at Registration:** ✅ Parents add only one child during registration. Admin links additional children via admin interface after approval.
+
+## Remaining Questions
+
+1. **Classroom News:** Should classroom-specific news be:
+   - A new audience type separate from grade-level?
+   - Or should it be tied to the classroom's grade with additional classroom filtering?
+
+2. **Teacher Post Permissions:** Should teachers be able to:
+   - Only post to their assigned grades/classrooms?
+   - Or also post school-wide (with admin approval)?

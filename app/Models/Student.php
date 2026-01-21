@@ -27,10 +27,19 @@ class Student extends Model
 
     /**
      * Get the classroom this student is in.
+     * @deprecated Classrooms are being removed - students are now assigned directly to grades
      */
     public function classroom(): BelongsTo
     {
         return $this->belongsTo(Classroom::class);
+    }
+
+    /**
+     * Get the teachers for this student's grade.
+     */
+    public function teachers(): BelongsToMany
+    {
+        return $this->grade?->teachers() ?? collect();
     }
 
     /**

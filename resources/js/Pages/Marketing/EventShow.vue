@@ -14,6 +14,7 @@ const formatDate = (date) => {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
+        timeZone: 'America/New_York',
     });
 };
 
@@ -22,6 +23,7 @@ const formatTime = (date) => {
     return new Date(date).toLocaleTimeString('en-US', {
         hour: 'numeric',
         minute: '2-digit',
+        timeZone: 'America/New_York',
     });
 };
 

@@ -32,8 +32,20 @@ const props = defineProps({
 });
 
 // Role preview toggle (for super admins)
-const previewRole = ref('admin'); // 'admin', 'teacher', 'parent'
 const previewRoles = ['admin', 'teacher', 'parent'];
+
+// Load preview role from localStorage (persists across page navigations)
+const getStoredPreviewRole = () => {
+    if (typeof window !== 'undefined') {
+        const stored = localStorage.getItem('portal_preview_role');
+        if (stored && previewRoles.includes(stored)) {
+            return stored;
+        }
+    }
+    return 'admin';
+};
+
+const previewRole = ref(getStoredPreviewRole());
 
 const isSuperAdmin = computed(() => props.user?.role === 'super_admin');
 const isActualAdmin = computed(() => props.user?.role === 'admin' || props.user?.role === 'super_admin');
@@ -50,6 +62,12 @@ const togglePreviewRole = () => {
     const currentIndex = previewRoles.indexOf(previewRole.value);
     const nextIndex = (currentIndex + 1) % previewRoles.length;
     previewRole.value = previewRoles[nextIndex];
+    
+    // Save to localStorage and notify other components
+    if (typeof window !== 'undefined') {
+        localStorage.setItem('portal_preview_role', previewRole.value);
+        window.dispatchEvent(new CustomEvent('preview-role-changed', { detail: previewRole.value }));
+    }
 };
 
 const previewRoleLabel = computed(() => {
@@ -192,7 +210,11 @@ const getLunchMenuForDate = (dateStr) => {
 const formatTime = (datetime) => {
     if (!datetime) return '';
     const date = new Date(datetime);
-    return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    return date.toLocaleTimeString('en-US', { 
+        hour: 'numeric', 
+        minute: '2-digit',
+        timeZone: 'America/New_York',
+    });
 };
 
 // Get truncated menu content (preserve line breaks, strip other HTML)
@@ -293,8 +315,8 @@ const currentWeekItems = computed(() => {
                     name: event.title,
                     time: formatTime(event.event_date),
                     datetime: event.event_date,
-                    dayName: eventDate.toLocaleDateString('en-US', { weekday: 'short' }),
-                    formattedDate: eventDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+                    dayName: eventDate.toLocaleDateString('en-US', { weekday: 'short', timeZone: 'America/New_York' }),
+                    formattedDate: eventDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'America/New_York' }),
                     type: 'event',
                     description: event.description || '',
                     buttonText: event.button_text || '',
@@ -344,8 +366,8 @@ const selectedWeekRange = computed(() => {
     const sunday = new Date(monday);
     sunday.setDate(monday.getDate() + 6);
     
-    const monStr = monday.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    const sunStr = sunday.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const monStr = monday.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'America/New_York' });
+    const sunStr = sunday.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'America/New_York' });
     
     return `${monStr} - ${sunStr}`;
 });
@@ -385,7 +407,8 @@ const formatFullDate = (datetime) => {
         weekday: 'long',
         month: 'long', 
         day: 'numeric',
-        year: 'numeric'
+        year: 'numeric',
+        timeZone: 'America/New_York',
     });
 };
 

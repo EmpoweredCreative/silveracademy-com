@@ -21,7 +21,7 @@ class StudentImportController extends Controller
     {
         $grades = Grade::orderBy('sort_order')->get(['id', 'name']);
 
-        return Inertia::render('Portal/Admin/Classrooms/Import', [
+        return Inertia::render('Portal/Admin/Grades/Import', [
             'grades' => $grades,
         ]);
     }
@@ -74,11 +74,8 @@ class StudentImportController extends Controller
             if ($stats['skipped'] > 0) {
                 $message .= ", {$stats['skipped']} skipped";
             }
-            if ($stats['classrooms_created'] > 0) {
-                $message .= ". {$stats['classrooms_created']} new classroom(s) created";
-            }
 
-            return redirect()->route('admin.classrooms.index')
+            return redirect()->route('admin.grades.index')
                 ->with('success', $message)
                 ->with('importErrors', $errors);
                 

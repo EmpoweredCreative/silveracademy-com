@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Marketing;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 use SendGrid\Mail\Mail;
 use SendGrid;
 
@@ -12,18 +13,92 @@ class ContactController extends Controller
 {
     public function store(Request $request)
     {
+        // Honeypot check - if this field is filled, it's a bot
+        if ($request->filled('website_url')) {
+            Log::warning('Contact form honeypot triggered', [
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
+            return back()->with('error', 'Sorry, there was an error sending your inquiry. Please try again later.');
+        }
+
+        // Time-based validation - prevent instant submissions
+        $formTimestamp = $request->input('form_timestamp');
+        if ($formTimestamp) {
+            $timeElapsed = time() - (int) $formTimestamp;
+            // Require at least 5 seconds to fill the form (humans need time)
+            // But allow up to 1 hour (3600 seconds) to prevent stale submissions
+            if ($timeElapsed < 5 || $timeElapsed > 3600) {
+                Log::warning('Contact form time validation failed', [
+                    'ip' => $request->ip(),
+                    'time_elapsed' => $timeElapsed,
+                    'user_agent' => $request->userAgent(),
+                ]);
+                return back()->with('error', 'Please take your time filling out the form and try again.');
+            }
+        } else {
+            Log::warning('Contact form missing timestamp', [
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
+            return back()->with('error', 'Please refresh the page and try again.');
+        }
+
+        // Check for suspicious patterns in content
+        $message = $request->input('message', '');
+        $email = $request->input('email', '');
+        
+        // Common spam patterns
+        $spamPatterns = [
+            '/\b(viagra|cialis|casino|poker|loan|debt|free money|click here|buy now|limited time)\b/i',
+            '/https?:\/\/[^\s]+/i', // Multiple URLs in message
+            '/\b\d{10,}\b/', // Long number sequences
+        ];
+        
+        $urlCount = preg_match_all('/https?:\/\/[^\s]+/i', $message);
+        if ($urlCount > 2) {
+            Log::warning('Contact form contains too many URLs', [
+                'ip' => $request->ip(),
+                'url_count' => $urlCount,
+            ]);
+            return back()->with('error', 'Your message contains too many links. Please remove them and try again.');
+        }
+
+        // Enhanced validation with spam detection
         $validated = $request->validate([
-            'parent_name' => 'required|string|max:255',
-            'student_name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'phone' => 'required|string|max:50',
-            'grade_interest' => 'required|string|max:255',
-            'school_year' => 'required|string|max:255',
+            'parent_name' => 'required|string|max:255|regex:/^[a-zA-Z\s\-\'\.]+$/u',
+            'student_name' => 'required|string|max:255|regex:/^[a-zA-Z\s\-\'\.]+$/u',
+            'email' => 'required|email:rfc,dns|max:255',
+            'phone' => 'required|string|max:50|regex:/^[\d\s\-\+\(\)]+$/',
+            'grade_interest' => 'required|string|max:255|in:Pre-K,Kindergarten,1st Grade,2nd Grade,3rd Grade,4th Grade,5th Grade,6th Grade,7th Grade,8th Grade,Undecided',
+            'school_year' => 'required|string|max:255|in:2025-2026,2026-2027,2027-2028,Not sure',
             'how_heard' => 'required|string|max:255',
-            'schedule_tour' => 'required|string|max:255',
-            'message' => 'required|string|max:5000',
+            'schedule_tour' => 'required|string|max:255|in:Yes, please send me the link.,Not yet — I\'d like more information first.',
+            'message' => 'required|string|min:10|max:5000',
             'subscribe' => 'boolean',
+            'form_timestamp' => 'required|integer',
+        ], [
+            'parent_name.regex' => 'The parent name contains invalid characters.',
+            'student_name.regex' => 'The student name contains invalid characters.',
+            'email.email' => 'Please provide a valid email address.',
+            'phone.regex' => 'Please provide a valid phone number.',
+            'message.min' => 'Please provide more details in your message (at least 10 characters).',
         ]);
+
+        // Additional spam check: Check for repeated submissions from same IP
+        $ipKey = 'contact_form_ip:' . $request->ip();
+        $submissionCount = Cache::get($ipKey, 0);
+        
+        if ($submissionCount >= 5) {
+            Log::warning('Contact form rate limit exceeded for IP', [
+                'ip' => $request->ip(),
+                'count' => $submissionCount,
+            ]);
+            return back()->with('error', 'Too many submissions from this location. Please try again later.');
+        }
+        
+        // Increment submission count (expires in 1 hour)
+        Cache::put($ipKey, $submissionCount + 1, now()->addHour());
 
         try {
             $sendgrid = new SendGrid(config('services.sendgrid.api_key'));

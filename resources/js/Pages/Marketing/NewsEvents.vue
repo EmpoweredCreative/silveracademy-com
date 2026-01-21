@@ -16,25 +16,30 @@ const formatDate = (date) => {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
+        timeZone: 'America/New_York',
     });
 };
 
 const formatEventDate = (startDate, endDate) => {
     const start = new Date(startDate);
-    const options = { month: 'short', day: 'numeric', year: 'numeric' };
+    const options = { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' };
     
     if (!endDate) {
         return start.toLocaleDateString('en-US', options);
     }
     
     const end = new Date(endDate);
-    if (start.toDateString() === end.toDateString()) {
+    // Compare dates in Eastern Time
+    const startET = new Date(start.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+    const endET = new Date(end.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+    
+    if (startET.toDateString() === endET.toDateString()) {
         return start.toLocaleDateString('en-US', options);
     }
     
-    // Check if same month/year
-    if (start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear()) {
-        return `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${end.getDate()}, ${end.getFullYear()}`;
+    // Check if same month/year in Eastern Time
+    if (startET.getMonth() === endET.getMonth() && startET.getFullYear() === endET.getFullYear()) {
+        return `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'America/New_York' })} - ${endET.getDate()}, ${endET.getFullYear()}`;
     }
     
     return `${start.toLocaleDateString('en-US', options)} - ${end.toLocaleDateString('en-US', options)}`;

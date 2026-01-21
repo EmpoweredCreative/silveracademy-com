@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Grade;
 use App\Models\Post;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -92,6 +93,17 @@ class PostController extends Controller
             $targetTeacherId = null;
         }
 
+        // Convert datetime-local input (which comes without timezone) to Eastern Time, then to UTC for storage
+        $eventStartDate = null;
+        $eventEndDate = null;
+        if (!empty($validated['event_start_date'])) {
+            // Parse as Eastern Time (America/New_York), then convert to UTC for database storage
+            $eventStartDate = Carbon::parse($validated['event_start_date'], 'America/New_York')->utc();
+        }
+        if (!empty($validated['event_end_date'])) {
+            $eventEndDate = Carbon::parse($validated['event_end_date'], 'America/New_York')->utc();
+        }
+
         $post = Post::create([
             'user_id' => $request->user()->id,
             'type' => $validated['type'],
@@ -104,8 +116,8 @@ class PostController extends Controller
             'slug' => Str::slug($validated['title']),
             'content' => $validated['content'],
             'image_path' => $imagePath,
-            'event_start_date' => $validated['event_start_date'] ?? null,
-            'event_end_date' => $validated['event_end_date'] ?? null,
+            'event_start_date' => $eventStartDate,
+            'event_end_date' => $eventEndDate,
             'button_text' => $validated['button_text'] ?? null,
             'button_url' => $validated['button_url'] ?? null,
             'recurrence_type' => $validated['recurrence_type'] ?? 'none',
@@ -193,6 +205,17 @@ class PostController extends Controller
             $targetTeacherId = null;
         }
 
+        // Convert datetime-local input (which comes without timezone) to Eastern Time, then to UTC for storage
+        $eventStartDate = null;
+        $eventEndDate = null;
+        if (!empty($validated['event_start_date'])) {
+            // Parse as Eastern Time (America/New_York), then convert to UTC for database storage
+            $eventStartDate = Carbon::parse($validated['event_start_date'], 'America/New_York')->utc();
+        }
+        if (!empty($validated['event_end_date'])) {
+            $eventEndDate = Carbon::parse($validated['event_end_date'], 'America/New_York')->utc();
+        }
+
         $post->update([
             'type' => $validated['type'],
             'is_school_closure' => $request->boolean('is_school_closure'),
@@ -203,8 +226,8 @@ class PostController extends Controller
             'title' => $validated['title'],
             'content' => $validated['content'],
             'image_path' => $imagePath,
-            'event_start_date' => $validated['event_start_date'] ?? null,
-            'event_end_date' => $validated['event_end_date'] ?? null,
+            'event_start_date' => $eventStartDate,
+            'event_end_date' => $eventEndDate,
             'button_text' => $validated['button_text'] ?? null,
             'button_url' => $validated['button_url'] ?? null,
             'recurrence_type' => $validated['recurrence_type'] ?? 'none',

@@ -10,8 +10,10 @@ import {
     UserGroupIcon,
     AcademicCapIcon,
     ClockIcon,
+    NewspaperIcon,
+    PencilSquareIcon,
 } from '@heroicons/vue/24/outline';
-import { ref, computed } from 'vue';
+import { ref, computed, provide, watch } from 'vue';
 
 const props = defineProps({
     user: Object,
@@ -19,13 +21,43 @@ const props = defineProps({
     upcomingEvents: Array,
     recentAnnouncements: Array,
     teacherAnnouncements: Array,
+    gradeNews: Array,
+    teacherGrades: Array,
+    studentCount: Number,
+    staffCount: Number,
+    upcomingEventsCount: Number,
 });
 
-const previewRole = ref('admin'); // 'admin', 'teacher', 'parent'
 const previewRoles = ['admin', 'teacher', 'parent'];
+
+// Load preview role from localStorage (persists across page navigations)
+const getStoredPreviewRole = () => {
+    if (typeof window !== 'undefined') {
+        const stored = localStorage.getItem('portal_preview_role');
+        if (stored && previewRoles.includes(stored)) {
+            return stored;
+        }
+    }
+    return 'admin';
+};
+
+const previewRole = ref(getStoredPreviewRole());
 
 const isSuperAdmin = computed(() => props.user?.role === 'super_admin');
 const isAdmin = computed(() => props.user?.role === 'admin' || props.user?.role === 'super_admin');
+
+// Save preview role to localStorage when it changes and notify other components
+watch(previewRole, (newRole) => {
+    if (typeof window !== 'undefined' && isSuperAdmin.value) {
+        localStorage.setItem('portal_preview_role', newRole);
+        // Dispatch custom event so layout can react immediately
+        window.dispatchEvent(new CustomEvent('preview-role-changed', { detail: newRole }));
+    }
+});
+
+// Provide preview role to child components (like PortalLayout)
+provide('previewRole', previewRole);
+provide('isSuperAdmin', isSuperAdmin);
 
 // Determine which view to show
 const showAdminView = computed(() => {
@@ -70,7 +102,8 @@ const formatDate = (dateStr) => {
     return date.toLocaleDateString('en-US', { 
         weekday: 'short',
         month: 'short', 
-        day: 'numeric'
+        day: 'numeric',
+        timeZone: 'America/New_York',
     });
 };
 
@@ -80,7 +113,8 @@ const formatWeekDate = (dateStr) => {
     return date.toLocaleDateString('en-US', { 
         month: 'long', 
         day: 'numeric',
-        year: 'numeric'
+        year: 'numeric',
+        timeZone: 'America/New_York',
     });
 };
 </script>
@@ -109,7 +143,7 @@ const formatWeekDate = (dateStr) => {
         
         <div class="space-y-8">
             <!-- ADMIN VIEW -->
-            <template v-if="previewRole === 'admin'">
+            <template v-if="showAdminView">
                 <!-- Admin Stats Grid -->
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
@@ -118,7 +152,7 @@ const formatWeekDate = (dateStr) => {
                                 <UserGroupIcon class="w-6 h-6 text-brand-600" />
                             </div>
                             <div>
-                                <p class="text-2xl font-bold text-slate-900">142</p>
+                                <p class="text-2xl font-bold text-slate-900">{{ studentCount ?? 0 }}</p>
                                 <p class="text-sm text-slate-600">Total Students</p>
                             </div>
                         </div>
@@ -129,7 +163,7 @@ const formatWeekDate = (dateStr) => {
                                 <AcademicCapIcon class="w-6 h-6 text-brand-600" />
                             </div>
                             <div>
-                                <p class="text-2xl font-bold text-slate-900">24</p>
+                                <p class="text-2xl font-bold text-slate-900">{{ staffCount ?? 0 }}</p>
                                 <p class="text-sm text-slate-600">Staff Members</p>
                             </div>
                         </div>
@@ -140,7 +174,7 @@ const formatWeekDate = (dateStr) => {
                                 <CalendarIcon class="w-6 h-6 text-brand-600" />
                             </div>
                             <div>
-                                <p class="text-2xl font-bold text-slate-900">{{ upcomingEvents?.length || 0 }}</p>
+                                <p class="text-2xl font-bold text-slate-900">{{ upcomingEventsCount ?? 0 }}</p>
                                 <p class="text-sm text-slate-600">Upcoming Events</p>
                             </div>
                         </div>
@@ -205,7 +239,7 @@ const formatWeekDate = (dateStr) => {
             </template>
 
             <!-- STAFF VIEW -->
-            <template v-else-if="previewRole === 'teacher'">
+            <template v-else-if="showTeacherView">
                 <div class="space-y-6">
                     <!-- Staff Welcome Card -->
                     <div class="bg-gradient-to-r from-emerald-600 to-emerald-700 rounded-xl p-6 text-white shadow-lg">
@@ -223,9 +257,18 @@ const formatWeekDate = (dateStr) => {
                     <!-- Staff Announcements -->
                     <div v-if="teacherAnnouncements && teacherAnnouncements.length > 0" class="bg-amber-50 rounded-xl shadow-sm border border-amber-200 overflow-hidden">
                         <div class="px-6 py-4 border-b border-amber-200 bg-amber-100">
-                            <div class="flex items-center gap-2">
-                                <MegaphoneIcon class="w-5 h-5 text-amber-700" />
-                                <h2 class="text-lg font-serif font-semibold text-amber-900">Staff Announcements</h2>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <MegaphoneIcon class="w-5 h-5 text-amber-700" />
+                                    <h2 class="text-lg font-serif font-semibold text-amber-900">Staff Announcements</h2>
+                                </div>
+                                <Link 
+                                    v-if="teacherGrades && teacherGrades.length > 0"
+                                    href="/portal/teacher-news" 
+                                    class="text-sm text-amber-700 hover:text-amber-800 font-medium"
+                                >
+                                    My Posts →
+                                </Link>
                             </div>
                         </div>
                         <div class="divide-y divide-amber-200">
@@ -290,7 +333,17 @@ const formatWeekDate = (dateStr) => {
                         <div class="px-6 py-4 border-b border-slate-200">
                             <h2 class="text-lg font-serif font-semibold text-slate-900">Quick Actions</h2>
                         </div>
-                        <div class="p-6 grid grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div class="p-6 grid grid-cols-2 lg:grid-cols-4 gap-4">
+                            <Link
+                                v-if="teacherGrades && teacherGrades.length > 0"
+                                href="/portal/teacher-news/create"
+                                class="flex flex-col items-center justify-center p-6 bg-emerald-50 rounded-xl hover:bg-emerald-100 transition-colors group border-2 border-emerald-200"
+                            >
+                                <div class="p-3 bg-emerald-100 rounded-full shadow-sm mb-3 group-hover:bg-emerald-200 transition-colors">
+                                    <PencilSquareIcon class="w-6 h-6 text-emerald-700" />
+                                </div>
+                                <span class="text-sm font-medium text-emerald-800 text-center">Post Grade News</span>
+                            </Link>
                             <Link
                                 href="/portal/calendar"
                                 class="flex flex-col items-center justify-center p-6 bg-slate-50 rounded-xl hover:bg-emerald-50 transition-colors group"
@@ -309,15 +362,16 @@ const formatWeekDate = (dateStr) => {
                                 </div>
                                 <span class="text-sm font-medium text-slate-700 group-hover:text-emerald-700 text-center">Lunch Menu</span>
                             </Link>
-                            <Link
+                            <a
                                 href="/news-events"
+                                target="_blank"
                                 class="flex flex-col items-center justify-center p-6 bg-slate-50 rounded-xl hover:bg-emerald-50 transition-colors group"
                             >
                                 <div class="p-3 bg-white rounded-full shadow-sm mb-3 group-hover:bg-emerald-100 transition-colors">
                                     <MegaphoneIcon class="w-6 h-6 text-slate-600 group-hover:text-emerald-600" />
                                 </div>
                                 <span class="text-sm font-medium text-slate-700 group-hover:text-emerald-700 text-center">News & Events</span>
-                            </Link>
+                            </a>
                         </div>
                     </div>
 
@@ -340,10 +394,10 @@ const formatWeekDate = (dateStr) => {
                                 <div class="flex items-start gap-4">
                                     <div class="flex-shrink-0 w-12 h-12 bg-emerald-50 rounded-lg flex flex-col items-center justify-center">
                                         <span class="text-xs font-semibold text-emerald-600 uppercase">
-                                            {{ new Date(event.event_start_date).toLocaleDateString('en-US', { month: 'short' }) }}
+                                            {{ new Date(event.event_start_date).toLocaleDateString('en-US', { month: 'short', timeZone: 'America/New_York' }) }}
                                         </span>
                                         <span class="text-lg font-bold text-emerald-700">
-                                            {{ new Date(event.event_start_date).getDate() }}
+                                            {{ new Date(new Date(event.event_start_date).toLocaleString('en-US', { timeZone: 'America/New_York' })).getDate() }}
                                         </span>
                                     </div>
                                     <div class="flex-1 min-w-0">
@@ -365,7 +419,96 @@ const formatWeekDate = (dateStr) => {
             </template>
 
             <!-- PARENT VIEW -->
-            <template v-else-if="previewRole === 'parent'">
+            <template v-else-if="showParentView">
+                <!-- Combined News Section: School-Wide + Grade-Specific -->
+                <div v-if="(recentAnnouncements && recentAnnouncements.length > 0) || (gradeNews && gradeNews.length > 0)" class="mb-8 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-slate-200 bg-gradient-to-r from-brand-50 to-emerald-50">
+                        <div class="flex items-center gap-3">
+                            <MegaphoneIcon class="w-5 h-5 text-brand-700" />
+                            <h2 class="text-lg font-serif font-semibold text-slate-900">News & Announcements</h2>
+                        </div>
+                    </div>
+                    <div class="divide-y divide-slate-100">
+                        <!-- School-Wide News from Admin -->
+                        <div
+                            v-for="announcement in recentAnnouncements"
+                            :key="'school-' + announcement.id"
+                            class="px-6 py-4 hover:bg-slate-50 transition-colors"
+                        >
+                            <div class="flex items-start gap-4">
+                                <div class="flex-shrink-0 w-12 h-12 bg-brand-100 rounded-lg flex flex-col items-center justify-center">
+                                    <span class="text-xs font-semibold text-brand-600 uppercase">
+                                        {{ new Date(announcement.published_at).toLocaleDateString('en-US', { month: 'short', timeZone: 'America/New_York' }) }}
+                                    </span>
+                                    <span class="text-lg font-bold text-brand-700">
+                                        {{ new Date(announcement.published_at).getDate() }}
+                                    </span>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <p class="text-sm font-semibold text-slate-900">{{ announcement.title }}</p>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-brand-100 text-brand-700">
+                                            School-Wide
+                                        </span>
+                                    </div>
+                                    <p class="text-sm text-slate-600 mt-1 line-clamp-2">
+                                        {{ announcement.content.replace(/<[^>]*>/g, '').substring(0, 200) }}{{ announcement.content.length > 200 ? '...' : '' }}
+                                    </p>
+                                    <div class="flex items-center gap-4 mt-2">
+                                        <p class="text-xs text-slate-500">
+                                            From Silver Academy
+                                        </p>
+                                        <Link 
+                                            :href="`/news/${announcement.slug}`" 
+                                            class="text-xs font-medium text-brand-600 hover:text-brand-700"
+                                        >
+                                            Read more →
+                                        </Link>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Grade-Specific News from Teachers -->
+                        <div
+                            v-for="news in gradeNews"
+                            :key="'grade-' + news.id"
+                            class="px-6 py-4 hover:bg-emerald-50/50 transition-colors"
+                        >
+                            <div class="flex items-start gap-4">
+                                <div class="flex-shrink-0 w-12 h-12 bg-emerald-100 rounded-lg flex flex-col items-center justify-center">
+                                    <span class="text-xs font-semibold text-emerald-600 uppercase">
+                                        {{ new Date(news.published_at).toLocaleDateString('en-US', { month: 'short', timeZone: 'America/New_York' }) }}
+                                    </span>
+                                    <span class="text-lg font-bold text-emerald-700">
+                                        {{ new Date(news.published_at).getDate() }}
+                                    </span>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <p class="text-sm font-semibold text-slate-900">{{ news.title }}</p>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700">
+                                            {{ news.target_grade?.name }}
+                                        </span>
+                                    </div>
+                                    <p class="text-sm text-slate-600 mt-1 line-clamp-2">
+                                        {{ news.content.replace(/<[^>]*>/g, '').substring(0, 200) }}{{ news.content.length > 200 ? '...' : '' }}
+                                    </p>
+                                    <p class="text-xs text-slate-500 mt-2">
+                                        From {{ news.author?.name || 'Teacher' }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Empty state if somehow both are empty but condition passed -->
+                    <div v-if="(!recentAnnouncements || recentAnnouncements.length === 0) && (!gradeNews || gradeNews.length === 0)" class="p-6 text-center">
+                        <NewspaperIcon class="mx-auto h-12 w-12 text-slate-300" />
+                        <p class="mt-2 text-sm text-slate-500">No news at this time.</p>
+                    </div>
+                </div>
+
                 <div class="grid lg:grid-cols-2 gap-8">
                     <!-- This Week's Lunch Menus -->
                     <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
@@ -422,10 +565,10 @@ const formatWeekDate = (dateStr) => {
                                 <div class="flex items-start gap-4">
                                     <div class="flex-shrink-0 w-12 h-12 bg-brand-50 rounded-lg flex flex-col items-center justify-center">
                                         <span class="text-xs font-semibold text-brand-600 uppercase">
-                                            {{ new Date(event.event_start_date).toLocaleDateString('en-US', { month: 'short' }) }}
+                                            {{ new Date(event.event_start_date).toLocaleDateString('en-US', { month: 'short', timeZone: 'America/New_York' }) }}
                                         </span>
                                         <span class="text-lg font-bold text-brand-700">
-                                            {{ new Date(event.event_start_date).getDate() }}
+                                            {{ new Date(new Date(event.event_start_date).toLocaleString('en-US', { timeZone: 'America/New_York' })).getDate() }}
                                         </span>
                                     </div>
                                     <div class="flex-1 min-w-0">
@@ -445,28 +588,7 @@ const formatWeekDate = (dateStr) => {
                     </div>
                 </div>
 
-                <!-- Recent Announcements -->
-                <div v-if="recentAnnouncements && recentAnnouncements.length > 0" class="bg-gradient-to-r from-brand-600 to-brand-700 rounded-xl p-6 text-white shadow-lg">
-                    <div class="flex items-start gap-4">
-                        <div class="p-2 bg-white/10 rounded-lg backdrop-blur-sm">
-                            <MegaphoneIcon class="w-6 h-6 text-white" />
-                        </div>
-                        <div class="flex-1">
-                            <h2 class="text-lg font-serif font-semibold mb-2">Latest Announcement</h2>
-                            <p class="text-brand-100 font-medium">{{ recentAnnouncements[0].title }}</p>
-                            <p class="text-brand-200 text-sm mt-2 line-clamp-2">
-                                {{ recentAnnouncements[0].content.replace(/<[^>]*>/g, '').substring(0, 200) }}...
-                            </p>
-                            <Link 
-                                :href="`/news/${recentAnnouncements[0].slug}`" 
-                                class="inline-block mt-4 text-sm font-medium text-white hover:text-brand-100"
-                            >
-                                Read more →
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-            </template>
+                            </template>
         </div>
     </PortalLayout>
 </template>

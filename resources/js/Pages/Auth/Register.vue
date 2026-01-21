@@ -1,119 +1,42 @@
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
-import { UserIcon, AcademicCapIcon } from '@heroicons/vue/24/outline';
-
-const props = defineProps({
-    staffEmailDomain: {
-        type: String,
-        default: 'silveracademypa.org',
-    },
-});
+import { UserGroupIcon } from '@heroicons/vue/24/outline';
 
 const form = useForm({
     name: '',
     email: '',
-    password: '',
-    password_confirmation: '',
-    account_type: 'parent', // Default to parent
+    is_parent_confirmed: false,
+    terms_accepted: false,
 });
 
 const submit = () => {
-    form.post('/register', {
-        onFinish: () => form.reset('password', 'password_confirmation'),
-    });
+    form.post('/register');
 };
 </script>
 
 <template>
-    <Head title="Register" />
+    <Head title="Parent Registration" />
 
     <GuestLayout>
         <div class="text-center mb-8">
-            <h1 class="text-2xl font-bold text-slate-900">Create your account</h1>
-            <p class="text-slate-600 mt-2">Join the Silver Academy portal</p>
+            <div class="mx-auto w-16 h-16 bg-brand-100 rounded-full flex items-center justify-center mb-4">
+                <UserGroupIcon class="w-8 h-8 text-brand-600" />
+            </div>
+            <h1 class="text-2xl font-bold text-slate-900">Parent Registration</h1>
+            <p class="text-slate-600 mt-2">Register for the Silver Academy Family Portal</p>
+        </div>
+
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <p class="text-sm text-blue-800">
+                <strong>Note:</strong> This registration is for parents only. Your account will be reviewed by school administration before you can access the portal. Once approved, you will receive an email with your login credentials.
+            </p>
         </div>
 
         <form @submit.prevent="submit" class="space-y-5">
-            <!-- Account Type Selection -->
-            <div>
-                <label class="block text-sm font-medium text-slate-700 mb-3">
-                    I am registering as:
-                </label>
-                <div class="grid grid-cols-2 gap-3">
-                    <label 
-                        :class="[
-                            'relative flex flex-col items-center p-4 border-2 rounded-xl cursor-pointer transition-all',
-                            form.account_type === 'parent' 
-                                ? 'border-brand-500 bg-brand-50 ring-2 ring-brand-500/20' 
-                                : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
-                        ]"
-                    >
-                        <input 
-                            type="radio" 
-                            v-model="form.account_type" 
-                            value="parent" 
-                            class="sr-only" 
-                        />
-                        <UserIcon 
-                            :class="[
-                                'w-8 h-8 mb-2',
-                                form.account_type === 'parent' ? 'text-brand-600' : 'text-slate-400'
-                            ]" 
-                        />
-                        <span 
-                            :class="[
-                                'font-semibold text-sm',
-                                form.account_type === 'parent' ? 'text-brand-700' : 'text-slate-700'
-                            ]"
-                        >
-                            Parent
-                        </span>
-                        <span class="text-xs text-slate-500 mt-1 text-center">
-                            Access your child's info
-                        </span>
-                    </label>
-                    <label 
-                        :class="[
-                            'relative flex flex-col items-center p-4 border-2 rounded-xl cursor-pointer transition-all',
-                            form.account_type === 'staff' 
-                                ? 'border-brand-500 bg-brand-50 ring-2 ring-brand-500/20' 
-                                : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
-                        ]"
-                    >
-                        <input 
-                            type="radio" 
-                            v-model="form.account_type" 
-                            value="staff" 
-                            class="sr-only" 
-                        />
-                        <AcademicCapIcon 
-                            :class="[
-                                'w-8 h-8 mb-2',
-                                form.account_type === 'staff' ? 'text-brand-600' : 'text-slate-400'
-                            ]" 
-                        />
-                        <span 
-                            :class="[
-                                'font-semibold text-sm',
-                                form.account_type === 'staff' ? 'text-brand-700' : 'text-slate-700'
-                            ]"
-                        >
-                            Staff Member
-                        </span>
-                        <span class="text-xs text-slate-500 mt-1 text-center">
-                            School email required
-                        </span>
-                    </label>
-                </div>
-                <p v-if="form.account_type === 'staff'" class="mt-2 text-xs text-slate-500">
-                    Staff registration requires a @{{ staffEmailDomain }} email address.
-                </p>
-            </div>
-
             <div>
                 <label for="name" class="block text-sm font-medium text-slate-700 mb-2">
-                    Full name
+                    Full Name
                 </label>
                 <input
                     id="name"
@@ -124,7 +47,7 @@ const submit = () => {
                     autocomplete="name"
                     class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 px-4 py-3 border"
                     :class="{ 'border-red-500': form.errors.name }"
-                    placeholder="John Doe"
+                    placeholder="Your full name"
                 />
                 <p v-if="form.errors.name" class="mt-2 text-sm text-red-600">
                     {{ form.errors.name }}
@@ -133,68 +56,74 @@ const submit = () => {
 
             <div>
                 <label for="email" class="block text-sm font-medium text-slate-700 mb-2">
-                    Email address
+                    Email Address
                 </label>
                 <input
                     id="email"
                     v-model="form.email"
                     type="email"
                     required
-                    autocomplete="username"
+                    autocomplete="email"
                     class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 px-4 py-3 border"
                     :class="{ 'border-red-500': form.errors.email }"
-                    :placeholder="form.account_type === 'staff' ? `you@${staffEmailDomain}` : 'you@example.com'"
+                    placeholder="you@example.com"
                 />
                 <p v-if="form.errors.email" class="mt-2 text-sm text-red-600">
                     {{ form.errors.email }}
                 </p>
             </div>
 
-            <div>
-                <label for="password" class="block text-sm font-medium text-slate-700 mb-2">
-                    Password
-                </label>
-                <input
-                    id="password"
-                    v-model="form.password"
-                    type="password"
-                    required
-                    autocomplete="new-password"
-                    class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 px-4 py-3 border"
-                    :class="{ 'border-red-500': form.errors.password }"
-                    placeholder="••••••••"
-                />
-                <p v-if="form.errors.password" class="mt-2 text-sm text-red-600">
-                    {{ form.errors.password }}
-                </p>
-            </div>
+            <!-- Parent Confirmation Checkbox -->
+            <div class="space-y-4">
+                <div class="flex items-start">
+                    <div class="flex items-center h-5">
+                        <input
+                            id="is_parent_confirmed"
+                            v-model="form.is_parent_confirmed"
+                            type="checkbox"
+                            class="w-4 h-4 text-brand-600 border-slate-300 rounded focus:ring-brand-500"
+                            :class="{ 'border-red-500': form.errors.is_parent_confirmed }"
+                        />
+                    </div>
+                    <div class="ml-3">
+                        <label for="is_parent_confirmed" class="text-sm text-slate-700">
+                            I hereby confirm that I am a parent or legal guardian of a student at Silver Academy.
+                        </label>
+                        <p v-if="form.errors.is_parent_confirmed" class="mt-1 text-sm text-red-600">
+                            {{ form.errors.is_parent_confirmed }}
+                        </p>
+                    </div>
+                </div>
 
-            <div>
-                <label for="password_confirmation" class="block text-sm font-medium text-slate-700 mb-2">
-                    Confirm password
-                </label>
-                <input
-                    id="password_confirmation"
-                    v-model="form.password_confirmation"
-                    type="password"
-                    required
-                    autocomplete="new-password"
-                    class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 px-4 py-3 border"
-                    :class="{ 'border-red-500': form.errors.password_confirmation }"
-                    placeholder="••••••••"
-                />
-                <p v-if="form.errors.password_confirmation" class="mt-2 text-sm text-red-600">
-                    {{ form.errors.password_confirmation }}
-                </p>
+                <!-- Terms Checkbox -->
+                <div class="flex items-start">
+                    <div class="flex items-center h-5">
+                        <input
+                            id="terms_accepted"
+                            v-model="form.terms_accepted"
+                            type="checkbox"
+                            class="w-4 h-4 text-brand-600 border-slate-300 rounded focus:ring-brand-500"
+                            :class="{ 'border-red-500': form.errors.terms_accepted }"
+                        />
+                    </div>
+                    <div class="ml-3">
+                        <label for="terms_accepted" class="text-sm text-slate-700">
+                            I agree to adhere to the terms and conditions of using the Silver Academy website.
+                        </label>
+                        <p v-if="form.errors.terms_accepted" class="mt-1 text-sm text-red-600">
+                            {{ form.errors.terms_accepted }}
+                        </p>
+                    </div>
+                </div>
             </div>
 
             <button
                 type="submit"
-                :disabled="form.processing"
-                class="w-full rounded-lg bg-brand-600 px-6 py-4 text-base font-semibold text-white shadow-sm hover:bg-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 transition-colors disabled:opacity-50"
+                :disabled="form.processing || !form.is_parent_confirmed || !form.terms_accepted"
+                class="w-full rounded-lg bg-brand-600 px-6 py-4 text-base font-semibold text-white shadow-sm hover:bg-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-                <span v-if="!form.processing">Create account</span>
-                <span v-else>Creating account...</span>
+                <span v-if="!form.processing">Submit Registration</span>
+                <span v-else>Submitting...</span>
             </button>
         </form>
 
@@ -204,6 +133,12 @@ const submit = () => {
                 <Link href="/login" class="font-medium text-brand-600 hover:text-brand-500">
                     Sign in
                 </Link>
+            </p>
+        </div>
+
+        <div class="mt-4 text-center">
+            <p class="text-xs text-slate-500">
+                Staff members are added to the system by school administration. Please contact the school office if you are a staff member needing access.
             </p>
         </div>
     </GuestLayout>

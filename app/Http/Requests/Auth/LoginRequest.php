@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -40,6 +41,34 @@ class LoginRequest extends FormRequest
     public function authenticate(): void
     {
         $this->ensureIsNotRateLimited();
+
+        // Check if user exists and is approved before attempting auth
+        $user = User::where('email', $this->email)->first();
+
+        if ($user) {
+            // Admins and super admins always bypass approval checks
+            $isAdmin = in_array($user->role, [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN]);
+
+            if (!$isAdmin) {
+                // Check if user has no password (awaiting approval)
+                if (empty($user->password)) {
+                    RateLimiter::hit($this->throttleKey());
+
+                    throw ValidationException::withMessages([
+                        'email' => 'Your account is pending approval. You will receive an email with your login credentials once approved.',
+                    ]);
+                }
+
+                // Check if user is not approved
+                if (!$user->isApproved()) {
+                    RateLimiter::hit($this->throttleKey());
+
+                    throw ValidationException::withMessages([
+                        'email' => 'Your account is pending approval. Please wait for an administrator to approve your registration.',
+                    ]);
+                }
+            }
+        }
 
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());

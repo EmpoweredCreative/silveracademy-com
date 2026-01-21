@@ -1,40 +1,35 @@
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import PortalLayout from '@/Layouts/PortalLayout.vue';
-import { computed } from 'vue';
 import { 
     ChevronLeftIcon,
     AcademicCapIcon,
     ShieldCheckIcon,
+    InformationCircleIcon,
 } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
-    classrooms: Array,
+    grades: Array,
     staffEmailDomain: String,
 });
 
 const form = useForm({
     name: '',
     email: '',
-    password: '',
-    password_confirmation: '',
     role: 'teacher',
-    classroom_ids: [],
-    send_welcome_email: true,
+    grade_ids: [],
 });
 
 const submit = () => {
     form.post('/portal/admin/staff');
 };
 
-const isTeacher = computed(() => form.role === 'teacher');
-
-const toggleClassroom = (classroomId) => {
-    const index = form.classroom_ids.indexOf(classroomId);
+const toggleGrade = (gradeId) => {
+    const index = form.grade_ids.indexOf(gradeId);
     if (index === -1) {
-        form.classroom_ids.push(classroomId);
+        form.grade_ids.push(gradeId);
     } else {
-        form.classroom_ids.splice(index, 1);
+        form.grade_ids.splice(index, 1);
     }
 };
 </script>
@@ -55,6 +50,19 @@ const toggleClassroom = (classroomId) => {
                     <ChevronLeftIcon class="w-4 h-4 mr-1" />
                     Back to Staff Management
                 </Link>
+            </div>
+
+            <!-- Info Box -->
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div class="flex items-start gap-3">
+                    <InformationCircleIcon class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                        <p class="text-sm text-blue-800">
+                            <strong>A welcome email will be sent automatically.</strong> When you create this staff member, 
+                            a secure password will be generated and sent to their email address with login instructions.
+                        </p>
+                    </div>
+                </div>
             </div>
 
             <!-- Form -->
@@ -94,7 +102,7 @@ const toggleClassroom = (classroomId) => {
                                 Staff Member
                             </span>
                             <span class="text-xs text-slate-500 mt-1 text-center">
-                                Can manage assigned classrooms
+                                Can manage assigned grades
                             </span>
                         </label>
                         <label 
@@ -166,73 +174,28 @@ const toggleClassroom = (classroomId) => {
                     <p v-if="form.errors.email" class="mt-1 text-sm text-red-600">{{ form.errors.email }}</p>
                 </div>
 
-                <!-- Password -->
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label for="password" class="block text-sm font-medium text-slate-700 mb-1">
-                            Password <span class="text-red-500">*</span>
-                        </label>
-                        <input
-                            id="password"
-                            v-model="form.password"
-                            type="password"
-                            required
-                            class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
-                            :class="{ 'border-red-500': form.errors.password }"
-                            placeholder="••••••••"
-                        />
-                        <p v-if="form.errors.password" class="mt-1 text-sm text-red-600">{{ form.errors.password }}</p>
-                    </div>
-                    <div>
-                        <label for="password_confirmation" class="block text-sm font-medium text-slate-700 mb-1">
-                            Confirm Password <span class="text-red-500">*</span>
-                        </label>
-                        <input
-                            id="password_confirmation"
-                            v-model="form.password_confirmation"
-                            type="password"
-                            required
-                            class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
-                            placeholder="••••••••"
-                        />
-                    </div>
-                </div>
-
-                <!-- Classroom Assignment (for teachers) -->
-                <div v-if="isTeacher">
+                <!-- Grade Assignment -->
+                <div>
                     <label class="block text-sm font-medium text-slate-700 mb-2">
-                        Assign to Classrooms
+                        Assign to Grade Levels
                     </label>
-                    <div v-if="classrooms.length > 0" class="border border-slate-200 rounded-lg divide-y divide-slate-200 max-h-64 overflow-y-auto">
+                    <div v-if="grades && grades.length > 0" class="border border-slate-200 rounded-lg divide-y divide-slate-200 max-h-64 overflow-y-auto">
                         <label 
-                            v-for="classroom in classrooms" 
-                            :key="classroom.id"
+                            v-for="grade in grades" 
+                            :key="grade.id"
                             class="flex items-center px-4 py-3 hover:bg-slate-50 cursor-pointer"
                         >
                             <input
                                 type="checkbox"
-                                :checked="form.classroom_ids.includes(classroom.id)"
-                                @change="toggleClassroom(classroom.id)"
+                                :checked="form.grade_ids.includes(grade.id)"
+                                @change="toggleGrade(grade.id)"
                                 class="h-4 w-4 text-brand-600 focus:ring-brand-500 border-slate-300 rounded"
                             />
-                            <span class="ml-3 text-sm text-slate-700">{{ classroom.display_name }}</span>
+                            <span class="ml-3 text-sm text-slate-700">{{ grade.name }}</span>
                         </label>
                     </div>
-                    <p v-else class="text-sm text-slate-500 italic">No classrooms available. Create classrooms first.</p>
-                    <p class="mt-2 text-xs text-slate-500">Select the classrooms this staff member will manage.</p>
-                </div>
-
-                <!-- Send Welcome Email -->
-                <div class="flex items-center">
-                    <input
-                        id="send_welcome_email"
-                        v-model="form.send_welcome_email"
-                        type="checkbox"
-                        class="h-4 w-4 text-brand-600 focus:ring-brand-500 border-slate-300 rounded"
-                    />
-                    <label for="send_welcome_email" class="ml-2 text-sm text-slate-700">
-                        Send welcome email with verification link
-                    </label>
+                    <p v-else class="text-sm text-slate-500 italic">No grade levels available.</p>
+                    <p class="mt-2 text-xs text-slate-500">Select the grade levels this staff member will teach or manage.</p>
                 </div>
 
                 <!-- Submit -->
@@ -256,4 +219,3 @@ const toggleClassroom = (classroomId) => {
         </div>
     </PortalLayout>
 </template>
-

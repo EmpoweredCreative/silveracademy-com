@@ -1,11 +1,19 @@
 <script setup>
 import { Head, useForm } from '@inertiajs/vue3';
+import { ref, onMounted } from 'vue';
 import MarketingLayout from '@/Layouts/MarketingLayout.vue';
 import { 
     EnvelopeIcon, 
     PhoneIcon, 
     MapPinIcon 
 } from '@heroicons/vue/24/outline';
+
+const formTimestamp = ref(null);
+
+onMounted(() => {
+    // Set timestamp when form is loaded
+    formTimestamp.value = Math.floor(Date.now() / 1000);
+});
 
 const form = useForm({
     parent_name: '',
@@ -18,6 +26,8 @@ const form = useForm({
     schedule_tour: '',
     message: '',
     subscribe: false,
+    form_timestamp: null,
+    website_url: '', // Honeypot field - should remain empty
 });
 
 const gradeOptions = [
@@ -59,10 +69,15 @@ const howHeardOptions = [
 ];
 
 const submit = () => {
+    // Set the timestamp before submitting
+    form.form_timestamp = formTimestamp.value;
+    
     form.post('/contact', {
         preserveScroll: true,
         onSuccess: () => {
             form.reset();
+            // Reset timestamp for potential resubmission
+            formTimestamp.value = Math.floor(Date.now() / 1000);
         },
     });
 };
@@ -260,6 +275,19 @@ const submit = () => {
                                     />
                                     <span class="text-slate-700 text-sm">Yes, please add me to the email list to receive occasional updates from The Silver Academy.</span>
                                 </label>
+                            </div>
+
+                            <!-- Honeypot field - hidden from users but visible to bots -->
+                            <div style="position: absolute; left: -9999px; opacity: 0; pointer-events: none;" aria-hidden="true">
+                                <label for="website_url">Website URL (leave blank)</label>
+                                <input
+                                    id="website_url"
+                                    v-model="form.website_url"
+                                    type="text"
+                                    name="website_url"
+                                    tabindex="-1"
+                                    autocomplete="off"
+                                />
                             </div>
 
                             <button

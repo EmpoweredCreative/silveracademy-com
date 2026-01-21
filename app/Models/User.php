@@ -3,11 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -34,6 +38,10 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'password',
         'role',
+        'avatar_url',
+        'is_approved',
+        'approved_at',
+        'approved_by',
     ];
 
     /**
@@ -56,11 +64,84 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_approved' => 'boolean',
+            'approved_at' => 'datetime',
         ];
     }
 
     /**
+     * Get the admin who approved this user.
+     */
+    public function approvedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    /**
+     * Check if user is approved.
+     */
+    public function isApproved(): bool
+    {
+        return (bool) $this->is_approved;
+    }
+
+    /**
+     * Approve this user and generate a password.
+     *
+     * @param User $approver The admin user approving
+     * @return string The generated plain text password
+     */
+    public function approve(User $approver): string
+    {
+        // Generate a secure random password
+        $password = Str::password(12);
+
+        $this->update([
+            'is_approved' => true,
+            'approved_at' => now(),
+            'approved_by' => $approver->id,
+            'password' => Hash::make($password),
+        ]);
+
+        return $password;
+    }
+
+    /**
+     * Reject this user (delete the account).
+     */
+    public function reject(): void
+    {
+        $this->delete();
+    }
+
+    /**
+     * Scope to only pending (unapproved) users.
+     */
+    public function scopePendingApproval(Builder $query): Builder
+    {
+        return $query->where('is_approved', false);
+    }
+
+    /**
+     * Scope to only approved users.
+     */
+    public function scopeApproved(Builder $query): Builder
+    {
+        return $query->where('is_approved', true);
+    }
+
+    /**
+     * Get the grade levels this teacher is assigned to.
+     */
+    public function grades(): BelongsToMany
+    {
+        return $this->belongsToMany(Grade::class, 'grade_teacher', 'teacher_id', 'grade_id')
+            ->withTimestamps();
+    }
+
+    /**
      * Get the classrooms this teacher is assigned to.
+     * @deprecated Use grades() instead - classrooms are being removed
      */
     public function classrooms(): HasMany
     {
@@ -141,7 +222,24 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Check if user can manage a specific grade.
+     */
+    public function canManageGrade(Grade $grade): bool
+    {
+        if ($this->isAdmin()) {
+            return true;
+        }
+
+        if ($this->isTeacher()) {
+            return $this->grades->contains($grade);
+        }
+
+        return false;
+    }
+
+    /**
      * Check if user can manage a specific classroom.
+     * @deprecated Use canManageGrade() instead - classrooms are being removed
      */
     public function canManageClassroom(Classroom $classroom): bool
     {

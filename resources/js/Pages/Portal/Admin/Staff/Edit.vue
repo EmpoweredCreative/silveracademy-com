@@ -10,7 +10,7 @@ import {
 
 const props = defineProps({
     staff: Object,
-    classrooms: Array,
+    grades: Array,
 });
 
 const form = useForm({
@@ -19,7 +19,7 @@ const form = useForm({
     password: '',
     password_confirmation: '',
     role: props.staff.role === 'super_admin' ? 'admin' : props.staff.role,
-    classroom_ids: props.staff.classroom_ids || [],
+    grade_ids: props.staff.grade_ids || [],
 });
 
 const submit = () => {
@@ -29,12 +29,12 @@ const submit = () => {
 const isTeacher = computed(() => form.role === 'teacher');
 const isSuperAdmin = computed(() => props.staff.role === 'super_admin');
 
-const toggleClassroom = (classroomId) => {
-    const index = form.classroom_ids.indexOf(classroomId);
+const toggleGrade = (gradeId) => {
+    const index = form.grade_ids.indexOf(gradeId);
     if (index === -1) {
-        form.classroom_ids.push(classroomId);
+        form.grade_ids.push(gradeId);
     } else {
-        form.classroom_ids.splice(index, 1);
+        form.grade_ids.splice(index, 1);
     }
 };
 </script>
@@ -101,7 +101,7 @@ const toggleClassroom = (classroomId) => {
                                 Staff Member
                             </span>
                             <span class="text-xs text-slate-500 mt-1 text-center">
-                                Can manage assigned classrooms
+                                Can manage assigned grades
                             </span>
                         </label>
                         <label 
@@ -207,28 +207,28 @@ const toggleClassroom = (classroomId) => {
                     </div>
                 </div>
 
-                <!-- Classroom Assignment (for teachers) -->
-                <div v-if="isTeacher && !isSuperAdmin" class="border-t border-slate-200 pt-6">
+                <!-- Grade Assignment -->
+                <div class="border-t border-slate-200 pt-6">
                     <label class="block text-sm font-medium text-slate-700 mb-2">
-                        Assign to Classrooms
+                        Assign to Grade Levels
                     </label>
-                    <div v-if="classrooms.length > 0" class="border border-slate-200 rounded-lg divide-y divide-slate-200 max-h-64 overflow-y-auto">
+                    <div v-if="grades.length > 0" class="border border-slate-200 rounded-lg divide-y divide-slate-200 max-h-64 overflow-y-auto">
                         <label 
-                            v-for="classroom in classrooms" 
-                            :key="classroom.id"
+                            v-for="grade in grades" 
+                            :key="grade.id"
                             class="flex items-center px-4 py-3 hover:bg-slate-50 cursor-pointer"
                         >
                             <input
                                 type="checkbox"
-                                :checked="form.classroom_ids.includes(classroom.id)"
-                                @change="toggleClassroom(classroom.id)"
+                                :checked="form.grade_ids.includes(grade.id)"
+                                @change="toggleGrade(grade.id)"
                                 class="h-4 w-4 text-brand-600 focus:ring-brand-500 border-slate-300 rounded"
                             />
-                            <span class="ml-3 text-sm text-slate-700">{{ classroom.display_name }}</span>
+                            <span class="ml-3 text-sm text-slate-700">{{ grade.name }}</span>
                         </label>
                     </div>
-                    <p v-else class="text-sm text-slate-500 italic">No classrooms available.</p>
-                    <p class="mt-2 text-xs text-slate-500">Select the classrooms this staff member will manage.</p>
+                    <p v-else class="text-sm text-slate-500 italic">No grade levels available.</p>
+                    <p class="mt-2 text-xs text-slate-500">Select the grade levels this staff member teaches or manages.</p>
                 </div>
 
                 <!-- Submit -->
@@ -252,4 +252,3 @@ const toggleClassroom = (classroomId) => {
         </div>
     </PortalLayout>
 </template>
-
