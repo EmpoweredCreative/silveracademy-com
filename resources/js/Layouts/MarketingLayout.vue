@@ -377,6 +377,20 @@ const socialLinks = [
                     </div>
                 </div>
             </div>
+            
+            <!-- Copyright Bar -->
+            <div class="bg-white border-t border-slate-200">
+                <div class="mx-auto max-w-7xl px-6 py-4 lg:px-8">
+                    <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                        <p class="text-xs text-slate-600">
+                            © 2026 The Silver Academy
+                        </p>
+                        <p class="text-xs text-slate-600">
+                            Powered by <a href="https://www.empoweredcreative.co" target="_blank" rel="noopener noreferrer" class="text-brand-600 hover:text-brand-700 transition-colors font-medium">Empowered Creative</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
         </footer>
     </div>
 </template>
