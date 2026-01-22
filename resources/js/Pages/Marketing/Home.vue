@@ -117,7 +117,7 @@ const stats = [
 
     <MarketingLayout>
         <!-- Hero Section -->
-        <section class="relative overflow-hidden bg-slate-50">
+        <section class="relative overflow-hidden" style="background-color: #f0f5fa;">
             <!-- Hero Video Background -->
             <div class="absolute inset-0">
                 <video 
@@ -129,27 +129,26 @@ const stats = [
                 >
                     <source src="/vid/Broll Header.mp4" type="video/mp4">
                 </video>
-                <!-- White Overlay for Text Readability -->
-                <div class="absolute inset-0 bg-white/70 z-10"></div>
-                <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/90 z-10"></div>
+                <!-- Overlay for Text Readability -->
+                <div class="absolute inset-0 bg-[#f0f5fa]/90 z-10"></div>
             </div>
             
             <div class="relative z-20 mx-auto max-w-7xl px-6 py-20 sm:py-28 lg:px-8 lg:py-36">
                 <div class="text-center max-w-4xl mx-auto">
                     <!-- Label -->
                     <div class="mb-6">
-                        <span class="inline-block px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-accent-600 bg-accent-100 rounded-full">
+                        <span class="inline-block px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-brand-700 bg-brand-100 rounded-full">
                             Welcome to The Silver Academy
                         </span>
                     </div>
                     
                     <!-- Main Headline - Serif Font -->
-                    <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl text-slate-600 leading-tight tracking-tight font-bold">
+                    <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl text-slate-800 leading-tight tracking-tight font-bold">
                         Igniting a Lifelong Love of Learning, Jewish Identity, and Purposeful Living
                     </h1>
                     
                     <!-- Subheadline -->
-                    <p class="mt-8 text-lg sm:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
+                    <p class="mt-8 text-lg sm:text-xl text-slate-700 max-w-3xl mx-auto leading-relaxed">
                         Rooted in rigorous academics and Jewish values, our small-class learning environment 
                         empowers Pre-K through 8th graders to grow with confidence, curiosity, and character 
                         here in Central Pennsylvania.
