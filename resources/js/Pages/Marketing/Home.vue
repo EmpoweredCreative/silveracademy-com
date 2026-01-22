@@ -143,12 +143,12 @@ const stats = [
                     </div>
                     
                     <!-- Main Headline - Serif Font -->
-                    <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl text-slate-800 leading-tight tracking-tight font-bold">
+                    <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl text-slate-600 leading-tight tracking-tight font-bold">
                         Igniting a Lifelong Love of Learning, Jewish Identity, and Purposeful Living
                     </h1>
                     
                     <!-- Subheadline -->
-                    <p class="mt-8 text-lg sm:text-xl text-slate-700 max-w-3xl mx-auto leading-relaxed">
+                    <p class="mt-8 text-lg sm:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
                         Rooted in rigorous academics and Jewish values, our small-class learning environment 
                         empowers Pre-K through 8th graders to grow with confidence, curiosity, and character 
                         here in Central Pennsylvania.
