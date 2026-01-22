@@ -6,26 +6,10 @@ import MarketingLayout from '@/Layouts/MarketingLayout.vue';
 const activePanel = ref(5); // Default to Family Partnership (index 5)
 const activeGrade = ref(0); // Default to Ganeinu (index 0)
 const isHoveringGrades = ref(false);
-const storyVideo = ref(null);
-const isVideoPlaying = ref(false);
+const isVideoLoaded = ref(false);
 
-const playVideo = () => {
-    if (storyVideo.value) {
-        storyVideo.value.play();
-        isVideoPlaying.value = true;
-    }
-};
-
-const toggleVideo = () => {
-    if (storyVideo.value) {
-        if (storyVideo.value.paused) {
-            storyVideo.value.play();
-            isVideoPlaying.value = true;
-        } else {
-            storyVideo.value.pause();
-            isVideoPlaying.value = false;
-        }
-    }
+const loadVideo = () => {
+    isVideoLoaded.value = true;
 };
 
 const panels = [
@@ -196,35 +180,41 @@ const stats = [
         <section class="w-full bg-white">
             <div class="mx-auto max-w-7xl px-6 lg:px-8 py-12">
                 <div class="aspect-video relative overflow-hidden group rounded-2xl shadow-xl">
-                    <video 
-                        ref="storyVideo"
-                        class="w-full h-full object-cover"
-                        poster="/vid/Silver Academy Full Video V3-poster.jpg"
-                        preload="metadata"
-                        @click="toggleVideo"
-                    >
-                        <source src="/vid/Silver Academy Full Video V3.mp4" type="video/mp4">
-                    </video>
-                    <!-- Black Overlay for Text Readability -->
-                    <div 
-                        v-if="!isVideoPlaying"
-                        class="absolute inset-0 bg-black/50 z-0"
-                    ></div>
-                    <div 
-                        v-if="!isVideoPlaying"
-                        class="absolute inset-0 flex items-center justify-center cursor-pointer z-10"
-                        @click="playVideo"
-                    >
-                        <div class="text-center">
-                            <div class="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform duration-300 border-2 border-white/50">
-                                <svg class="w-10 h-10 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M8 5v14l11-7z" />
-                                </svg>
+                    <!-- YouTube iframe (loaded on click) -->
+                    <iframe
+                        v-if="isVideoLoaded"
+                        class="w-full h-full"
+                        src="https://www.youtube.com/embed/cZ_1tVrVBZk?rel=0&modestbranding=1&autoplay=1"
+                        title="Watch Our Story - Silver Academy"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowfullscreen
+                    ></iframe>
+                    
+                    <!-- Poster image with overlay (shown before click) -->
+                    <template v-else>
+                        <img 
+                            src="/vid/Silver Academy Full Video V3-poster.jpg" 
+                            alt="Watch Our Story"
+                            class="w-full h-full object-cover"
+                        />
+                        <!-- Black Overlay for Text Readability -->
+                        <div class="absolute inset-0 bg-black/50 z-0"></div>
+                        <div 
+                            class="absolute inset-0 flex items-center justify-center cursor-pointer z-10"
+                            @click="loadVideo"
+                        >
+                            <div class="text-center">
+                                <div class="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform duration-300 border-2 border-white/50">
+                                    <svg class="w-10 h-10 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z" />
+                                    </svg>
+                                </div>
+                                <h3 class="text-white text-xl font-semibold tracking-wider uppercase drop-shadow-lg">Watch Our Story</h3>
+                                <p class="text-white/90 mt-2 font-serif text-lg drop-shadow-md">Life at Silver Academy</p>
                             </div>
-                            <h3 class="text-white text-xl font-semibold tracking-wider uppercase drop-shadow-lg">Watch Our Story</h3>
-                            <p class="text-white/90 mt-2 font-serif text-lg drop-shadow-md">Life at Silver Academy</p>
                         </div>
-                    </div>
+                    </template>
                 </div>
             </div>
         </section>
