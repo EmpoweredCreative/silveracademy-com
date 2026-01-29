@@ -29,7 +29,12 @@ function execCommand(cmd, value = null) {
 
 function syncToModel() {
     if (!editorRef.value) return;
-    const html = editorRef.value.innerHTML;
+    let html = editorRef.value.innerHTML;
+    // Treat effectively empty content as empty string
+    const textContent = editorRef.value.textContent?.trim() || '';
+    if (!textContent && !html.includes('<img')) {
+        html = '';
+    }
     if (html !== props.modelValue) {
         emit('update:modelValue', html);
     }
@@ -42,6 +47,11 @@ function handleInput() {
 function handlePaste(e) {
     // Allow default paste; sync after a tick so content is in the editor
     setTimeout(syncToModel, 0);
+}
+
+function handleBlur() {
+    // Ensure content is synced when focus leaves the editor
+    syncToModel();
 }
 
 function addLink() {
@@ -214,6 +224,7 @@ onBeforeUnmount(() => {
             :data-placeholder="placeholder"
             @input="handleInput"
             @paste="handlePaste"
+            @blur="handleBlur"
         />
     </div>
 </template>
