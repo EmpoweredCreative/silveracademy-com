@@ -53,3 +53,12 @@
 .prose ul.list-square {
     list-style-type: square;
 }
+
+/* Link styles for prose content */
+.prose a {
+    color: var(--color-brand-700);
+    text-decoration: underline;
+}
+.prose a:hover {
+    color: var(--color-brand-600);
+}
