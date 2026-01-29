@@ -47,9 +47,14 @@ const formatEventDate = (startDate, endDate) => {
 
 const stripHtml = (html) => {
     if (!html) return '';
-    const div = document.createElement('div');
-    div.innerHTML = html;
-    return div.textContent || div.innerText || '';
+    // Replace block-level tags with spaces to prevent words from running together
+    let text = html
+        .replace(/<\/?(p|div|br|li|ul|ol|h[1-6])[^>]*>/gi, ' ')
+        .replace(/<[^>]+>/g, '') // Remove remaining tags
+        .replace(/&nbsp;/g, ' ')
+        .replace(/\s+/g, ' ') // Collapse multiple spaces
+        .trim();
+    return text;
 };
 
 const getExcerpt = (content, length = 150) => {
@@ -238,14 +243,9 @@ const getExcerpt = (content, length = 150) => {
                                             <p class="text-slate-600 text-sm mb-4">
                                                 {{ getExcerpt(event.content, 200) }}
                                             </p>
-                                            <div class="flex items-center justify-between">
-                                                <p class="text-sm text-slate-500">
-                                                    {{ formatEventDate(event.event_start_date, event.event_end_date) }}
-                                                </p>
-                                                <span v-if="event.button_text" class="text-sm font-medium text-accent-600">
-                                                    Registration Available
-                                                </span>
-                                            </div>
+                                            <p class="text-sm text-slate-500">
+                                                {{ formatEventDate(event.event_start_date, event.event_end_date) }}
+                                            </p>
                                         </div>
                                     </div>
                                 </Link>
