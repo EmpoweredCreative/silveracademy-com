@@ -59,7 +59,6 @@ const form = useForm({
     button_url: props.post.button_url || '',
     recurrence_type: props.post.recurrence_type || 'none',
     recurrence_end_date: formatDate(props.post.recurrence_end_date),
-    published_at: props.post.published_at,
 });
 
 const submit = () => {

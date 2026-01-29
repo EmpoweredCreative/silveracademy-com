@@ -166,7 +166,6 @@ class PostController extends Controller
             'button_url' => 'nullable|url|max:500',
             'recurrence_type' => 'nullable|in:none,daily,weekly,biweekly,monthly',
             'recurrence_end_date' => 'nullable|date|after:event_start_date',
-            'published_at' => 'nullable|date',
         ]);
 
         // Handle image
@@ -229,7 +228,8 @@ class PostController extends Controller
             'button_url' => $validated['button_url'] ?? null,
             'recurrence_type' => $validated['recurrence_type'] ?? 'none',
             'recurrence_end_date' => $validated['recurrence_end_date'] ?? null,
-            'published_at' => $validated['published_at'] ?? $post->published_at,
+            // Don't update published_at on edit - preserve existing value
+            // Use togglePublish action to change publish status
         ]);
 
         return redirect()->route('portal.posts.index')
