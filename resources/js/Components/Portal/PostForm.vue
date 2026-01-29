@@ -115,6 +115,16 @@ const audienceDescription = computed(() => {
 
 <template>
     <form @submit.prevent="emit('submit')" class="space-y-6">
+        <!-- General Errors Display -->
+        <div v-if="Object.keys(form.errors).length > 0" class="bg-red-50 border border-red-200 rounded-lg p-4">
+            <h4 class="text-red-800 font-medium mb-2">Please fix the following errors:</h4>
+            <ul class="list-disc list-inside text-sm text-red-600 space-y-1">
+                <li v-for="(error, field) in form.errors" :key="field">
+                    <strong>{{ field }}:</strong> {{ error }}
+                </li>
+            </ul>
+        </div>
+
         <!-- Post Type -->
         <div>
             <label class="block text-sm font-medium text-slate-700 mb-2">Post Type</label>
