@@ -168,7 +168,7 @@ class Post extends Model
     public function scopePublished(Builder $query): Builder
     {
         return $query->whereNotNull('published_at')
-            ->where('published_at', '<=', now());
+            ->where('published_at', '<=', now()->utc());
     }
 
     /**
@@ -194,8 +194,8 @@ class Post extends Model
     {
         return $query->where('type', 'event')
             ->where(function ($q) {
-                $q->where('event_start_date', '>=', now())
-                    ->orWhere('event_end_date', '>=', now());
+                $q->where('event_start_date', '>=', now()->utc())
+                    ->orWhere('event_end_date', '>=', now()->utc());
             });
     }
 

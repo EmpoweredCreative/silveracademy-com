@@ -32,16 +32,6 @@ class NewsController extends Controller
             ->take(10)
             ->get();
 
-        // Temporary debugging - log all public events to see what's happening
-        $allPublicEvents = Post::where('type', 'event')
-            ->where('is_public', true)
-            ->whereNotNull('published_at')
-            ->get(['id', 'title', 'event_start_date', 'event_end_date', 'published_at', 'is_public']);
-        
-        \Log::info('All public events:', $allPublicEvents->toArray());
-        \Log::info('Now:', ['now' => now()->toDateTimeString()]);
-        \Log::info('Filtered events (showing on page):', $events->pluck('title')->toArray());
-
         return Inertia::render('Marketing/NewsEvents', [
             'news' => $news,
             'events' => $events,
