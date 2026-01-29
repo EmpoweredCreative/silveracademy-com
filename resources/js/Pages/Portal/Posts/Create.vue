@@ -28,7 +28,13 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.post('/portal/posts', {
+    form.transform((data) => ({
+        ...data,
+        // Explicitly convert booleans for FormData compatibility
+        is_public: data.is_public ? '1' : '0',
+        is_school_closure: data.is_school_closure ? '1' : '0',
+        publish_now: data.publish_now ? '1' : '0',
+    })).post('/portal/posts', {
         forceFormData: true,
     });
 };

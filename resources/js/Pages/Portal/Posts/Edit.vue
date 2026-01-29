@@ -66,6 +66,9 @@ const submit = () => {
     form.transform((data) => ({
         ...data,
         _method: 'PUT',
+        // Explicitly convert booleans for FormData compatibility
+        is_public: data.is_public ? '1' : '0',
+        is_school_closure: data.is_school_closure ? '1' : '0',
     })).post(`/portal/posts/${props.post.slug}`, {
         forceFormData: true,
     });
