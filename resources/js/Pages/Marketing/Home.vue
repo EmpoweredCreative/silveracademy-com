@@ -169,13 +169,22 @@ const stats = [
                         <Link 
                             href="/events/open-house"
                             @click="closePopup"
-                            class="block rounded-xl overflow-hidden shadow-2xl hover:shadow-3xl transition-shadow"
+                            class="block rounded-t-xl overflow-hidden shadow-2xl hover:shadow-3xl transition-shadow"
                         >
                             <img 
                                 src="/img/popup/saopenhouse.png" 
                                 alt="Open House - Join us at The Silver Academy"
                                 class="w-full h-auto"
                             />
+                        </Link>
+                        
+                        <!-- Button -->
+                        <Link 
+                            href="/events/open-house"
+                            @click="closePopup"
+                            class="block w-full py-4 bg-accent-500 text-white text-center font-semibold uppercase tracking-wider rounded-b-xl hover:bg-accent-600 transition-colors"
+                        >
+                            View Event Details
                         </Link>
                     </div>
                 </div>
