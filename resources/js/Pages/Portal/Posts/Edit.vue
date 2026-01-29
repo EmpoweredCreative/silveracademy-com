@@ -63,26 +63,11 @@ const form = useForm({
 });
 
 const submit = () => {
-    console.log('Submitting form with data:', {
-        type: form.type,
-        title: form.title,
-        content: form.content ? form.content.substring(0, 100) + '...' : '(empty)',
-        is_public: form.is_public,
-        event_start_date: form.event_start_date,
-        event_end_date: form.event_end_date,
-    });
-    
     form.transform((data) => ({
         ...data,
         _method: 'PUT',
     })).post(`/portal/posts/${props.post.slug}`, {
         forceFormData: true,
-        onError: (errors) => {
-            console.error('Form submission errors:', errors);
-        },
-        onSuccess: () => {
-            console.log('Form submitted successfully!');
-        },
     });
 };
 </script>
