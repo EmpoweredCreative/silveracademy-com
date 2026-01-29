@@ -10,18 +10,26 @@ const props = defineProps({
 });
 
 // Format datetime for input fields (YYYY-MM-DDTHH:MM)
-// Converts UTC datetime from database to Eastern Time for display in form
+// Backend stores Eastern wall-clock time; display in Eastern using formatToParts so we don't re-parse in local TZ
 const formatDateTimeLocal = (dateString) => {
     if (!dateString) return '';
-    const date = new Date(dateString);
-    // Convert to Eastern Time
-    const etDate = new Date(date.toLocaleString('en-US', { timeZone: 'America/New_York' }));
-    const year = etDate.getFullYear();
-    const month = String(etDate.getMonth() + 1).padStart(2, '0');
-    const day = String(etDate.getDate()).padStart(2, '0');
-    const hours = String(etDate.getHours()).padStart(2, '0');
-    const minutes = String(etDate.getMinutes()).padStart(2, '0');
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
+    // If string has no timezone (e.g. from DB), treat as UTC so Date parses correctly
+    const normalized = String(dateString).endsWith('Z') || /[+-]\d{2}:?\d{2}$/.test(dateString)
+        ? dateString
+        : dateString.replace(/\.\d+$/, '') + 'Z';
+    const date = new Date(normalized);
+    const formatter = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'America/New_York',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+    });
+    const parts = formatter.formatToParts(date);
+    const get = (type) => parts.find((p) => p.type === type)?.value ?? '';
+    return `${get('year')}-${get('month')}-${get('day')}T${get('hour')}:${get('minute')}`;
 };
 
 // Format date for input fields (YYYY-MM-DD)

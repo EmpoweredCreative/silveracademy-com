@@ -93,15 +93,15 @@ class PostController extends Controller
             $targetTeacherId = null;
         }
 
-        // Convert datetime-local input (which comes without timezone) to Eastern Time, then to UTC for storage
+        // Parse datetime-local input as Eastern Time and store as-is (app timezone is America/New_York)
+        // so Laravel persists and reads the same wall-clock time without misinterpretation
         $eventStartDate = null;
         $eventEndDate = null;
         if (!empty($validated['event_start_date'])) {
-            // Parse as Eastern Time (America/New_York), then convert to UTC for database storage
-            $eventStartDate = Carbon::parse($validated['event_start_date'], 'America/New_York')->utc();
+            $eventStartDate = Carbon::parse($validated['event_start_date'], 'America/New_York');
         }
         if (!empty($validated['event_end_date'])) {
-            $eventEndDate = Carbon::parse($validated['event_end_date'], 'America/New_York')->utc();
+            $eventEndDate = Carbon::parse($validated['event_end_date'], 'America/New_York');
         }
 
         $post = Post::create([
@@ -205,15 +205,14 @@ class PostController extends Controller
             $targetTeacherId = null;
         }
 
-        // Convert datetime-local input (which comes without timezone) to Eastern Time, then to UTC for storage
+        // Parse datetime-local input as Eastern Time and store as-is (app timezone is America/New_York)
         $eventStartDate = null;
         $eventEndDate = null;
         if (!empty($validated['event_start_date'])) {
-            // Parse as Eastern Time (America/New_York), then convert to UTC for database storage
-            $eventStartDate = Carbon::parse($validated['event_start_date'], 'America/New_York')->utc();
+            $eventStartDate = Carbon::parse($validated['event_start_date'], 'America/New_York');
         }
         if (!empty($validated['event_end_date'])) {
-            $eventEndDate = Carbon::parse($validated['event_end_date'], 'America/New_York')->utc();
+            $eventEndDate = Carbon::parse($validated['event_end_date'], 'America/New_York');
         }
 
         $post->update([

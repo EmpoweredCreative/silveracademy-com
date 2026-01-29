@@ -130,7 +130,7 @@ const stats = [
                     <source src="/vid/Broll Header.mp4" type="video/mp4">
                 </video>
                 <!-- Overlay for Text Readability -->
-                <div class="absolute inset-0 bg-[#f0f5fa]/90 z-10"></div>
+                <div class="absolute inset-0 bg-[#f0f5fa]/80 z-10"></div>
             </div>
             
             <div class="relative z-20 mx-auto max-w-7xl px-6 py-20 sm:py-28 lg:px-8 lg:py-36">
