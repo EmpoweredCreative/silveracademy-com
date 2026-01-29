@@ -9,7 +9,6 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -113,7 +112,6 @@ class PostController extends Controller
             'target_grade_id' => $targetGradeId,
             'target_teacher_id' => $targetTeacherId,
             'title' => $validated['title'],
-            'slug' => Str::slug($validated['title']),
             'content' => $validated['content'],
             'image_path' => $imagePath,
             'event_start_date' => $eventStartDate,
