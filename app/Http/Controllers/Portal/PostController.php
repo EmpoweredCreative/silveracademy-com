@@ -237,6 +237,21 @@ class PostController extends Controller
     }
 
     /**
+     * Upload an image for use inside post content (WYSIWYG).
+     */
+    public function uploadImage(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image|max:2048',
+        ]);
+
+        $path = $request->file('image')->store('posts/inline', 'public');
+        $url = asset('storage/' . $path);
+
+        return response()->json(['url' => $url]);
+    }
+
+    /**
      * Remove the specified post.
      */
     public function destroy(Post $post)

@@ -106,6 +106,7 @@ Route::middleware(['auth', 'approved'])->prefix('portal')->name('portal.')->grou
     // Admin-only routes for managing posts
     Route::middleware('admin')->group(function () {
         Route::resource('posts', PostController::class)->except(['show']);
+        Route::post('/posts/upload-image', [PostController::class, 'uploadImage'])->name('posts.upload-image');
         Route::post('/posts/{post}/toggle-publish', [PostController::class, 'togglePublish'])
             ->name('posts.toggle-publish');
     });

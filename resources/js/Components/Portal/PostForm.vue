@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, watch } from 'vue';
+import WysiwygEditor from './WysiwygEditor.vue';
 
 const props = defineProps({
     form: Object,
@@ -318,14 +319,11 @@ const audienceDescription = computed(() => {
             <label for="content" class="block text-sm font-medium text-slate-700 mb-1">
                 Content <span class="text-red-500">*</span>
             </label>
-            <textarea
-                id="content"
+            <WysiwygEditor
                 v-model="form.content"
-                rows="8"
-                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                 placeholder="Write your content here..."
-                required
-            ></textarea>
+                min-height="240px"
+            />
             <p v-if="form.errors.content" class="mt-1 text-sm text-red-600">{{ form.errors.content }}</p>
         </div>
 

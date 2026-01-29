@@ -59,9 +59,17 @@ const formatEventTime = (startDate, endDate) => {
     return `Starting at ${formatTime(startDate)}`;
 };
 
+const stripHtml = (html) => {
+    if (!html) return '';
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    return div.textContent || div.innerText || '';
+};
+
 const getExcerpt = (content, length = 100) => {
-    if (content.length <= length) return content;
-    return content.substring(0, length).trim() + '...';
+    const text = stripHtml(content);
+    if (text.length <= length) return text;
+    return text.substring(0, length).trim() + '...';
 };
 </script>
 
@@ -162,8 +170,8 @@ const getExcerpt = (content, length = 100) => {
         <section class="py-12 lg:py-16 bg-white">
             <div class="mx-auto max-w-4xl px-6 lg:px-8">
                 <h2 class="font-serif text-2xl text-slate-800 mb-6">About This Event</h2>
-                <div class="prose prose-lg max-w-none prose-headings:font-serif prose-headings:text-slate-800 prose-p:text-slate-600 prose-a:text-brand-600 prose-a:no-underline hover:prose-a:underline">
-                    <div class="whitespace-pre-wrap">{{ event.content }}</div>
+                <div class="prose prose-lg max-w-none prose-headings:font-serif prose-headings:text-slate-800 prose-p:text-slate-600 prose-a:text-brand-600 prose-a:no-underline hover:prose-a:underline prose-img:rounded-lg">
+                    <div class="prose-content" v-html="event.content"></div>
                 </div>
             </div>
         </section>
@@ -177,7 +185,7 @@ const getExcerpt = (content, length = 100) => {
                     </div>
                     <div class="flex gap-3">
                         <a
-                            :href="`https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${new Date(event.event_start_date).toISOString().replace(/[-:]/g, '').split('.')[0]}Z/${new Date(event.event_end_date || event.event_start_date).toISOString().replace(/[-:]/g, '').split('.')[0]}Z&details=${encodeURIComponent(event.content.substring(0, 200))}`"
+                            :href="`https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${new Date(event.event_start_date).toISOString().replace(/[-:]/g, '').split('.')[0]}Z/${new Date(event.event_end_date || event.event_start_date).toISOString().replace(/[-:]/g, '').split('.')[0]}Z&details=${encodeURIComponent(stripHtml(event.content).substring(0, 200))}`"
                             target="_blank"
                             rel="noopener noreferrer"
                             class="px-4 py-2 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow text-sm font-medium text-slate-700 hover:text-brand-600"

@@ -16,9 +16,17 @@ const formatDate = (date) => {
     });
 };
 
+const stripHtml = (html) => {
+    if (!html) return '';
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    return div.textContent || div.innerText || '';
+};
+
 const getExcerpt = (content, length = 100) => {
-    if (content.length <= length) return content;
-    return content.substring(0, length).trim() + '...';
+    const text = stripHtml(content);
+    if (text.length <= length) return text;
+    return text.substring(0, length).trim() + '...';
 };
 </script>
 
@@ -69,8 +77,8 @@ const getExcerpt = (content, length = 100) => {
         <!-- Content -->
         <section class="py-12 lg:py-16 bg-white">
             <div class="mx-auto max-w-4xl px-6 lg:px-8">
-                <div class="prose prose-lg max-w-none prose-headings:font-serif prose-headings:text-slate-800 prose-p:text-slate-600 prose-a:text-brand-600 prose-a:no-underline hover:prose-a:underline">
-                    <div class="whitespace-pre-wrap">{{ post.content }}</div>
+                <div class="prose prose-lg max-w-none prose-headings:font-serif prose-headings:text-slate-800 prose-p:text-slate-600 prose-a:text-brand-600 prose-a:no-underline hover:prose-a:underline prose-img:rounded-lg">
+                    <div class="prose-content" v-html="post.content"></div>
                 </div>
             </div>
         </section>

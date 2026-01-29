@@ -45,9 +45,17 @@ const formatEventDate = (startDate, endDate) => {
     return `${start.toLocaleDateString('en-US', options)} - ${end.toLocaleDateString('en-US', options)}`;
 };
 
+const stripHtml = (html) => {
+    if (!html) return '';
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    return div.textContent || div.innerText || '';
+};
+
 const getExcerpt = (content, length = 150) => {
-    if (content.length <= length) return content;
-    return content.substring(0, length).trim() + '...';
+    const text = stripHtml(content);
+    if (text.length <= length) return text;
+    return text.substring(0, length).trim() + '...';
 };
 </script>
 
