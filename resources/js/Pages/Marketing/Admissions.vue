@@ -46,7 +46,7 @@ const panels = [
         title: 'Accessible Education',
         description: 'Generous financial aid and EITC programs ensure every family has access.',
         image: '/img/graphics/home/web-silveracademyAccessible.jpg',
-        link: '#tuition'
+        link: '/contact'
     }
 ];
 
@@ -127,9 +127,6 @@ const testimonials = [
                         <Link href="#process" class="bg-accent-500 text-white px-8 py-3 rounded font-semibold uppercase tracking-wider hover:bg-accent-600 transition-colors">
                             How to Apply
                         </Link>
-                        <Link href="#tuition" class="bg-white text-brand-600 px-8 py-3 rounded font-semibold uppercase tracking-wider hover:bg-slate-50 transition-colors border-2 border-brand-100">
-                            Tuition & Aid
-                        </Link>
                     </div>
                 </div>
             </div>
@@ -182,7 +179,7 @@ const testimonials = [
                             :href="panel.link" 
                             class="inline-flex items-center text-sm font-bold text-brand-600 uppercase tracking-wider hover:text-brand-800 transition-colors"
                         >
-                            {{ panel.title === 'Accessible Education' ? 'Tuition & Scholarships' : 'Learn More' }}
+                            {{ panel.title === 'Accessible Education' ? 'Contact us to learn more' : 'Learn More' }}
                             <svg class="ml-2 w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                             </svg>
@@ -289,8 +286,8 @@ const testimonials = [
             </div>
         </section>
 
-        <!-- Tuition Section -->
-        <section id="tuition" class="py-24 bg-slate-50">
+        <!-- Tuition Section (hidden for now) -->
+        <section v-if="false" id="tuition" class="py-24 bg-slate-50">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
                 <div class="text-center mb-16">
                     <h2 class="font-serif text-3xl text-slate-800 font-bold mb-4">Tuition & Financial Support</h2>

@@ -59,7 +59,7 @@ const panels = [
         title: 'Accessible Education',
         description: 'We are committed to making a Silver Academy education reachable for every family through generous scholarship programs and tuition assistance.',
         image: '/img/graphics/home/web-silveracademyAccessible.jpg',
-        link: '/admissions#tuition'
+        link: '/contact'
     },
     {
         title: 'Family Partnership',
@@ -353,7 +353,7 @@ const stats = [
                             :href="panel.link" 
                             class="inline-flex items-center text-sm font-bold text-brand-600 uppercase tracking-wider hover:text-brand-800 transition-colors"
                         >
-                            {{ panel.title === 'Accessible Education' ? 'Tuition & Scholarships' : 
+                            {{ panel.title === 'Accessible Education' ? 'Contact us to learn more' : 
                                (panel.title === 'Family Partnership' ? 'Silver Parent Circle' : 'Learn More') }}
                             <svg class="ml-2 w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />

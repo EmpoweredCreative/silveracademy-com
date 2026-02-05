@@ -40,7 +40,6 @@ const utilityNav = computed(() => [
             href: '/admissions',
             children: [
                 { name: 'How to Apply', href: '/admissions#process' },
-                { name: 'Tuition & Affordability', href: '/admissions#tuition' },
                 { name: 'Why a Jewish Day School?', href: '/admissions#why-jewish-day-school' },
                 { name: 'Testimonials & Alumni', href: '/admissions#testimonials' },
             ]
