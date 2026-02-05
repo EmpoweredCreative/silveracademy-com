@@ -14,23 +14,21 @@ const reasons = [
     <Head title="Silver Parent Circle - The Silver Academy" />
 
     <MarketingLayout>
-        <!-- Hero Section -->
+        <!-- Hero Section - Image only -->
         <section class="relative h-[400px] overflow-hidden">
-            <div class="absolute inset-0">
-                <img 
-                    src="/img/graphics/home/web-silveracademyFamily Parntership.jpg" 
-                    alt="Families Connecting" 
-                    class="w-full h-full object-cover" 
-                    style="object-position: center top;"
-                />
-                <div class="absolute inset-0 bg-brand-900/60 mix-blend-multiply"></div>
-            </div>
-            <div class="relative h-full flex items-center justify-center text-center px-4">
-                <div class="max-w-4xl">
-                    <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl text-white leading-tight tracking-tight mb-6">
-                        Connect, Collaborate, and Celebrate as a Silver Family
-                    </h1>
-                </div>
+            <img 
+                src="/img/graphics/home/web-silveracademyFamily Parntership.jpg" 
+                alt="Families Connecting" 
+                class="w-full h-full object-cover" 
+                style="object-position: center top;"
+            />
+        </section>
+        <!-- Hero Title - Below image -->
+        <section class="py-8 bg-white">
+            <div class="mx-auto max-w-7xl px-6 lg:px-8 text-center">
+                <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl text-slate-800 leading-tight tracking-tight">
+                    Connect, Collaborate, and Celebrate as a Silver Family
+                </h1>
             </div>
         </section>
 

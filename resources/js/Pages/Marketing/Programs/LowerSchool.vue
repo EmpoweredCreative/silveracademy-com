@@ -27,22 +27,20 @@ const environment = [
     <Head title="Lower School (Grades 1-4) - The Silver Academy" />
 
     <MarketingLayout>
-        <!-- Hero Section -->
+        <!-- Hero Section - Image only -->
         <section class="relative h-[400px] overflow-hidden">
-            <div class="absolute inset-0">
-                <img 
-                    src="/img/graphics/programs/lower school/web-silveracademy2025_Silver Academy-747.jpg" 
-                    alt="Lower School Classroom" 
-                    class="w-full h-full object-cover" 
-                />
-                <div class="absolute inset-0 bg-brand-900/60 mix-blend-multiply"></div>
-            </div>
-            <div class="relative h-full flex items-center justify-center text-center px-4">
-                <div class="max-w-4xl">
-                    <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl text-white leading-tight tracking-tight mb-6">
-                        Integrated Learning for Academic Excellence and Jewish Identity
-                    </h1>
-                </div>
+            <img 
+                src="/img/graphics/programs/lower school/web-silveracademy2025_Silver Academy-747.jpg" 
+                alt="Lower School Classroom" 
+                class="w-full h-full object-cover" 
+            />
+        </section>
+        <!-- Hero Title - Below image -->
+        <section class="py-8 bg-white">
+            <div class="mx-auto max-w-7xl px-6 lg:px-8 text-center">
+                <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl text-slate-800 leading-tight tracking-tight w-[65%] mx-auto">
+                    Integrated Learning for Academic Excellence and Jewish Identity
+                </h1>
             </div>
         </section>
 

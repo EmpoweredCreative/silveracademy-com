@@ -80,6 +80,8 @@ const benefits = [
     { title: 'Leadership and Community Service', description: 'Students develop confidence, collaboration skills, and a sense of purpose.' },
 ];
 
+const annualReportEmbedUrl = 'https://drive.google.com/file/d/1qsIjvE6bK9Y7XJJGTqDaaRCF24RJMuMg/preview';
+
 const testimonials = [
     {
         quote: "From the moment we joined Silver, we knew our children would be seen and supported. The small class sizes and individualized attention made all the difference. Our kids not only excel academically but also grow into kind, confident, and thoughtful young people.",
@@ -108,7 +110,6 @@ const testimonials = [
                     alt="Students" 
                     class="w-full h-full object-cover opacity-100" 
                 />
-                <div class="absolute inset-0 bg-black/20"></div>
             </div>
         </section>
 
@@ -116,13 +117,13 @@ const testimonials = [
         <section class="py-20 bg-white text-center">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
                 <div class="max-w-4xl mx-auto">
-                    <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl text-slate-800 leading-tight tracking-tight">
+                    <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl text-slate-800 leading-none tracking-tight mb-6">
                         Nurturing Confidence, Character,<br>and a Love of Learning
                     </h1>
-                    <p class="mt-8 text-lg sm:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
+                    <p class="text-lg sm:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
                         Join a small, values-driven school where students thrive academically, socially, and spiritually from Pre-K through 8th grade.
                     </p>
-                    <div class="mt-10 flex justify-center gap-4">
+                    <div class="mt-8 flex justify-center gap-4">
                         <Link href="#process" class="bg-accent-500 text-white px-8 py-3 rounded font-semibold uppercase tracking-wider hover:bg-accent-600 transition-colors">
                             How to Apply
                         </Link>
@@ -189,7 +190,7 @@ const testimonials = [
         </section>
 
         <!-- Why A Jewish Day School -->
-        <section class="py-24 bg-slate-50">
+        <section id="why-jewish-day-school" class="py-24 bg-slate-50">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
                 <div class="grid lg:grid-cols-2 gap-12 items-center">
                     <div>
@@ -272,10 +273,14 @@ const testimonials = [
                     </div>
                     
                     <div class="mt-16 text-center">
-                        <a href="https://app.simpletuitionsolutions.org/thesilveracademy/admissions" target="_blank" rel="noopener noreferrer" class="inline-block bg-accent-500 text-white px-10 py-4 rounded font-bold uppercase tracking-wider hover:bg-accent-600 transition-colors shadow-lg hover:shadow-xl">
-                            Apply Now
-                        </a>
-                        <p class="mt-4 text-sm text-slate-500">Start your online application today</p>
+                        <div class="flex flex-wrap justify-center gap-4">
+                            <a href="https://calendar.app.google/Y5NrAjA9RooWgwZ98" target="_blank" rel="noopener noreferrer" class="inline-block bg-accent-500 text-white px-10 py-4 rounded font-bold uppercase tracking-wider hover:bg-accent-600 transition-colors shadow-lg hover:shadow-xl">
+                                Schedule a Visit
+                            </a>
+                            <a href="https://app.simpletuitionsolutions.org/thesilveracademy/admissions" target="_blank" rel="noopener noreferrer" class="inline-block bg-white text-brand-600 px-10 py-4 rounded font-bold uppercase tracking-wider hover:bg-slate-50 transition-colors shadow-lg border-2 border-brand-200">
+                                Apply Now
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -356,7 +361,7 @@ const testimonials = [
         </section>
 
         <!-- Alumni & Testimonials -->
-        <section class="py-24 bg-brand-500 text-white">
+        <section id="testimonials" class="py-24 bg-brand-500 text-white">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
                 <div class="text-center mb-16">
                     <h2 class="font-serif text-3xl sm:text-4xl font-bold mb-4">Celebrating Generations of Lifelong Learners</h2>
@@ -378,13 +383,24 @@ const testimonials = [
                 <div class="mt-16 text-center">
                     <div class="bg-white p-8 rounded-2xl max-w-4xl mx-auto shadow-lg">
                         <div class="flex flex-col md:flex-row items-center gap-8">
-                            <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=200&h=200&q=80" alt="Student" class="w-24 h-24 rounded-full object-cover border-4 border-accent-500" />
-                            <div class="text-left">
+                            <img src="/img/graphics/admissions/web-silveracademyAlexandra.jpg" alt="Alexandra" class="w-24 h-24 rounded-full object-cover border-4 border-accent-500" />
+                            <div class="text-left flex-1">
                                 <h3 class="text-xl font-bold text-slate-800 mb-2">Student Story: Alexandra</h3>
                                 <p class="text-slate-600 text-sm leading-relaxed">
                                     Alexandra joined The Silver Academy as the youngest of four siblings. Initially shy, she thrived thanks to nurturing teachers. Now a first grader, Alexandra is a top reader, confident in her abilities, and proud of her Jewish identity.
                                 </p>
                             </div>
+                        </div>
+                    </div>
+                    <div class="mt-10 max-w-4xl mx-auto rounded-2xl overflow-hidden shadow-xl bg-white">
+                        <div class="aspect-[8/11] min-h-[500px] w-full">
+                            <iframe
+                                :src="annualReportEmbedUrl"
+                                title="The Silver Academy Annual Report"
+                                class="w-full h-full border-0"
+                                allow="autoplay"
+                                allowfullscreen
+                            />
                         </div>
                     </div>
                 </div>

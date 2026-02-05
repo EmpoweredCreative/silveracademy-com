@@ -51,22 +51,21 @@ const opportunities = [
 
     <MarketingLayout>
         <!-- Hero Section -->
-        <section class="relative h-[500px] overflow-hidden">
-            <div class="absolute inset-0">
+        <section>
+            <div class="relative h-[500px] overflow-hidden">
                 <img 
                     src="/img/graphics/get-involved/web-silveracademy2025_Silver Academy-326.jpg" 
                     alt="Community support" 
                     class="w-full h-full object-cover"
                     style="object-position: center -102px;"
                 />
-                <div class="absolute inset-0 bg-brand-900/60 mix-blend-multiply"></div>
             </div>
-            <div class="absolute inset-0 flex items-center justify-center text-center">
-                <div class="max-w-3xl px-4 sm:px-6 lg:px-8">
-                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-white mb-6">
+            <div class="bg-white py-12 px-4 sm:px-6 lg:px-8 text-center">
+                <div class="max-w-3xl mx-auto">
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-slate-900 mb-6">
                         Get Involved
                     </h1>
-                    <p class="text-xl md:text-2xl text-brand-50 font-medium max-w-2xl mx-auto">
+                    <p class="text-xl md:text-2xl text-slate-600 font-medium max-w-2xl mx-auto">
                         Your support helps us provide a vibrant, values-driven education for every child.
                     </p>
                 </div>

@@ -315,7 +315,7 @@ const submit = () => {
                                     </div>
                                     <div>
                                         <h3 class="font-semibold text-slate-900 text-sm">Email</h3>
-                                        <a href="mailto:office@silveracademypa.org" class="text-brand-600 hover:text-brand-700 transition-colors">office@silveracademypa.org</a>
+                                        <a href="mailto:info@silveracademypa.org" class="text-brand-600 hover:text-brand-700 transition-colors">info@silveracademypa.org</a>
                                     </div>
                                 </div>
                                 <div class="flex items-start gap-4">

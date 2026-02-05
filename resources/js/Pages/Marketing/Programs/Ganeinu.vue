@@ -25,23 +25,21 @@ const outcomes = [
     <Head title="Ganeinu (Early Childhood) - The Silver Academy" />
 
     <MarketingLayout>
-        <!-- Hero Section -->
+        <!-- Hero Section - Image only -->
         <section class="relative h-[400px] overflow-hidden">
-            <div class="absolute inset-0">
-                <img 
-                    src="/img/graphics/programs/ganeinu/web-silveracademyIMG_6289%202.jpg" 
-                    alt="Ganeinu Early Childhood" 
-                    class="w-full h-full object-cover"
-                    style="object-position: center 30%;"
-                />
-                <div class="absolute inset-0 bg-brand-900/60 mix-blend-multiply"></div>
-            </div>
-            <div class="relative h-full flex items-center justify-center text-center px-4">
-                <div class="max-w-4xl">
-                    <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl text-white leading-tight tracking-tight mb-6">
-                        Shalom! Welcome to Ganeinu
-                    </h1>
-                </div>
+            <img 
+                src="/img/graphics/programs/ganeinu/web-silveracademyIMG_6289%202.jpg" 
+                alt="Ganeinu Early Childhood" 
+                class="w-full h-full object-cover"
+                style="object-position: center 30%;"
+            />
+        </section>
+        <!-- Hero Title - Below image -->
+        <section class="py-8 bg-white">
+            <div class="mx-auto max-w-7xl px-6 lg:px-8 text-center">
+                <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl text-slate-800 leading-tight tracking-tight">
+                    Shalom! Welcome to Ganeinu
+                </h1>
             </div>
         </section>
 

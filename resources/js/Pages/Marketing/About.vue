@@ -42,14 +42,13 @@ const cards = [
                     alt="Students smiling" 
                     class="w-full h-full object-cover object-center"
                 />
-                <div class="absolute inset-0 bg-black/20"></div>
             </div>
         </section>
 
         <!-- Intro Section -->
         <section class="py-20 bg-white text-center">
             <div class="mx-auto max-w-4xl px-6 lg:px-8">
-                <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl text-slate-800 leading-tight tracking-tight">
+                <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl text-slate-800 leading-none tracking-tight mb-6">
                     A Tradition of Empowering<br />
                     Learners and Leaders
                 </h1>
@@ -74,7 +73,7 @@ const cards = [
                                 class="w-full h-full object-cover"
                             />
                             <!-- Blue Overlay -->
-                            <div class="absolute inset-0 bg-brand-900/90 mix-blend-multiply"></div>
+                            <div class="absolute inset-0 bg-brand-900/75 mix-blend-multiply"></div>
                         </div>
                         
                         <!-- Content -->
@@ -103,7 +102,7 @@ const cards = [
                                 class="w-full h-full object-cover"
                             />
                             <!-- Blue Overlay -->
-                            <div class="absolute inset-0 bg-brand-900/90 mix-blend-multiply"></div>
+                            <div class="absolute inset-0 bg-brand-900/75 mix-blend-multiply"></div>
                         </div>
                         
                         <!-- Content -->
@@ -163,7 +162,7 @@ const cards = [
         </section>
 
         <!-- Our Story Section -->
-        <section class="bg-slate-50 py-24">
+        <section id="our-story" class="bg-slate-50 py-24">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
                 <!-- Large Image -->
                 <div class="relative w-full h-[500px] rounded-t-lg overflow-hidden mb-0">
@@ -192,7 +191,9 @@ const cards = [
                     </p>
                     
                     <a 
-                        href="#" 
+                        href="https://calendar.app.google/Y5NrAjA9RooWgwZ98" 
+                        target="_blank"
+                        rel="noopener noreferrer"
                         class="inline-block px-8 py-3 text-sm font-semibold uppercase tracking-wider text-brand-600 bg-white border-2 border-accent-500 rounded hover:bg-accent-50 transition-colors duration-200"
                     >
                         Visit Our Campus

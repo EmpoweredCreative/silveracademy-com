@@ -28,22 +28,20 @@ const environment = [
     <Head title="Upper School (Grades 5-8) - The Silver Academy" />
 
     <MarketingLayout>
-        <!-- Hero Section -->
+        <!-- Hero Section - Image only -->
         <section class="relative h-[400px] overflow-hidden">
-            <div class="absolute inset-0">
-                <img 
-                    src="/img/graphics/programs/upper school/web-silveracademy524347888_1336777831616096_6995516925783677283_n.jpg" 
-                    alt="Upper School Students" 
-                    class="w-full h-full object-cover" 
-                />
-                <div class="absolute inset-0 bg-brand-900/60 mix-blend-multiply"></div>
-            </div>
-            <div class="relative h-full flex items-center justify-center text-center px-4">
-                <div class="max-w-4xl">
-                    <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl text-white leading-tight tracking-tight mb-6">
-                        Supporting Growth, Curiosity, and Academic Excellence
-                    </h1>
-                </div>
+            <img 
+                src="/img/graphics/programs/upper school/web-silveracademy524347888_1336777831616096_6995516925783677283_n.jpg" 
+                alt="Upper School Students" 
+                class="w-full h-full object-cover" 
+            />
+        </section>
+        <!-- Hero Title - Below image -->
+        <section class="py-8 bg-white">
+            <div class="mx-auto max-w-7xl px-6 lg:px-8 text-center">
+                <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl text-slate-800 leading-tight tracking-tight w-[65%] mx-auto">
+                    Supporting Growth, Curiosity, and Academic Excellence
+                </h1>
             </div>
         </section>
 

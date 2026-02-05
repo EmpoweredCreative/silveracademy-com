@@ -82,7 +82,6 @@ const enrichment = [
                     alt="Students learning" 
                     class="w-full h-full object-cover opacity-100" 
                 />
-                <div class="absolute inset-0 bg-black/30"></div>
             </div>
         </section>
 
@@ -90,10 +89,10 @@ const enrichment = [
         <section class="py-20 bg-white text-center">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
                 <div class="max-w-4xl mx-auto">
-                    <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl text-slate-800 leading-tight tracking-tight mb-6">
+                    <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl text-slate-800 leading-none tracking-tight mb-6">
                         Learning, Growing, and Thriving<br />at Every Age
                     </h1>
-                    <p class="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
+                    <p class="text-lg sm:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
                         From Pre-K through 8th grade, The Silver Academy offers a rich, values-driven curriculum 
                         that nurtures the whole child – academically, socially, and spiritually.
                     </p>
@@ -134,7 +133,7 @@ const enrichment = [
         <!-- Grade Levels Interactive Accordion -->
         <section class="py-8 bg-slate-100">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
-                <div class="h-[500px] flex w-full gap-4 rounded-2xl overflow-hidden" @mouseenter="isHoveringGrades = true" @mouseleave="isHoveringGrades = false">
+                <div class="h-[500px] flex w-full gap-2 rounded-2xl overflow-hidden" @mouseenter="isHoveringGrades = true" @mouseleave="isHoveringGrades = false">
                     <div 
                         v-for="(grade, index) in gradeLevels" 
                         :key="index"
@@ -150,15 +149,16 @@ const enrichment = [
                             :class="activeGrade === index ? 'scale-100' : 'scale-110'"
                         />
                         <div class="absolute inset-0 bg-black transition-opacity duration-300"
-                             :class="isHoveringGrades ? 'opacity-50' : (activeGrade === index ? 'opacity-40' : 'opacity-30')"></div>
+                             :class="isHoveringGrades ? 'opacity-70' : (activeGrade === index ? 'opacity-60' : 'opacity-50')"></div>
                         
                         <!-- Content -->
                         <div class="absolute bottom-0 left-0 right-0 p-4 md:p-8 flex flex-col justify-end h-full z-10">
                             <div class="transform transition-all duration-300"
                                  :class="activeGrade === index ? 'translate-y-0' : 'translate-y-4'">
                                 <!-- Background Bar for Title - Blue when collapsed, Yellow when expanded -->
-                                <div 
-                                    class="inline-block px-4 py-2 mb-2 rounded transition-colors duration-300"
+                                <Link 
+                                    :href="grade.link"
+                                    class="inline-block px-4 py-2 mb-2 rounded transition-colors duration-300 hover:opacity-90 cursor-pointer"
                                     :class="activeGrade === index ? 'bg-accent-500/90' : 'bg-brand-500/90'"
                                 >
                                     <h3 
@@ -167,7 +167,7 @@ const enrichment = [
                                     >
                                         {{ grade.title }}
                                     </h3>
-                                </div>
+                                </Link>
                                 <p 
                                     class="text-white/90 text-xs md:text-sm font-medium uppercase tracking-widest mb-4 transition-opacity duration-300"
                                     :class="activeGrade === index ? 'opacity-100' : 'opacity-100 md:opacity-0'"

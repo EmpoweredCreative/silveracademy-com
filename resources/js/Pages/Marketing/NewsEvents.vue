@@ -128,8 +128,55 @@ const getExcerpt = (content, length = 150) => {
         <section class="py-16 bg-slate-50">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
                 <div class="grid lg:grid-cols-3 gap-12">
-                    <!-- Main Content -->
-                    <div class="lg:col-span-2">
+                    <!-- Left Column - Upcoming Events (wider) -->
+                    <div class="hidden lg:block lg:col-span-2" v-if="activeTab !== 'events'">
+                        <div class="sticky top-32">
+                            <h2 class="font-serif text-2xl text-slate-800 mb-6">Upcoming Events</h2>
+                            
+                            <div v-if="events.length === 0" class="text-center py-8 bg-white rounded-xl">
+                                <p class="text-slate-500 text-sm">No upcoming events.</p>
+                            </div>
+
+                            <div v-else class="space-y-4">
+                                <Link
+                                    v-for="event in events.slice(0, 5)"
+                                    :key="event.id"
+                                    :href="`/events/${event.slug}`"
+                                    class="block bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-4 group"
+                                >
+                                    <div class="flex items-start gap-4">
+                                        <div class="flex-shrink-0 w-14 text-center bg-brand-50 rounded-lg py-2">
+                                            <div class="text-xl font-bold text-brand-600">
+                                                {{ new Date(event.event_start_date).getDate() }}
+                                            </div>
+                                            <div class="text-xs text-brand-500 uppercase">
+                                                {{ new Date(event.event_start_date).toLocaleDateString('en-US', { month: 'short' }) }}
+                                            </div>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <h3 class="font-medium text-slate-800 group-hover:text-brand-600 transition-colors truncate">
+                                                {{ event.title }}
+                                            </h3>
+                                            <p class="text-xs text-slate-500 mt-1">
+                                                {{ formatEventDate(event.event_start_date, event.event_end_date) }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </Link>
+
+                                <button
+                                    v-if="events.length > 5"
+                                    @click="activeTab = 'events'"
+                                    class="w-full py-3 text-sm font-medium text-brand-600 hover:text-brand-700 bg-brand-50 rounded-lg transition-colors"
+                                >
+                                    View All Events
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column - Main Content (News / Events tab) - narrower -->
+                    <div class="lg:col-span-1">
                         <!-- News Section -->
                         <div v-if="activeTab === 'all' || activeTab === 'news'" class="mb-12">
                             <h2 v-if="activeTab === 'all'" class="font-serif text-2xl text-slate-800 mb-6">
@@ -249,53 +296,6 @@ const getExcerpt = (content, length = 150) => {
                                         </div>
                                     </div>
                                 </Link>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Sidebar - Upcoming Events -->
-                    <div class="hidden lg:block" v-if="activeTab !== 'events'">
-                        <div class="sticky top-32">
-                            <h2 class="font-serif text-2xl text-slate-800 mb-6">Upcoming Events</h2>
-                            
-                            <div v-if="events.length === 0" class="text-center py-8 bg-white rounded-xl">
-                                <p class="text-slate-500 text-sm">No upcoming events.</p>
-                            </div>
-
-                            <div v-else class="space-y-4">
-                                <Link
-                                    v-for="event in events.slice(0, 5)"
-                                    :key="event.id"
-                                    :href="`/events/${event.slug}`"
-                                    class="block bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-4 group"
-                                >
-                                    <div class="flex items-start gap-4">
-                                        <div class="flex-shrink-0 w-14 text-center bg-brand-50 rounded-lg py-2">
-                                            <div class="text-xl font-bold text-brand-600">
-                                                {{ new Date(event.event_start_date).getDate() }}
-                                            </div>
-                                            <div class="text-xs text-brand-500 uppercase">
-                                                {{ new Date(event.event_start_date).toLocaleDateString('en-US', { month: 'short' }) }}
-                                            </div>
-                                        </div>
-                                        <div class="flex-1 min-w-0">
-                                            <h3 class="font-medium text-slate-800 group-hover:text-brand-600 transition-colors truncate">
-                                                {{ event.title }}
-                                            </h3>
-                                            <p class="text-xs text-slate-500 mt-1">
-                                                {{ formatEventDate(event.event_start_date, event.event_end_date) }}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </Link>
-
-                                <button
-                                    v-if="events.length > 5"
-                                    @click="activeTab = 'events'"
-                                    class="w-full py-3 text-sm font-medium text-brand-600 hover:text-brand-700 bg-brand-50 rounded-lg transition-colors"
-                                >
-                                    View All Events
-                                </button>
                             </div>
                         </div>
                     </div>

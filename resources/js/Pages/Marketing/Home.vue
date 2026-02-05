@@ -205,7 +205,7 @@ const stats = [
                     <source src="/vid/Broll Header.mp4" type="video/mp4">
                 </video>
                 <!-- Overlay for Text Readability -->
-                <div class="absolute inset-0 bg-[#f0f5fa]/80 z-10"></div>
+                <div class="absolute inset-0 bg-[#f0f5fa]/70 z-10"></div>
             </div>
             
             <div class="relative z-20 mx-auto max-w-7xl px-6 py-20 sm:py-28 lg:px-8 lg:py-36">
@@ -479,18 +479,22 @@ const stats = [
                         >
                             Inquire
                         </Link>
-                        <Link
-                            href="/contact"
+                        <a
+                            href="https://calendar.app.google/Y5NrAjA9RooWgwZ98"
+                            target="_blank"
+                            rel="noopener noreferrer"
                             class="px-8 py-3 text-sm font-semibold uppercase tracking-wider text-slate-800 bg-white border-2 border-accent-500 rounded hover:bg-accent-500 hover:text-white transition-colors duration-200"
                         >
                             Visit
-                        </Link>
-                        <Link
-                            href="#"
+                        </a>
+                        <a
+                            href="https://app.simpletuitionsolutions.org/en/login"
+                            target="_blank"
+                            rel="noopener noreferrer"
                             class="px-8 py-3 text-sm font-semibold uppercase tracking-wider text-slate-800 bg-white border-2 border-accent-500 rounded hover:bg-accent-500 hover:text-white transition-colors duration-200"
                         >
                             Apply
-                        </Link>
+                        </a>
                     </div>
                 </div>
             </div>

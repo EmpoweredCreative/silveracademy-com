@@ -162,7 +162,7 @@ import {
                 </div>
                 
                 <p class="mt-8 text-sm text-slate-500">
-                    Or visit the <a href="#" class="text-brand-600 hover:underline">PA DCED EITC website</a> for additional instructions and eligibility details.
+                    Or visit the <a href="https://dced.pa.gov/programs/educational-improvement-tax-credit-program-eitc/" target="_blank" rel="noopener noreferrer" class="text-brand-600 hover:underline">PA DCED EITC website</a> for additional instructions and eligibility details.
                 </p>
             </div>
         </section>

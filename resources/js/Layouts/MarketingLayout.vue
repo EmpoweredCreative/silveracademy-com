@@ -24,8 +24,27 @@ const utilityNav = computed(() => [
 
     const mainNav = [
         { name: 'Welcome', href: '/' },
-        { name: 'About', href: '/about' },
-        { name: 'Admissions', href: '/admissions' },
+        {
+            name: 'About',
+            href: '/about',
+            children: [
+                { name: 'Who We Are', href: '/about#our-story' },
+                { name: 'Leadership, Staff & Faculty (Coming Soon)', href: '#' },
+                { name: 'Why The Silver Academy', href: '/why-silver-academy' },
+                { name: 'Our Community', href: '/our-community' },
+                { name: 'Silver At A Glance', href: '#' },
+            ]
+        },
+        {
+            name: 'Admissions',
+            href: '/admissions',
+            children: [
+                { name: 'How to Apply', href: '/admissions#process' },
+                { name: 'Tuition & Affordability', href: '/admissions#tuition' },
+                { name: 'Why a Jewish Day School?', href: '/admissions#why-jewish-day-school' },
+                { name: 'Testimonials & Alumni', href: '/admissions#testimonials' },
+            ]
+        },
         { 
             name: 'Programs', 
             href: '/programs',
