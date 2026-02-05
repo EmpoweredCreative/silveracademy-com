@@ -133,12 +133,16 @@ const enrichment = [
         <!-- Grade Levels Interactive Accordion -->
         <section class="py-8 bg-slate-100">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
-                <div class="h-[500px] flex w-full gap-2 rounded-2xl overflow-hidden" @mouseenter="isHoveringGrades = true" @mouseleave="isHoveringGrades = false">
+                <!-- Grade levels: vertical on mobile, horizontal on md+ -->
+                <div class="flex flex-col md:flex-row w-full gap-2 min-h-[920px] md:min-h-0 md:h-[500px] rounded-2xl overflow-hidden" @mouseenter="isHoveringGrades = true" @mouseleave="isHoveringGrades = false">
                     <div 
                         v-for="(grade, index) in gradeLevels" 
                         :key="index"
-                        class="relative rounded-2xl overflow-hidden cursor-pointer transition-all duration-500 ease-in-out group"
-                        :class="activeGrade === index ? 'flex-grow-[3]' : 'flex-grow-[1] hover:flex-grow-[1.2]'"
+                        class="relative rounded-2xl overflow-hidden cursor-pointer transition-all duration-500 ease-in-out group flex-shrink-0 md:flex-shrink md:min-h-0"
+                        :class="[
+                            activeGrade === index ? 'md:flex-grow-[3]' : 'md:flex-grow-[1] md:hover:flex-grow-[1.2]',
+                            activeGrade === index ? 'min-h-[420px]' : 'min-h-[230px]'
+                        ]"
                         @click="activeGrade = index"
                         @mouseenter="activeGrade = index"
                     >
@@ -151,8 +155,11 @@ const enrichment = [
                         <div class="absolute inset-0 bg-black transition-opacity duration-300"
                              :class="isHoveringGrades ? 'opacity-70' : (activeGrade === index ? 'opacity-60' : 'opacity-50')"></div>
                         
-                        <!-- Content -->
-                        <div class="absolute bottom-0 left-0 right-0 p-4 md:p-8 flex flex-col justify-end h-full z-10">
+                        <!-- Content: extra top padding on mobile only when this panel is expanded -->
+                        <div 
+                            class="absolute bottom-0 left-0 right-0 p-4 pt-6 md:p-8 flex flex-col justify-end h-full z-10"
+                            :class="activeGrade === index ? 'pt-12 md:pt-8' : ''"
+                        >
                             <div class="transform transition-all duration-300"
                                  :class="activeGrade === index ? 'translate-y-0' : 'translate-y-4'">
                                 <!-- Background Bar for Title - Blue when collapsed, Yellow when expanded -->

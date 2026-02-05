@@ -135,13 +135,16 @@ const testimonials = [
             </div>
         </section>
 
-        <!-- Why Choose Silver - Interactive Panels -->
-        <section class="h-[600px] w-full flex bg-slate-900 overflow-hidden">
+        <!-- Why Choose Silver - Interactive Panels: vertical on mobile, horizontal on md+ -->
+        <section class="w-full flex flex-col md:flex-row bg-slate-900 overflow-hidden min-h-[980px] md:min-h-0 md:h-[600px]">
             <div 
                 v-for="(panel, index) in panels" 
                 :key="index"
-                class="relative transition-all duration-500 ease-in-out border-r border-white/20 last:border-r-0 cursor-pointer overflow-hidden group"
-                :class="activePanel === index ? 'flex-grow-[4]' : 'flex-grow-[1] hover:flex-grow-[1.2]'"
+                class="relative transition-all duration-500 ease-in-out cursor-pointer overflow-hidden group flex-shrink-0 md:flex-shrink border-b border-white/20 last:border-b-0 md:border-b-0 md:border-r md:last:border-r-0 md:min-h-0"
+                :class="[
+                    activePanel === index ? 'md:flex-grow-[4]' : 'md:flex-grow-[1] md:hover:flex-grow-[1.2]',
+                    activePanel === index ? 'min-h-[380px]' : 'min-h-[140px]'
+                ]"
                 @click="activePanel = index"
             >
                 <!-- Background Image -->
@@ -157,12 +160,12 @@ const testimonials = [
                           :class="activePanel === index ? 'opacity-0' : 'opacity-100'"></div>
                 </div>
 
-                <!-- Vertical Title (Inactive State) -->
+                <!-- Title: horizontal at top on mobile, vertical on md+ (Inactive State) -->
                 <div 
-                    class="absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-300"
+                    class="absolute inset-0 flex items-start pt-4 justify-center md:items-center md:pt-0 pointer-events-none transition-opacity duration-300"
                     :class="activePanel === index ? 'opacity-0' : 'opacity-100'"
                 >
-                    <h3 class="text-white font-bold text-xl uppercase tracking-widest whitespace-nowrap rotate-180 writing-vertical-lr select-none drop-shadow-md">
+                    <h3 class="panel-inactive-title text-white font-bold text-lg md:text-xl uppercase tracking-widest select-none drop-shadow-md text-center px-2">
                         {{ panel.title }}
                     </h3>
                 </div>
@@ -412,6 +415,17 @@ const testimonials = [
 <style scoped>
 .writing-vertical-lr {
     writing-mode: vertical-lr;
+}
+
+.panel-inactive-title {
+    white-space: normal;
+}
+@media (min-width: 768px) {
+    .panel-inactive-title {
+        writing-mode: vertical-lr;
+        transform: rotate(180deg);
+        white-space: nowrap;
+    }
 }
 </style>
 

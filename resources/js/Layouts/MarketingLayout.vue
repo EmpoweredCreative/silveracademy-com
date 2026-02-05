@@ -232,9 +232,13 @@ const socialLinks = [
                                 {{ item.name }}
                             </Link>
                             <div v-else>
-                                <div class="block px-3 py-2 text-base font-medium text-slate-700 rounded-md">
+                                <Link
+                                    :href="item.href"
+                                    class="block px-3 py-2 text-base font-medium text-slate-700 hover:bg-brand-50 hover:text-brand-600 rounded-md"
+                                    @click="mobileMenuOpen = false"
+                                >
                                     {{ item.name }}
-                                </div>
+                                </Link>
                                 <div class="pl-4 space-y-1">
                                     <Link
                                         v-for="child in item.children"
@@ -340,12 +344,12 @@ const socialLinks = [
                 </div>
             </div>
             
-            <!-- Bottom Bar -->
+            <!-- Bottom Bar: vertical stack on mobile, horizontal on md+ -->
             <div class="bg-brand-500">
                 <div class="mx-auto max-w-7xl px-6 py-4 lg:px-8">
-                    <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-                        <!-- Left: Social + Legal -->
-                        <div class="flex items-center gap-4">
+                    <div class="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-4">
+                        <!-- Left: Social + Legal (stacked vertically on mobile) -->
+                        <div class="flex flex-col items-center gap-3 md:flex-row md:items-center md:gap-4">
                             <div class="flex items-center gap-3">
                                 <a
                                     v-for="social in socialLinks"
@@ -359,15 +363,15 @@ const socialLinks = [
                                     </svg>
                                 </a>
                             </div>
-                            <div class="flex items-center gap-2 text-xs text-white uppercase tracking-wide">
+                            <div class="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-xs text-white uppercase tracking-wide text-center">
                                 <a href="#" class="hover:text-accent-300 transition-colors">Privacy Policy</a>
-                                <span>|</span>
+                                <span class="hidden sm:inline">|</span>
                                 <a href="#" class="hover:text-accent-300 transition-colors">Accessibility</a>
                             </div>
                         </div>
                         
-                        <!-- Right: Portal Links + Contact -->
-                        <div class="flex items-center gap-6">
+                        <!-- Right: Portal Links + Contact (stacked vertically on mobile) -->
+                        <div class="flex flex-col items-center gap-3 md:flex-row md:items-center md:gap-6">
                             <Link 
                                 :href="portalLink" 
                                 class="text-sm uppercase tracking-wide text-white hover:text-accent-300 transition-colors font-medium"
