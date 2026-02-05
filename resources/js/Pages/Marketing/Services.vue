@@ -26,6 +26,10 @@ const pillars = [
     { 
         title: 'Jewish Identity & Pride', 
         description: 'Daily engagement with Torah, tradition, and Jewish holidays builds confidence and connection.'
+    },
+    { 
+        title: 'Accessible Education', 
+        description: 'We are committed to making a Silver Academy education reachable for every family through generous scholarship programs and tuition assistance.'
     }
 ];
 

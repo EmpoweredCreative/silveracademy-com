@@ -352,12 +352,12 @@ const testimonials = [
                     <div class="bg-white p-8 rounded-2xl border-l-4 border-accent-500 shadow-sm">
                         <h4 class="font-bold text-slate-800 mb-2">EITC & OSTC Programs</h4>
                         <p class="text-slate-600 text-sm mb-4">Redirect PA state taxes to support scholarships.</p>
-                        <a href="#" class="text-brand-600 font-semibold hover:text-brand-700 text-sm flex items-center">
+                        <Link href="/get-involved/eitc-individual" class="text-brand-600 font-semibold hover:text-brand-700 text-sm flex items-center">
                             Learn more about EITC
                             <svg class="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                             </svg>
-                        </a>
+                        </Link>
                     </div>
                 </div>
             </div>
