@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
 import MarketingLayout from '@/Layouts/MarketingLayout.vue';
 
@@ -7,24 +7,6 @@ const activePanel = ref(5); // Default to Family Partnership (index 5)
 const activeGrade = ref(0); // Default to Ganeinu (index 0)
 const isHoveringGrades = ref(false);
 const isVideoLoaded = ref(false);
-
-// Popup state
-const showPopup = ref(false);
-
-onMounted(() => {
-    // Only show popup once per session
-    if (!sessionStorage.getItem('openHousePopupShown')) {
-        // Small delay so the page loads first
-        setTimeout(() => {
-            showPopup.value = true;
-        }, 500);
-    }
-});
-
-const closePopup = () => {
-    showPopup.value = false;
-    sessionStorage.setItem('openHousePopupShown', 'true');
-};
 
 const loadVideo = () => {
     isVideoLoaded.value = true;
@@ -134,63 +116,6 @@ const stats = [
     <Head title="Home - Central PA's Jewish Day School" />
 
     <MarketingLayout>
-        <!-- Open House Popup -->
-        <Teleport to="body">
-            <Transition
-                enter-active-class="transition-opacity duration-300"
-                enter-from-class="opacity-0"
-                enter-to-class="opacity-100"
-                leave-active-class="transition-opacity duration-300"
-                leave-from-class="opacity-100"
-                leave-to-class="opacity-0"
-            >
-                <div 
-                    v-if="showPopup" 
-                    class="fixed inset-0 z-50 flex items-center justify-center p-4"
-                    @click.self="closePopup"
-                >
-                    <!-- Backdrop -->
-                    <div class="absolute inset-0 bg-black/60"></div>
-                    
-                    <!-- Popup Content -->
-                    <div class="relative max-w-lg w-full animate-popup">
-                        <!-- Close Button -->
-                        <button 
-                            @click="closePopup"
-                            class="absolute -top-3 -right-3 z-10 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-slate-100 transition-colors"
-                            aria-label="Close popup"
-                        >
-                            <svg class="w-6 h-6 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                        
-                        <!-- Image Link -->
-                        <Link 
-                            href="/events/open-house"
-                            @click="closePopup"
-                            class="block rounded-t-xl overflow-hidden shadow-2xl hover:shadow-3xl transition-shadow"
-                        >
-                            <img 
-                                src="/img/popup/saopenhouse.png" 
-                                alt="Open House - Join us at The Silver Academy"
-                                class="w-full h-auto"
-                            />
-                        </Link>
-                        
-                        <!-- Button -->
-                        <Link 
-                            href="/events/open-house"
-                            @click="closePopup"
-                            class="block w-full py-4 bg-accent-500 text-white text-center font-semibold uppercase tracking-wider rounded-b-xl hover:bg-accent-600 transition-colors"
-                        >
-                            View Event Details
-                        </Link>
-                    </div>
-                </div>
-            </Transition>
-        </Teleport>
-
         <!-- Hero Section -->
         <section class="relative overflow-hidden" style="background-color: #f0f5fa;">
             <!-- Hero Video Background -->
