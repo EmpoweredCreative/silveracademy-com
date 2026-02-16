@@ -2,7 +2,7 @@
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import PortalLayout from '@/Layouts/PortalLayout.vue';
 import { ref, computed } from 'vue';
-import { PlusIcon, PencilIcon, TrashIcon, ArrowUpTrayIcon } from '@heroicons/vue/24/outline';
+import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
     entries: Array,
@@ -29,10 +29,6 @@ const cancelDelete = () => {
     confirmingDelete.value = null;
     deleteConfirmText.value = '';
 };
-
-const runImport = (force = false) => {
-    router.post('/portal/admin/staff-directory/import-from-csv', { force: force });
-};
 </script>
 
 <template>
@@ -43,7 +39,7 @@ const runImport = (force = false) => {
 
         <div class="space-y-6">
             <p class="text-slate-600">
-                This list appears on the public <a href="/staff" target="_blank" rel="noopener" class="text-brand-600 hover:underline">Staff page</a>. Add or edit entries here; the CSV is only used for the first-time import.
+                This list appears on the public <a href="/staff" target="_blank" rel="noopener" class="text-brand-600 hover:underline">Staff page</a>. Data is stored in the database; add or edit entries here.
             </p>
 
             <!-- Flash messages -->
@@ -63,22 +59,6 @@ const runImport = (force = false) => {
                     <PlusIcon class="w-4 h-4 mr-2" />
                     Add entry
                 </Link>
-                <button
-                    type="button"
-                    @click="runImport(false)"
-                    class="inline-flex items-center px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 transition-colors"
-                >
-                    <ArrowUpTrayIcon class="w-4 h-4 mr-2" />
-                    Import from CSV (first time only)
-                </button>
-                <button
-                    v-if="entries.length > 0"
-                    type="button"
-                    @click="runImport(true)"
-                    class="inline-flex items-center px-4 py-2 border border-amber-300 rounded-lg text-sm font-medium text-amber-800 bg-amber-50 hover:bg-amber-100 transition-colors"
-                >
-                    Replace all with CSV
-                </button>
             </div>
 
             <!-- Table -->
@@ -125,7 +105,7 @@ const runImport = (force = false) => {
                         </tr>
                         <tr v-if="entries.length === 0">
                             <td colspan="5" class="px-6 py-12 text-center text-slate-500">
-                                No entries yet. Add one or import from CSV (place <code class="bg-slate-100 px-1 rounded">storage/app/staff_directory.csv</code> and click Import).
+                                No entries yet. Run <code class="bg-slate-100 px-1 rounded">php artisan db:seed</code> to seed the staff directory, or add entries above.
                             </td>
                         </tr>
                     </tbody>

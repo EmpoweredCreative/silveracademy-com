@@ -155,7 +155,6 @@ Route::middleware(['auth', 'admin'])->prefix('portal/admin')->name('admin.')->gr
 
     // Staff Directory (public website staff page)
     Route::get('/staff-directory', [StaffDirectoryController::class, 'index'])->name('staff-directory.index');
-    Route::post('/staff-directory/import-from-csv', [StaffDirectoryController::class, 'importFromCsv'])->name('staff-directory.import-from-csv');
     Route::get('/staff-directory/create', [StaffDirectoryController::class, 'create'])->name('staff-directory.create');
     Route::post('/staff-directory', [StaffDirectoryController::class, 'store'])->name('staff-directory.store');
     Route::get('/staff-directory/{staffDirectory}/edit', [StaffDirectoryController::class, 'edit'])->name('staff-directory.edit');

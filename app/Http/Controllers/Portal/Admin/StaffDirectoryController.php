@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Portal\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\StaffDirectory;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Artisan;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -30,24 +29,6 @@ class StaffDirectoryController extends Controller
         return Inertia::render('Portal/Admin/StaffDirectory/Index', [
             'entries' => $entries,
         ]);
-    }
-
-    /**
-     * One-time import from CSV (storage/app/staff_directory.csv). Use --force to replace.
-     */
-    public function importFromCsv(Request $request)
-    {
-        $force = $request->boolean('force');
-        $exitCode = Artisan::call('staff-directory:import-from-csv', ['--force' => $force]);
-
-        if ($exitCode !== 0) {
-            $output = trim(Artisan::output());
-            return redirect()->route('admin.staff-directory.index')
-                ->with('error', $output ?: 'Import failed.');
-        }
-
-        return redirect()->route('admin.staff-directory.index')
-            ->with('success', trim(Artisan::output()) ?: 'Staff directory imported from CSV.');
     }
 
     /**
