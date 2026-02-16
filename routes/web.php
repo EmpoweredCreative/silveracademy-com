@@ -31,6 +31,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/about', [HomeController::class, 'about'])->name('about');
+Route::get('/staff', [HomeController::class, 'staff'])->name('staff');
 Route::get('/why-silver-academy', [HomeController::class, 'whySilverAcademy'])->name('why-silver-academy');
 Route::get('/our-community', [HomeController::class, 'ourCommunity'])->name('our-community');
 Route::get('/admissions', [HomeController::class, 'admissions'])->name('admissions');

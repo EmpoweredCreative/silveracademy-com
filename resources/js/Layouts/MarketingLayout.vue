@@ -29,7 +29,7 @@ const utilityNav = computed(() => [
             href: '/about',
             children: [
                 { name: 'Who We Are', href: '/about#our-story' },
-                { name: 'Leadership, Staff & Faculty (Coming Soon)', href: '#' },
+                { name: 'Leadership, Staff & Faculty', href: '/staff' },
                 { name: 'Why The Silver Academy', href: '/why-silver-academy' },
                 { name: 'Our Community', href: '/our-community' },
                 { name: 'Silver At A Glance', href: '#' },

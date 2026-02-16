@@ -20,7 +20,7 @@ const cards = [
     {
         title: 'MEET OUR AMAZING TEAM',
         image: '/img/graphics/about/websilver-meetourteachers.jpg',
-        link: '#'
+        link: '/staff'
     },
     {
         title: 'LEARN ABOUT OUR COMMUNITY',
