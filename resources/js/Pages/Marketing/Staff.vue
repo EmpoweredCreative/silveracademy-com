@@ -14,13 +14,14 @@ defineProps({
     <Head title="Leadership, Staff & Faculty - The Silver Academy" />
 
     <MarketingLayout>
-        <!-- Hero Section -->
-        <section class="relative h-[400px] overflow-hidden">
+        <!-- Hero Section: taller to fit teacher and students; positioned to minimize head space -->
+        <section class="relative h-[500px] overflow-hidden">
             <div class="absolute inset-0">
                 <img
-                    src="/img/graphics/about/websilver-meetourteachers.jpg"
+                    src="/img/graphics/admissions/web-silveracademyWhy A Jewish Day School.jpg"
                     alt="Meet our amazing staff"
-                    class="w-full h-full object-cover object-center"
+                    class="w-full h-full object-cover"
+                    style="object-position: 50% 22%;"
                 />
             </div>
         </section>
