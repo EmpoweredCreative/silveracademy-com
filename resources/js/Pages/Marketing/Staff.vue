@@ -41,7 +41,10 @@ defineProps({
         <!-- Staff Grid -->
         <section class="pt-10 pb-20 bg-white">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
-                <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-10">
+                <div v-if="staff.length === 0" class="text-center py-16 text-slate-500">
+                    <p class="text-lg">Staff listings will be updated soon.</p>
+                </div>
+                <div v-else class="grid sm:grid-cols-2 lg:grid-cols-3 gap-10">
                     <article
                         v-for="member in staff"
                         :key="member.name"
