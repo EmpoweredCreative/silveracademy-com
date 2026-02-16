@@ -15,6 +15,7 @@ use App\Http\Controllers\Portal\Admin\ApprovalController;
 use App\Http\Controllers\Portal\Admin\GradeController;
 use App\Http\Controllers\Portal\Admin\StudentImportController;
 use App\Http\Controllers\Portal\Admin\StaffController;
+use App\Http\Controllers\Portal\Admin\StaffDirectoryController;
 use App\Http\Controllers\Portal\Admin\StaffImportController;
 use App\Http\Controllers\Portal\Admin\ParentController;
 use App\Http\Controllers\Portal\Admin\LunchMenuImportController;
@@ -151,6 +152,15 @@ Route::middleware(['auth', 'admin'])->prefix('portal/admin')->name('admin.')->gr
     Route::post('/staff/{staff}/send-welcome', [StaffController::class, 'sendWelcomeEmail'])->name('staff.send-welcome');
     Route::post('/staff/send-bulk-welcome', [StaffController::class, 'sendBulkWelcomeEmails'])->name('staff.send-bulk-welcome');
     Route::post('/staff/send-all-pending-welcome', [StaffController::class, 'sendAllPendingWelcomeEmails'])->name('staff.send-all-pending-welcome');
+
+    // Staff Directory (public website staff page)
+    Route::get('/staff-directory', [StaffDirectoryController::class, 'index'])->name('staff-directory.index');
+    Route::post('/staff-directory/import-from-csv', [StaffDirectoryController::class, 'importFromCsv'])->name('staff-directory.import-from-csv');
+    Route::get('/staff-directory/create', [StaffDirectoryController::class, 'create'])->name('staff-directory.create');
+    Route::post('/staff-directory', [StaffDirectoryController::class, 'store'])->name('staff-directory.store');
+    Route::get('/staff-directory/{staffDirectory}/edit', [StaffDirectoryController::class, 'edit'])->name('staff-directory.edit');
+    Route::put('/staff-directory/{staffDirectory}', [StaffDirectoryController::class, 'update'])->name('staff-directory.update');
+    Route::delete('/staff-directory/{staffDirectory}', [StaffDirectoryController::class, 'destroy'])->name('staff-directory.destroy');
 
     // Parent Management
     Route::get('/parents', [ParentController::class, 'index'])->name('parents.index');

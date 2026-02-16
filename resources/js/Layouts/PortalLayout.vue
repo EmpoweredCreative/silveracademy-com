@@ -82,6 +82,7 @@ const navigation = computed(() => {
         items.push({ name: 'News & Events', href: '/portal/posts' })
         items.push({ name: 'Parents', href: '/portal/admin/parents' })
         items.push({ name: 'Staff', href: '/portal/admin/staff' })
+        items.push({ name: 'Staff Directory', href: '/portal/admin/staff-directory' })
         items.push({ name: 'Grades', href: '/portal/admin/grades' })
     } else if (effectiveRole.value === 'teacher') {
         // Teachers see link to public News & Events page (view only)
