@@ -118,7 +118,7 @@ const submit = () => {
                         </div>
                         
                         <form @submit.prevent="submit" class="space-y-5">
-                            <!-- Parent/Guardian Name -->
+                            <!-- Parent/Guardian Name (Edit 50: mandatory) -->
                             <div>
                                 <label for="parent_name" class="block text-sm font-medium text-slate-700 mb-2">
                                     Parent/Guardian Name <span class="text-red-500">*</span>
@@ -135,18 +135,17 @@ const submit = () => {
                             <!-- Student Name -->
                             <div>
                                 <label for="student_name" class="block text-sm font-medium text-slate-700 mb-2">
-                                    Student Name <span class="text-red-500">*</span>
+                                    Student Name
                                 </label>
                                 <input
                                     id="student_name"
                                     v-model="form.student_name"
                                     type="text"
-                                    required
                                     class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 px-4 py-3 border"
                                 />
                             </div>
 
-                            <!-- Email -->
+                            <!-- Email (Edit 50: mandatory) -->
                             <div>
                                 <label for="email" class="block text-sm font-medium text-slate-700 mb-2">
                                     Parent/Guardian Email <span class="text-red-500">*</span>
@@ -163,13 +162,12 @@ const submit = () => {
                             <!-- Phone -->
                             <div>
                                 <label for="phone" class="block text-sm font-medium text-slate-700 mb-2">
-                                    Parent/Guardian Phone Number <span class="text-red-500">*</span>
+                                    Parent/Guardian Phone Number
                                 </label>
                                 <input
                                     id="phone"
                                     v-model="form.phone"
                                     type="tel"
-                                    required
                                     class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 px-4 py-3 border"
                                 />
                             </div>
@@ -177,15 +175,14 @@ const submit = () => {
                             <!-- Grade of Interest -->
                             <div>
                                 <label for="grade_interest" class="block text-sm font-medium text-slate-700 mb-2">
-                                    Grade of Interest <span class="text-red-500">*</span>
+                                    Grade of Interest
                                 </label>
                                 <select
                                     id="grade_interest"
                                     v-model="form.grade_interest"
-                                    required
                                     class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 px-4 py-3 border"
                                 >
-                                    <option value="" disabled>Choose</option>
+                                    <option value="">Choose</option>
                                     <option v-for="grade in gradeOptions" :key="grade" :value="grade">{{ grade }}</option>
                                 </select>
                             </div>
@@ -193,15 +190,14 @@ const submit = () => {
                             <!-- School Year Interested In -->
                             <div>
                                 <label for="school_year" class="block text-sm font-medium text-slate-700 mb-2">
-                                    School Year Interested In <span class="text-red-500">*</span>
+                                    School Year Interested In
                                 </label>
                                 <select
                                     id="school_year"
                                     v-model="form.school_year"
-                                    required
                                     class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 px-4 py-3 border"
                                 >
-                                    <option value="" disabled>Choose</option>
+                                    <option value="">Choose</option>
                                     <option v-for="year in schoolYearOptions" :key="year" :value="year">{{ year }}</option>
                                 </select>
                             </div>
@@ -209,15 +205,14 @@ const submit = () => {
                             <!-- How did you hear about us? -->
                             <div>
                                 <label for="how_heard" class="block text-sm font-medium text-slate-700 mb-2">
-                                    How did you hear about us? <span class="text-red-500">*</span>
+                                    How did you hear about us?
                                 </label>
                                 <select
                                     id="how_heard"
                                     v-model="form.how_heard"
-                                    required
                                     class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 px-4 py-3 border"
                                 >
-                                    <option value="" disabled>Choose</option>
+                                    <option value="">Choose</option>
                                     <option v-for="option in howHeardOptions" :key="option" :value="option">{{ option }}</option>
                                 </select>
                             </div>
@@ -225,7 +220,7 @@ const submit = () => {
                             <!-- Would you like to schedule a tour? -->
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 mb-3">
-                                    Would you like to schedule a tour? <span class="text-red-500">*</span>
+                                    Would you like to schedule a tour?
                                 </label>
                                 <div class="space-y-2">
                                     <label class="flex items-center gap-3 cursor-pointer">
@@ -233,7 +228,6 @@ const submit = () => {
                                             type="radio"
                                             v-model="form.schedule_tour"
                                             value="Yes, please send me the link."
-                                            required
                                             class="w-4 h-4 text-brand-600 border-slate-300 focus:ring-brand-500"
                                         />
                                         <span class="text-slate-700">Yes, please send me the link.</span>
@@ -253,13 +247,12 @@ const submit = () => {
                             <!-- Questions or Anything You'd Like Us to Know -->
                             <div>
                                 <label for="message" class="block text-sm font-medium text-slate-700 mb-2">
-                                    Questions or Anything You'd Like Us to Know <span class="text-red-500">*</span>
+                                    Questions or Anything You'd Like Us to Know
                                 </label>
                                 <textarea
                                     id="message"
                                     v-model="form.message"
                                     rows="4"
-                                    required
                                     class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 px-4 py-3 border resize-none"
                                     placeholder="Share any specific questions or details you'd like us to be aware of."
                                 ></textarea>
@@ -333,7 +326,7 @@ const submit = () => {
                                     </div>
                                     <div>
                                         <h3 class="font-semibold text-slate-900 text-sm">Address</h3>
-                                        <p class="text-slate-600">3301 N Front St<br>Harrisburg, PA 17110</p>
+                                        <p class="text-slate-600">2986 N. 2nd Street<br>South Hall Building<br>Harrisburg, PA 17110</p>
                                     </div>
                                 </div>
                             </div>

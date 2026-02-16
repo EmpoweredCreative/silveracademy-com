@@ -15,25 +15,23 @@ import {
     <Head title="Life & Legacy - The Silver Academy" />
 
     <MarketingLayout>
-        <!-- Hero Section -->
+        <!-- Hero Section - Image only (Edit 46: header formatting matches other pages) -->
         <section class="relative h-[400px] overflow-hidden">
-            <div class="absolute inset-0">
-                <img 
-                    src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=1920&q=80" 
-                    alt="Generations" 
-                    class="w-full h-full object-cover object-center"
-                />
-                <div class="absolute inset-0 bg-brand-900/70 mix-blend-multiply"></div>
-            </div>
-            <div class="absolute inset-0 flex items-center justify-center text-center">
-                <div class="max-w-4xl px-4 sm:px-6 lg:px-8">
-                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-white mb-6">
-                        Life & Legacy
-                    </h1>
-                    <p class="text-xl md:text-2xl text-brand-100 font-medium max-w-2xl mx-auto">
-                        Build a Lasting Legacy for Jewish Education
-                    </p>
-                </div>
+            <img 
+                src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=1920&q=80" 
+                alt="Generations" 
+                class="w-full h-full object-cover object-center"
+            />
+        </section>
+        <!-- Hero Title - Below image -->
+        <section class="py-8 bg-white">
+            <div class="mx-auto max-w-7xl px-6 lg:px-8 text-center">
+                <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl text-slate-800 leading-tight tracking-tight">
+                    Life & Legacy
+                </h1>
+                <p class="mt-6 text-lg text-slate-600 max-w-2xl mx-auto">
+                    Build a Lasting Legacy for Jewish Education
+                </p>
             </div>
         </section>
 

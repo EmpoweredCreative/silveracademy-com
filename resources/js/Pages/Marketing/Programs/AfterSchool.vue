@@ -29,8 +29,8 @@ const reasons = [
                 style="object-position: center 30%;"
             />
         </section>
-        <!-- Hero Title - Below image -->
-        <section class="py-8 bg-white">
+        <!-- Hero Title - Below image (Edit 30: reduced spacing between h1 and paragraph) -->
+        <section class="pt-8 pb-4 bg-white">
             <div class="mx-auto max-w-7xl px-6 lg:px-8 text-center">
                 <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl text-slate-800 leading-tight tracking-tight">
                     Safe, Enriching, and Fun After the School Day
@@ -39,10 +39,10 @@ const reasons = [
         </section>
 
         <!-- Overview -->
-        <section class="py-20 bg-white">
+        <section class="pt-6 pb-20 bg-white">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
                 <div class="max-w-3xl mx-auto text-center">
-                    <p class="text-xl text-slate-600 leading-relaxed mb-6">
+                    <p class="text-lg text-slate-600 leading-relaxed mb-6">
                         A place where students can learn, play, and explore in a supportive environment.
                     </p>
                     <p class="text-lg text-slate-600 leading-relaxed">

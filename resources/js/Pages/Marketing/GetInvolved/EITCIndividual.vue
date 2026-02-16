@@ -15,26 +15,24 @@ import {
     <Head title="Individual EITC - The Silver Academy" />
 
     <MarketingLayout>
-        <!-- Hero Section -->
-        <section class="relative h-[350px] overflow-hidden">
-            <div class="absolute inset-0">
-                <img 
-                    src="/img/graphics/header/web-silveracademyHeader option1.jpg" 
-                    alt="Individual EITC Giving" 
-                    class="w-full h-full object-cover"
-                    style="object-position: center 40%;"
-                />
-                <div class="absolute inset-0 bg-brand-900/80 mix-blend-multiply"></div>
-            </div>
-            <div class="absolute inset-0 flex items-center justify-center text-center">
-                <div class="max-w-4xl px-4 sm:px-6 lg:px-8">
-                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-white mb-6">
-                        Individual EITC Giving
-                    </h1>
-                    <p class="text-xl text-brand-100 font-medium max-w-2xl mx-auto">
-                        Support Students Through Pennsylvania’s Educational Improvement Tax Credit Program
-                    </p>
-                </div>
+        <!-- Hero Section - Image only (Edit 43: header formatting matches other pages) -->
+        <section class="relative h-[400px] overflow-hidden">
+            <img 
+                src="/img/graphics/header/web-silveracademyHeader option1.jpg" 
+                alt="Individual EITC Giving" 
+                class="w-full h-full object-cover"
+                style="object-position: center 40%;"
+            />
+        </section>
+        <!-- Hero Title - Below image -->
+        <section class="py-8 bg-white">
+            <div class="mx-auto max-w-7xl px-6 lg:px-8 text-center">
+                <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl text-slate-800 leading-tight tracking-tight">
+                    Individual EITC Giving
+                </h1>
+                <p class="mt-6 text-lg text-slate-600 max-w-2xl mx-auto">
+                    Support Students Through Pennsylvania’s Educational Improvement Tax Credit Program
+                </p>
             </div>
         </section>
 

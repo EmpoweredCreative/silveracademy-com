@@ -59,7 +59,7 @@ const environment = [
                             Our Grades 5–8 program at The Silver Academy challenges students academically, socially, and spiritually, 
                             equipping them with the skills, confidence, and ethical grounding to succeed in high school and beyond.
                         </p>
-                        <p class="text-slate-600 leading-relaxed mb-8">
+                        <p class="text-slate-600 text-lg leading-relaxed mb-8">
                             Middle School students engage in rigorous coursework while exploring leadership, Jewish identity, and 
                             real-world applications of learning.
                         </p>

@@ -27,10 +27,10 @@ const environment = [
     <Head title="Lower School (Grades 1-4) - The Silver Academy" />
 
     <MarketingLayout>
-        <!-- Hero Section - Image only -->
+        <!-- Hero Section - Image only (Edit 25: updated header image) -->
         <section class="relative h-[400px] overflow-hidden">
             <img 
-                src="/img/graphics/programs/lower school/web-silveracademy2025_Silver Academy-747.jpg" 
+                src="/img/graphics/programs/lower school/websilver-lowerschool.png" 
                 alt="Lower School Classroom" 
                 class="w-full h-full object-cover" 
             />
@@ -52,14 +52,14 @@ const environment = [
                     <div>
                         <p class="text-brand-500 font-semibold uppercase tracking-widest text-sm mb-4">Why Lower School at Silver</p>
                         <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl text-slate-800 leading-tight mb-6">
-                            Integrated Learning for Academic Excellence
+                            Rigorous Academics and Jewish Values
                         </h2>
                         <p class="text-slate-600 text-lg leading-relaxed mb-4">
                             At The Silver Academy, Grades 1–4 combine rigorous academics with a rich Judaic curriculum, 
                             nurturing analytical thinking, ethical reasoning, and a love of learning. Our integrated approach 
                             allows students to explore general and Jewish studies together.
                         </p>
-                        <p class="text-slate-600 leading-relaxed mb-8">
+                        <p class="text-slate-600 text-lg leading-relaxed mb-8">
                             With small class sizes and individualized attention, every student is seen, supported, and challenged 
                             to grow academically, socially, and spiritually.
                         </p>

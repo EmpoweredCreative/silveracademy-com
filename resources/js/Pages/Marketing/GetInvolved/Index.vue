@@ -62,10 +62,10 @@ const opportunities = [
             </div>
             <div class="bg-white py-12 px-4 sm:px-6 lg:px-8 text-center">
                 <div class="max-w-3xl mx-auto">
-                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-slate-900 mb-6">
+                    <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl text-slate-800 leading-tight tracking-tight mb-6">
                         Get Involved
                     </h1>
-                    <p class="text-xl md:text-2xl text-slate-600 font-medium max-w-2xl mx-auto">
+                    <p class="text-lg text-slate-600 leading-relaxed max-w-2xl mx-auto">
                         Your support helps us provide a vibrant, values-driven education for every child.
                     </p>
                 </div>
@@ -76,8 +76,8 @@ const opportunities = [
         <section class="py-20 bg-white">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-16">
-                    <h2 class="text-3xl font-serif font-bold text-slate-900 sm:text-4xl">Make a Difference</h2>
-                    <p class="mt-4 text-lg text-slate-600 max-w-3xl mx-auto">
+                    <h2 class="font-serif text-3xl font-bold text-slate-800 mb-4">Make a Difference</h2>
+                    <p class="text-lg text-slate-600 leading-relaxed max-w-3xl mx-auto">
                         There are many ways to get involved with The Silver Academy. Whether through direct giving, tax credit programs, planned giving, or community fundraisers, your contribution matters.
                     </p>
                 </div>
@@ -92,7 +92,7 @@ const opportunities = [
                             <div :class="['w-14 h-14 rounded-full flex items-center justify-center mb-6', item.color]">
                                 <component :is="item.icon" class="w-8 h-8" />
                             </div>
-                            <h3 class="text-2xl font-serif font-bold text-slate-900 mb-4">
+                            <h3 class="font-serif text-2xl font-bold text-slate-800 mb-4">
                                 {{ item.title }}
                             </h3>
                             <p class="text-slate-600 leading-relaxed mb-6">
@@ -152,21 +152,17 @@ const opportunities = [
             </div>
         </section>
 
-        <!-- Call to Action -->
-        <section class="py-16 bg-slate-50 border-t border-slate-200">
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-                <h2 class="text-2xl font-serif font-bold text-slate-900 mb-4">
-                    Have questions about giving?
-                </h2>
-                <p class="text-slate-600 mb-8 max-w-2xl mx-auto">
-                    We'd love to discuss how you can make a meaningful impact. Contact our development office to learn more about giving opportunities.
-                </p>
-                <Link
-                    href="/contact"
-                    class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-brand-600 hover:bg-brand-700 transition-colors shadow-sm"
-                >
-                    Contact Us
-                </Link>
+        <!-- Call to Action (same format as Fundraisers page) -->
+        <section class="py-16 bg-white border-t border-slate-200">
+            <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-2xl font-bold text-slate-900 mb-4">Questions or Need Help?</h2>
+                <p class="text-slate-600 mb-8">For assistance with any of our fundraising programs, please contact:</p>
+                
+                <div class="inline-block bg-slate-50 p-8 rounded-xl">
+                    <p class="font-bold text-lg text-slate-900">Office of Development</p>
+                    <p class="text-brand-600 mb-2"><a href="mailto:development@silveracademypa.org" class="hover:text-brand-700 transition-colors">development@silveracademypa.org</a></p>
+                    <p class="text-brand-600"><a href="tel:717-238-8775" class="hover:text-brand-700 transition-colors">717-238-8775</a></p>
+                </div>
             </div>
         </section>
     </MarketingLayout>

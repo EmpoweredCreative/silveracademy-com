@@ -14,25 +14,23 @@ import {
     <Head title="Fundraisers - The Silver Academy" />
 
     <MarketingLayout>
-        <!-- Hero Section -->
-        <section class="relative h-[350px] overflow-hidden">
-            <div class="absolute inset-0">
-                <img 
-                    src="https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=1920&q=80" 
-                    alt="Fundraisers" 
-                    class="w-full h-full object-cover object-center"
-                />
-                <div class="absolute inset-0 bg-brand-900/80 mix-blend-multiply"></div>
-            </div>
-            <div class="absolute inset-0 flex items-center justify-center text-center">
-                <div class="max-w-4xl px-4 sm:px-6 lg:px-8">
-                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-white mb-6">
-                        Fundraisers
-                    </h1>
-                    <p class="text-xl text-brand-100 font-medium max-w-2xl mx-auto">
-                        Supporting our school is easy—shop, scan, and collect!
-                    </p>
-                </div>
+        <!-- Hero Section - Image only (Edit 47: header formatting matches other pages) -->
+        <section class="relative h-[400px] overflow-hidden">
+            <img 
+                src="https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=1920&q=80" 
+                alt="Fundraisers" 
+                class="w-full h-full object-cover object-center"
+            />
+        </section>
+        <!-- Hero Title - Below image -->
+        <section class="py-8 bg-white">
+            <div class="mx-auto max-w-7xl px-6 lg:px-8 text-center">
+                <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl text-slate-800 leading-tight tracking-tight">
+                    Fundraisers
+                </h1>
+                <p class="mt-6 text-lg text-slate-600 max-w-2xl mx-auto">
+                    Supporting our school is easy—shop, scan, and collect!
+                </p>
             </div>
         </section>
 

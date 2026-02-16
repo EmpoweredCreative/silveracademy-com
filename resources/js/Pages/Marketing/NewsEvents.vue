@@ -68,18 +68,24 @@ const getExcerpt = (content, length = 150) => {
     <Head title="News & Events" />
 
     <MarketingLayout>
-        <!-- Hero Section -->
-        <section class="bg-gradient-to-br from-brand-600 to-brand-800 py-16 lg:py-24">
-            <div class="mx-auto max-w-7xl px-6 lg:px-8">
-                <div class="text-center">
-                    <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl text-white tracking-tight">
-                        News & Events
-                    </h1>
-                    <p class="mt-6 text-lg text-brand-100 max-w-2xl mx-auto">
-                        Stay connected with the latest happenings at The Silver Academy. 
-                        From school announcements to upcoming events, find everything here.
-                    </p>
-                </div>
+        <!-- Hero Section - Image only (Edit 33: updated header image) -->
+        <section class="relative h-[400px] overflow-hidden">
+            <img 
+                src="/img/graphics/newsevents/websilver-newsandevents.png" 
+                alt="News & Events" 
+                class="w-full h-full object-cover" 
+            />
+        </section>
+        <!-- Hero Title & Text - Below image (Edit 34: text placement like other pages) -->
+        <section class="py-8 bg-white">
+            <div class="mx-auto max-w-7xl px-6 lg:px-8 text-center">
+                <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl text-slate-800 leading-tight tracking-tight">
+                    News & Events
+                </h1>
+                <p class="mt-6 text-lg text-slate-600 max-w-2xl mx-auto">
+                    Stay connected with the latest happenings at The Silver Academy. 
+                    From school announcements to upcoming events, find everything here.
+                </p>
             </div>
         </section>
 

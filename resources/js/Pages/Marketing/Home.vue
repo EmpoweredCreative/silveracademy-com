@@ -5,6 +5,8 @@ import MarketingLayout from '@/Layouts/MarketingLayout.vue';
 
 const activePanel = ref(5); // Default to Family Partnership (index 5)
 const activeGrade = ref(0); // Default to Ganeinu (index 0)
+const hoveredPanel = ref(null); // Full expansion on hover (Edit 5)
+const hoveredGrade = ref(null);
 const isHoveringGrades = ref(false);
 const isVideoLoaded = ref(false);
 
@@ -28,7 +30,7 @@ const panels = [
     {
         title: 'Restorative Culture',
         description: 'We prioritize social-emotional learning and character development, building a community rooted in empathy, respect, and mutual responsibility.',
-        image: 'https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&w=800&q=80',
+        image: '/img/graphics/home/web-silverRestoration.jpg',
         link: '/about#why-silver-academy'
     },
     {
@@ -116,10 +118,10 @@ const stats = [
     <Head title="Home - Central PA's Jewish Day School" />
 
     <MarketingLayout>
-        <!-- Hero Section -->
-        <section class="relative overflow-hidden" style="background-color: #f0f5fa;">
-            <!-- Hero Video Background -->
-            <div class="absolute inset-0">
+        <!-- Hero Section - Video banner (no overlay), text underneath (Edits 1, 2, 3) -->
+        <!-- Video banner - shorter height so text and video visible on load -->
+        <section class="relative overflow-hidden bg-slate-900">
+            <div class="h-[280px] sm:h-[360px] lg:h-[420px] w-full">
                 <video 
                     autoplay 
                     muted 
@@ -129,11 +131,12 @@ const stats = [
                 >
                     <source src="/vid/Broll Header.mp4" type="video/mp4">
                 </video>
-                <!-- Overlay for Text Readability -->
-                <div class="absolute inset-0 bg-[#f0f5fa]/70 z-10"></div>
             </div>
-            
-            <div class="relative z-20 mx-auto max-w-7xl px-6 py-20 sm:py-28 lg:px-8 lg:py-36">
+        </section>
+        
+        <!-- Hero text - below video, no overlay, larger text (Edit 3) -->
+        <section class="pt-12 pb-6 sm:py-16 lg:py-20 bg-white">
+            <div class="mx-auto max-w-7xl px-6 lg:px-8">
                 <div class="text-center max-w-4xl mx-auto">
                     <!-- Label -->
                     <div class="mb-6">
@@ -142,13 +145,13 @@ const stats = [
                         </span>
                     </div>
                     
-                    <!-- Main Headline - Serif Font -->
-                    <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl text-slate-600 leading-tight tracking-tight font-bold">
+                    <!-- Main Headline - Increased size for readability (Edit 3) -->
+                    <h1 class="font-serif text-5xl sm:text-6xl lg:text-7xl text-slate-600 leading-tight tracking-tight font-bold">
                         Igniting a Lifelong Love of Learning, Jewish Identity, and Purposeful Living
                     </h1>
                     
-                    <!-- Subheadline -->
-                    <p class="mt-8 text-lg sm:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
+                    <!-- Subheadline - Increased size -->
+                    <p class="mt-8 text-xl sm:text-2xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
                         Rooted in rigorous academics and Jewish values, our small-class learning environment 
                         empowers Pre-K through 8th graders to grow with confidence, curiosity, and character 
                         here in Central Pennsylvania.
@@ -175,9 +178,9 @@ const stats = [
             </div>
         </section>
 
-        <!-- Organizational Video Section -->
+        <!-- Organizational Video Section (Edit 4: tighter gap on mobile) -->
         <section class="w-full bg-white">
-            <div class="mx-auto max-w-7xl px-6 lg:px-8 py-12">
+            <div class="mx-auto max-w-7xl px-6 lg:px-8 pt-6 pb-4 sm:py-12">
                 <div class="aspect-video relative overflow-hidden group rounded-2xl shadow-xl">
                     <!-- YouTube iframe (loaded on click) -->
                     <iframe
@@ -218,8 +221,8 @@ const stats = [
             </div>
         </section>
 
-        <!-- Value Proposition Section -->
-        <section class="py-16 bg-white text-center">
+        <!-- Value Proposition Section (Edit 4: tighter gap from org video on mobile) -->
+        <section class="pt-6 pb-16 sm:py-16 bg-white text-center">
             <div class="mx-auto max-w-4xl px-6 lg:px-8">
                 <h2 class="font-serif text-3xl sm:text-4xl text-slate-800 tracking-tight mb-6">
                     A School That Sees, Supports, and Nurtures Every Child
@@ -231,45 +234,52 @@ const stats = [
             </div>
         </section>
 
-        <!-- Interactive Panels Section: vertical stack on mobile, horizontal on md+ -->
+        <!-- Interactive Panels Section: tiles fully expand on hover (Edit 5) -->
         <section class="w-full flex flex-col md:flex-row bg-slate-900 overflow-hidden min-h-[840px] md:min-h-0 md:h-[600px]">
             <div 
                 v-for="(panel, index) in panels" 
                 :key="index"
                 class="relative transition-all duration-500 ease-in-out cursor-pointer overflow-hidden group flex-shrink-0 md:flex-shrink border-b border-white/20 last:border-b-0 md:border-b-0 md:border-r md:last:border-r-0 md:min-h-0"
                 :class="[
-                    activePanel === index ? 'md:flex-grow-[4]' : 'md:flex-grow-[1] md:hover:flex-grow-[1.2]',
-                    activePanel === index ? 'min-h-[380px]' : 'min-h-[140px]'
+                    (hoveredPanel !== null ? hoveredPanel === index : activePanel === index) ? 'md:flex-grow-[4]' : 'md:flex-grow-[1]',
+                    (hoveredPanel !== null ? hoveredPanel === index : activePanel === index) ? 'min-h-[380px]' : 'min-h-[140px]'
                 ]"
                 @click="activePanel = index"
+                @mouseenter="hoveredPanel = index"
+                @mouseleave="hoveredPanel = null"
             >
-                <!-- Background Image -->
+                <!-- Background Image (Edit 7: object-position on mobile for Dual Curriculum & Family Partnership to show faces) -->
                 <div class="absolute inset-0 transition-transform duration-700 ease-out"
-                     :class="activePanel === index ? 'scale-100' : 'scale-110 grayscale group-hover:grayscale-0'">
-                    <img :src="panel.image" :alt="panel.title" class="w-full h-full object-cover" />
+                     :class="(hoveredPanel !== null ? hoveredPanel === index : activePanel === index) ? 'scale-100' : 'scale-110 grayscale group-hover:grayscale-0'">
+                    <img 
+                        :src="panel.image" 
+                        :alt="panel.title" 
+                        class="w-full h-full object-cover"
+                        :class="(panel.title === 'Dual Curriculum' || panel.title === 'Family Partnership') ? 'max-md:object-top' : ''"
+                    />
                     <!-- Overlay -->
                     <div class="absolute inset-0 bg-brand-900/40 transition-opacity duration-300"
-                         :class="activePanel === index ? 'opacity-20' : 'opacity-60 group-hover:opacity-40'"></div>
+                         :class="(hoveredPanel !== null ? hoveredPanel === index : activePanel === index) ? 'opacity-20' : 'opacity-60 group-hover:opacity-40'"></div>
                      
                      <!-- Blue overlay for inactive tabs -->
                      <div class="absolute inset-0 bg-brand-600/80 mix-blend-multiply transition-opacity duration-300"
-                          :class="activePanel === index ? 'opacity-0' : 'opacity-100'"></div>
+                          :class="(hoveredPanel !== null ? hoveredPanel === index : activePanel === index) ? 'opacity-0' : 'opacity-100'"></div>
                 </div>
 
                 <!-- Title: horizontal at top on mobile, vertical centered on md+ (Inactive State) -->
                 <div 
                     class="absolute inset-0 flex items-start pt-4 justify-center md:items-center md:pt-0 pointer-events-none transition-opacity duration-300"
-                    :class="activePanel === index ? 'opacity-0' : 'opacity-100'"
+                    :class="(hoveredPanel !== null ? hoveredPanel === index : activePanel === index) ? 'opacity-0' : 'opacity-100'"
                 >
                     <h3 class="panel-inactive-title text-white font-bold text-lg md:text-xl uppercase tracking-widest select-none drop-shadow-md text-center px-2">
                         {{ panel.title }}
                     </h3>
                 </div>
 
-                <!-- Content (Active State) -->
+                <!-- Content (Active State) - shown when active or hovered -->
                 <div 
                     class="absolute bottom-0 left-0 right-0 p-8 md:p-12 transition-all duration-500 transform"
-                    :class="activePanel === index ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'"
+                    :class="(hoveredPanel !== null ? hoveredPanel === index : activePanel === index) ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'"
                 >
                     <div class="bg-white/95 backdrop-blur-sm p-8 rounded-lg shadow-xl max-w-xl mx-auto md:mx-0">
                         <h3 class="text-2xl font-serif font-bold text-slate-800 mb-4">{{ panel.title }}</h3>
@@ -289,8 +299,8 @@ const stats = [
             </div>
         </section>
 
-        <!-- Stats & Grade Levels Section -->
-        <section class="py-24 bg-white">
+        <!-- Stats & Grade Levels Section (Edit 11: tighter gap to "Be Part of a School" on mobile) -->
+        <section class="pt-24 pb-12 sm:py-24 bg-white">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
                 <!-- Stats Row -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-12 text-center mb-24">
@@ -300,9 +310,9 @@ const stats = [
                     </div>
                 </div>
 
-                <!-- Section Title -->
+                <!-- Section Title (Edit 7: allow wrap on mobile so "Growing Confident, Compassionate..." isn't cut off) -->
                 <div class="text-center max-w-3xl mx-auto mb-16">
-                    <h2 class="font-serif text-3xl sm:text-4xl text-slate-800 tracking-tight mb-6 whitespace-nowrap">
+                    <h2 class="font-serif text-3xl sm:text-4xl text-slate-800 tracking-tight mb-6 whitespace-normal sm:whitespace-nowrap">
                         Growing Confident, Compassionate, and Curious Students
                     </h2>
                     <p class="text-lg text-slate-600 leading-relaxed">
@@ -313,18 +323,19 @@ const stats = [
                     </p>
                 </div>
 
-                <!-- Grade Levels: vertical stack on mobile, horizontal on md+ -->
-                <div class="flex flex-col md:flex-row w-full gap-2 min-h-[920px] md:min-h-0 md:h-[500px]" @mouseenter="isHoveringGrades = true" @mouseleave="isHoveringGrades = false">
+                <!-- Grade Levels: tiles fully expand on hover (Edit 5) -->
+                <div class="flex flex-col md:flex-row w-full gap-2 min-h-[920px] md:min-h-0 md:h-[500px]" @mouseenter="isHoveringGrades = true" @mouseleave="isHoveringGrades = false; hoveredGrade = null">
                     <div 
                         v-for="(grade, index) in gradeLevels" 
                         :key="index"
                         class="relative rounded-2xl overflow-hidden cursor-pointer transition-all duration-500 ease-in-out group flex-shrink-0 md:flex-shrink md:min-h-0"
                         :class="[
-                            activeGrade === index ? 'md:flex-grow-[3]' : 'md:flex-grow-[1] md:hover:flex-grow-[1.2]',
-                            activeGrade === index ? 'min-h-[420px]' : 'min-h-[230px]'
+                            (activeGrade === index || hoveredGrade === index) ? 'md:flex-grow-[3]' : 'md:flex-grow-[1]',
+                            (activeGrade === index || hoveredGrade === index) ? 'min-h-[420px]' : 'min-h-[230px]'
                         ]"
                         @click="activeGrade = index"
-                        @mouseenter="activeGrade = index"
+                        @mouseenter="activeGrade = index; hoveredGrade = index"
+                        @mouseleave="hoveredGrade = null"
                     >
                         <img 
                             :src="grade.image" 
@@ -332,8 +343,9 @@ const stats = [
                             class="absolute inset-0 w-full h-full object-cover transition-transform duration-700"
                             :class="activeGrade === index ? 'scale-100' : 'scale-110'"
                         />
+                        <!-- Edit 8: No overlay when collapsed; overlay only on hover/expand when text appears -->
                         <div class="absolute inset-0 bg-black transition-opacity duration-300"
-                             :class="isHoveringGrades ? 'opacity-70' : (activeGrade === index ? 'opacity-60' : 'opacity-50')"></div>
+                             :class="(activeGrade === index || hoveredGrade === index) ? 'opacity-60' : 'opacity-0'"></div>
                         
                         <!-- Content: extra top padding on mobile only when this panel is expanded -->
                         <div 
@@ -385,8 +397,8 @@ const stats = [
             </div>
         </section>
 
-        <!-- Family Community Section -->
-        <section class="py-24 bg-white">
+        <!-- Family Community Section (Edit 11: tighter gap from programs on mobile) -->
+        <section class="pt-12 pb-24 sm:py-24 bg-white">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
                 <div class="text-center max-w-4xl mx-auto">
                     <!-- Star of David Icon -->
@@ -437,10 +449,10 @@ const stats = [
         <!-- Testimonial Section -->
         <section class="relative py-0">
             <div class="relative h-[600px] md:h-[700px]">
-                <!-- Background Image -->
+                <!-- Background Image (Edit 9: parent testimonial photo) -->
                 <img 
-                    src="/img/graphics/home/web-silveracademyQuote.jpg" 
-                    alt="Happy student at Silver Academy" 
+                    src="/img/graphics/home/parenttestimonial.png" 
+                    alt="Parent testimonial - Silver Academy" 
                     class="absolute inset-0 w-full h-full object-cover"
                 />
                 
@@ -463,9 +475,9 @@ const stats = [
                                 opportunity to see new perspectives.
                             </p>
                             
-                            <!-- Attribution -->
+                            <!-- Attribution (Edit 10) -->
                             <p class="text-right text-slate-600 font-medium">
-                                —PARENT
+                                —Lindsay J.<br />Parent
                             </p>
                         </div>
                     </div>

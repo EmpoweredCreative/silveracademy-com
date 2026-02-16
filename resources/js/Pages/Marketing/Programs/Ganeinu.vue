@@ -25,10 +25,10 @@ const outcomes = [
     <Head title="Ganeinu (Early Childhood) - The Silver Academy" />
 
     <MarketingLayout>
-        <!-- Hero Section - Image only -->
+        <!-- Hero Section - Image only (Edit 22: updated header image) -->
         <section class="relative h-[400px] overflow-hidden">
             <img 
-                src="/img/graphics/programs/ganeinu/web-silveracademyIMG_6289%202.jpg" 
+                src="/img/graphics/programs/ganeinu/websilver-ganeinu.png" 
                 alt="Ganeinu Early Childhood" 
                 class="w-full h-full object-cover"
                 style="object-position: center 30%;"
@@ -58,7 +58,7 @@ const outcomes = [
                             confidence, and a love of learning. Students engage in hands-on experiences that build foundational 
                             academic, social, and emotional skills.
                         </p>
-                        <p class="text-slate-600 leading-relaxed mb-8">
+                        <p class="text-slate-600 text-lg leading-relaxed mb-8">
                             Children explore Jewish heritage, traditions, and values in a warm, nurturing environment—gaining 
                             the tools they need to thrive in school and beyond.
                         </p>
@@ -93,13 +93,13 @@ const outcomes = [
                         </a>
                     </div>
 
-                    <!-- Right Image with Decorative Background -->
+                    <!-- Right Image (Edit 24: moved current header photo here) -->
                     <div class="relative h-full min-h-[500px]">
                         <!-- Decorative angled background -->
                         <div class="absolute inset-0 bg-brand-500 rounded-2xl transform rotate-3"></div>
-                        <!-- Main image -->
+                        <!-- Main image - former header photo -->
                         <img 
-                            src="/img/graphics/programs/ganeinu/web-silveracademyIMG_6136.jpg" 
+                            src="/img/graphics/programs/ganeinu/web-silveracademyIMG_6289%202.jpg" 
                             alt="Ganeinu students learning" 
                             class="absolute inset-0 w-full h-full object-cover rounded-2xl transform -rotate-3 hover:rotate-0 transition-transform duration-500 shadow-xl"
                         />
@@ -108,10 +108,10 @@ const outcomes = [
             </div>
         </section>
 
-        <!-- Schedule & Drop-Off -->
+        <!-- Schedule & Drop-Off (Edit 23: lunch removed) -->
         <section class="py-20 bg-brand-50">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
-                <div class="grid md:grid-cols-2 gap-12 items-start">
+                <div class="max-w-2xl">
                     <div class="bg-white p-8 rounded-xl shadow-sm">
                         <h2 class="font-serif text-2xl font-bold text-slate-800 mb-6">Schedule & Drop-Off</h2>
                         <div class="space-y-4 text-slate-600">
@@ -121,16 +121,6 @@ const outcomes = [
                                 <li>Students arriving from outside may be dropped off at the Ganeinu room.</li>
                                 <li>Each session begins with a small opening activity (12:00–12:15 pm) before lunch to help students settle in and connect.</li>
                             </ul>
-                        </div>
-                    </div>
-                    <div class="bg-white p-8 rounded-xl shadow-sm">
-                        <h2 class="font-serif text-2xl font-bold text-slate-800 mb-6">Lunch</h2>
-                        <div class="space-y-4 text-slate-600">
-                            <p>
-                                Students eat together in the Silver Academy lunchroom at 12:15 pm, sharing the space with lower grades and middle schoolers. 
-                                After lunch, they recite the first paragraph of Bircat Hamazon (Grace after Meals), and by January, most students can sing 
-                                along with this foundational t’fillah (prayer).
-                            </p>
                         </div>
                     </div>
                 </div>

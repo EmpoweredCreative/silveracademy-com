@@ -52,7 +52,7 @@ const judaicStudies = [
                             through curiosity, creativity, and collaboration. Students engage in a rigorous, values-driven curriculum 
                             that balances academic achievement with Jewish identity.
                         </p>
-                        <p class="text-slate-600 leading-relaxed mb-8">
+                        <p class="text-slate-600 text-lg leading-relaxed mb-8">
                             Each child receives individualized attention, fostering confidence, independence, and a love of learning 
                             that prepares them for success in school and beyond.
                         </p>

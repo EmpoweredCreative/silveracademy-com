@@ -64,17 +64,17 @@ class ContactController extends Controller
             return back()->with('error', 'Your message contains too many links. Please remove them and try again.');
         }
 
-        // Enhanced validation with spam detection
+        // Enhanced validation with spam detection (Edit 50: only parent_name and email required)
         $validated = $request->validate([
             'parent_name' => 'required|string|max:255|regex:/^[a-zA-Z\s\-\'\.]+$/u',
-            'student_name' => 'required|string|max:255|regex:/^[a-zA-Z\s\-\'\.]+$/u',
+            'student_name' => 'nullable|string|max:255|regex:/^[a-zA-Z\s\-\'\.]+$/u',
             'email' => 'required|email:rfc,dns|max:255',
-            'phone' => 'required|string|max:50|regex:/^[\d\s\-\+\(\)]+$/',
-            'grade_interest' => 'required|string|max:255|in:Pre-K,Kindergarten,1st Grade,2nd Grade,3rd Grade,4th Grade,5th Grade,6th Grade,7th Grade,8th Grade,Undecided',
-            'school_year' => 'required|string|max:255|in:2025-2026,2026-2027,2027-2028,Not sure',
-            'how_heard' => 'required|string|max:255',
-            'schedule_tour' => 'required|string|max:255|in:Yes, please send me the link.,Not yet — I\'d like more information first.',
-            'message' => 'required|string|min:10|max:5000',
+            'phone' => 'nullable|string|max:50|regex:/^[\d\s\-\+\(\)]*$/',
+            'grade_interest' => 'nullable|string|max:255',
+            'school_year' => 'nullable|string|max:255',
+            'how_heard' => 'nullable|string|max:255',
+            'schedule_tour' => 'nullable|string|max:255',
+            'message' => 'nullable|string|min:1|max:5000',
             'subscribe' => 'boolean',
             'form_timestamp' => 'required|integer',
         ], [
@@ -108,7 +108,9 @@ class ContactController extends Controller
                 config('services.sendgrid.from_email'),
                 config('services.sendgrid.from_name')
             );
-            $email->setSubject('Admissions Inquiry: ' . $validated['student_name'] . ' - ' . $validated['grade_interest']);
+            $subjectName = ! empty($validated['student_name']) ? $validated['student_name'] : $validated['parent_name'];
+            $subjectGrade = $validated['grade_interest'] ?? 'Inquiry';
+            $email->setSubject('Admissions Inquiry: ' . $subjectName . ' - ' . $subjectGrade);
             $email->addTo(
                 config('services.sendgrid.to_email'),
                 config('services.sendgrid.to_name')
@@ -124,21 +126,21 @@ class ContactController extends Controller
             $content .= "CONTACT INFORMATION\n";
             $content .= "-------------------\n";
             $content .= "Parent/Guardian Name: {$validated['parent_name']}\n";
-            $content .= "Student Name: {$validated['student_name']}\n";
+            $content .= "Student Name: " . ($validated['student_name'] ?? '—') . "\n";
             $content .= "Email: {$validated['email']}\n";
-            $content .= "Phone: {$validated['phone']}\n\n";
+            $content .= "Phone: " . ($validated['phone'] ?? '—') . "\n\n";
             $content .= "ENROLLMENT INTEREST\n";
             $content .= "-------------------\n";
-            $content .= "Grade of Interest: {$validated['grade_interest']}\n";
-            $content .= "School Year: {$validated['school_year']}\n";
-            $content .= "Schedule a Tour: {$validated['schedule_tour']}\n\n";
+            $content .= "Grade of Interest: " . ($validated['grade_interest'] ?? '—') . "\n";
+            $content .= "School Year: " . ($validated['school_year'] ?? '—') . "\n";
+            $content .= "Schedule a Tour: " . ($validated['schedule_tour'] ?? '—') . "\n\n";
             $content .= "ADDITIONAL INFO\n";
             $content .= "-------------------\n";
-            $content .= "How They Heard About Us: {$validated['how_heard']}\n";
+            $content .= "How They Heard About Us: " . ($validated['how_heard'] ?? '—') . "\n";
             $content .= "Subscribe to Email List: {$subscribeStatus}\n\n";
             $content .= "QUESTIONS/COMMENTS\n";
             $content .= "-------------------\n";
-            $content .= "{$validated['message']}\n";
+            $content .= ($validated['message'] ?? '—') . "\n";
             
             $email->addContent("text/plain", $content);
             
@@ -147,26 +149,29 @@ class ContactController extends Controller
             $htmlContent .= "<h3 style='color: #1e3a5f; border-bottom: 2px solid #f5a623; padding-bottom: 8px;'>Contact Information</h3>";
             $htmlContent .= "<table style='width: 100%; border-collapse: collapse;'>";
             $htmlContent .= "<tr><td style='padding: 8px 0; font-weight: bold; width: 200px;'>Parent/Guardian Name:</td><td style='padding: 8px 0;'>" . htmlspecialchars($validated['parent_name']) . "</td></tr>";
-            $htmlContent .= "<tr><td style='padding: 8px 0; font-weight: bold;'>Student Name:</td><td style='padding: 8px 0;'>" . htmlspecialchars($validated['student_name']) . "</td></tr>";
+            $htmlContent .= "<tr><td style='padding: 8px 0; font-weight: bold;'>Student Name:</td><td style='padding: 8px 0;'>" . htmlspecialchars($validated['student_name'] ?? '—') . "</td></tr>";
             $htmlContent .= "<tr><td style='padding: 8px 0; font-weight: bold;'>Email:</td><td style='padding: 8px 0;'><a href='mailto:" . htmlspecialchars($validated['email']) . "'>" . htmlspecialchars($validated['email']) . "</a></td></tr>";
-            $htmlContent .= "<tr><td style='padding: 8px 0; font-weight: bold;'>Phone:</td><td style='padding: 8px 0;'><a href='tel:" . htmlspecialchars($validated['phone']) . "'>" . htmlspecialchars($validated['phone']) . "</a></td></tr>";
+            $phone = $validated['phone'] ?? '';
+            $phoneDisplay = $phone ?: '—';
+            $phoneCell = $phone ? "<a href='tel:" . htmlspecialchars($phone) . "'>" . htmlspecialchars($phoneDisplay) . "</a>" : htmlspecialchars($phoneDisplay);
+            $htmlContent .= "<tr><td style='padding: 8px 0; font-weight: bold;'>Phone:</td><td style='padding: 8px 0;'>" . $phoneCell . "</td></tr>";
             $htmlContent .= "</table>";
             
             $htmlContent .= "<h3 style='color: #1e3a5f; border-bottom: 2px solid #f5a623; padding-bottom: 8px; margin-top: 24px;'>Enrollment Interest</h3>";
             $htmlContent .= "<table style='width: 100%; border-collapse: collapse;'>";
-            $htmlContent .= "<tr><td style='padding: 8px 0; font-weight: bold; width: 200px;'>Grade of Interest:</td><td style='padding: 8px 0;'>" . htmlspecialchars($validated['grade_interest']) . "</td></tr>";
-            $htmlContent .= "<tr><td style='padding: 8px 0; font-weight: bold;'>School Year:</td><td style='padding: 8px 0;'>" . htmlspecialchars($validated['school_year']) . "</td></tr>";
-            $htmlContent .= "<tr><td style='padding: 8px 0; font-weight: bold;'>Schedule a Tour:</td><td style='padding: 8px 0;'>" . htmlspecialchars($validated['schedule_tour']) . "</td></tr>";
+            $htmlContent .= "<tr><td style='padding: 8px 0; font-weight: bold; width: 200px;'>Grade of Interest:</td><td style='padding: 8px 0;'>" . htmlspecialchars($validated['grade_interest'] ?? '—') . "</td></tr>";
+            $htmlContent .= "<tr><td style='padding: 8px 0; font-weight: bold;'>School Year:</td><td style='padding: 8px 0;'>" . htmlspecialchars($validated['school_year'] ?? '—') . "</td></tr>";
+            $htmlContent .= "<tr><td style='padding: 8px 0; font-weight: bold;'>Schedule a Tour:</td><td style='padding: 8px 0;'>" . htmlspecialchars($validated['schedule_tour'] ?? '—') . "</td></tr>";
             $htmlContent .= "</table>";
             
             $htmlContent .= "<h3 style='color: #1e3a5f; border-bottom: 2px solid #f5a623; padding-bottom: 8px; margin-top: 24px;'>Additional Information</h3>";
             $htmlContent .= "<table style='width: 100%; border-collapse: collapse;'>";
-            $htmlContent .= "<tr><td style='padding: 8px 0; font-weight: bold; width: 200px;'>How They Heard About Us:</td><td style='padding: 8px 0;'>" . htmlspecialchars($validated['how_heard']) . "</td></tr>";
+            $htmlContent .= "<tr><td style='padding: 8px 0; font-weight: bold; width: 200px;'>How They Heard About Us:</td><td style='padding: 8px 0;'>" . htmlspecialchars($validated['how_heard'] ?? '—') . "</td></tr>";
             $htmlContent .= "<tr><td style='padding: 8px 0; font-weight: bold;'>Subscribe to Email List:</td><td style='padding: 8px 0;'>" . $subscribeStatus . "</td></tr>";
             $htmlContent .= "</table>";
             
             $htmlContent .= "<h3 style='color: #1e3a5f; border-bottom: 2px solid #f5a623; padding-bottom: 8px; margin-top: 24px;'>Questions/Comments</h3>";
-            $htmlContent .= "<p style='background: #f8f9fa; padding: 16px; border-radius: 8px;'>" . nl2br(htmlspecialchars($validated['message'])) . "</p>";
+            $htmlContent .= "<p style='background: #f8f9fa; padding: 16px; border-radius: 8px;'>" . nl2br(htmlspecialchars($validated['message'] ?? '—')) . "</p>";
             
             $email->addContent("text/html", $htmlContent);
             

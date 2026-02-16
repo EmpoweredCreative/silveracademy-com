@@ -4,6 +4,7 @@ import { Head, Link } from '@inertiajs/vue3';
 import MarketingLayout from '@/Layouts/MarketingLayout.vue';
 
 const activePanel = ref(6); // Default to Accessible Education (index 6)
+const hoveredPanel = ref(null); // Full expansion on hover (Edit 5)
 
 const panels = [
     {
@@ -80,8 +81,6 @@ const benefits = [
     { title: 'Leadership and Community Service', description: 'Students develop confidence, collaboration skills, and a sense of purpose.' },
 ];
 
-const annualReportEmbedUrl = 'https://drive.google.com/file/d/1qsIjvE6bK9Y7XJJGTqDaaRCF24RJMuMg/preview';
-
 const testimonials = [
     {
         quote: "From the moment we joined Silver, we knew our children would be seen and supported. The small class sizes and individualized attention made all the difference. Our kids not only excel academically but also grow into kind, confident, and thoughtful young people.",
@@ -102,12 +101,12 @@ const testimonials = [
     <Head title="Admissions - The Silver Academy" />
 
     <MarketingLayout>
-        <!-- Hero Section -->
+        <!-- Hero Section (Edit 15: admissions header image) -->
         <section class="relative h-[400px] overflow-hidden">
             <div class="absolute inset-0">
                 <img 
-                    src="/img/graphics/admissions/web-silveracademyWhy A Jewish Day School.jpg" 
-                    alt="Students" 
+                    src="/img/graphics/admissions/websilver-admissions.png" 
+                    alt="Silver Academy community" 
                     class="w-full h-full object-cover opacity-100" 
                 />
             </div>
@@ -132,45 +131,47 @@ const testimonials = [
             </div>
         </section>
 
-        <!-- Why Choose Silver - Interactive Panels: vertical on mobile, horizontal on md+ -->
+        <!-- Why Choose Silver - Interactive Panels: tiles fully expand on hover (Edit 5) -->
         <section class="w-full flex flex-col md:flex-row bg-slate-900 overflow-hidden min-h-[980px] md:min-h-0 md:h-[600px]">
             <div 
                 v-for="(panel, index) in panels" 
                 :key="index"
                 class="relative transition-all duration-500 ease-in-out cursor-pointer overflow-hidden group flex-shrink-0 md:flex-shrink border-b border-white/20 last:border-b-0 md:border-b-0 md:border-r md:last:border-r-0 md:min-h-0"
                 :class="[
-                    activePanel === index ? 'md:flex-grow-[4]' : 'md:flex-grow-[1] md:hover:flex-grow-[1.2]',
-                    activePanel === index ? 'min-h-[380px]' : 'min-h-[140px]'
+                    (hoveredPanel !== null ? hoveredPanel === index : activePanel === index) ? 'md:flex-grow-[4]' : 'md:flex-grow-[1]',
+                    (hoveredPanel !== null ? hoveredPanel === index : activePanel === index) ? 'min-h-[380px]' : 'min-h-[140px]'
                 ]"
                 @click="activePanel = index"
+                @mouseenter="hoveredPanel = index"
+                @mouseleave="hoveredPanel = null"
             >
                 <!-- Background Image -->
                 <div class="absolute inset-0 transition-transform duration-700 ease-out"
-                     :class="activePanel === index ? 'scale-100' : 'scale-110 grayscale group-hover:grayscale-0'">
+                     :class="(hoveredPanel !== null ? hoveredPanel === index : activePanel === index) ? 'scale-100' : 'scale-110 grayscale group-hover:grayscale-0'">
                     <img :src="panel.image" :alt="panel.title" class="w-full h-full object-cover" />
                     <!-- Overlay -->
                     <div class="absolute inset-0 bg-brand-900/40 transition-opacity duration-300"
-                         :class="activePanel === index ? 'opacity-20' : 'opacity-60 group-hover:opacity-40'"></div>
+                         :class="(hoveredPanel !== null ? hoveredPanel === index : activePanel === index) ? 'opacity-20' : 'opacity-60 group-hover:opacity-40'"></div>
                      
                      <!-- Blue overlay for inactive tabs -->
                      <div class="absolute inset-0 bg-brand-600/80 mix-blend-multiply transition-opacity duration-300"
-                          :class="activePanel === index ? 'opacity-0' : 'opacity-100'"></div>
+                          :class="(hoveredPanel !== null ? hoveredPanel === index : activePanel === index) ? 'opacity-0' : 'opacity-100'"></div>
                 </div>
 
                 <!-- Title: horizontal at top on mobile, vertical on md+ (Inactive State) -->
                 <div 
                     class="absolute inset-0 flex items-start pt-4 justify-center md:items-center md:pt-0 pointer-events-none transition-opacity duration-300"
-                    :class="activePanel === index ? 'opacity-0' : 'opacity-100'"
+                    :class="(hoveredPanel !== null ? hoveredPanel === index : activePanel === index) ? 'opacity-0' : 'opacity-100'"
                 >
                     <h3 class="panel-inactive-title text-white font-bold text-lg md:text-xl uppercase tracking-widest select-none drop-shadow-md text-center px-2">
                         {{ panel.title }}
                     </h3>
                 </div>
 
-                <!-- Content (Active State) -->
+                <!-- Content (Active State) - shown when active or hovered -->
                 <div 
                     class="absolute bottom-0 left-0 right-0 p-8 md:p-12 transition-all duration-500 transform"
-                    :class="activePanel === index ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'"
+                    :class="(hoveredPanel !== null ? hoveredPanel === index : activePanel === index) ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'"
                 >
                     <div class="bg-white/95 backdrop-blur-sm p-8 rounded-lg shadow-xl max-w-xl mx-auto md:mx-0">
                         <h3 class="text-2xl font-serif font-bold text-slate-800 mb-4">{{ panel.title }}</h3>
@@ -242,6 +243,30 @@ const testimonials = [
                             style="object-position: center 25%;"
                         />
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Virtual Conversation Video (Edit 18) -->
+        <section class="w-full py-16 bg-white">
+            <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                <div class="text-center mb-8">
+                    <h2 class="font-serif text-3xl sm:text-4xl text-slate-800 tracking-tight mb-2">
+                        A Virtual Conversation with the Head of School
+                    </h2>
+                    <p class="text-lg text-slate-600">
+                        Why Harrisburg and The Silver Academy are a good fit for your family
+                    </p>
+                </div>
+                <div class="aspect-video relative overflow-hidden rounded-2xl shadow-xl max-w-4xl mx-auto">
+                    <iframe
+                        class="w-full h-full"
+                        src="https://www.youtube.com/embed/CHzoyAzwsxo?rel=0&modestbranding=1"
+                        title="A Virtual Conversation with the Head of School - The Silver Academy"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowfullscreen
+                    ></iframe>
                 </div>
             </div>
         </section>
@@ -390,17 +415,6 @@ const testimonials = [
                                     Alexandra joined The Silver Academy as the youngest of four siblings. Initially shy, she thrived thanks to nurturing teachers. Now a first grader, Alexandra is a top reader, confident in her abilities, and proud of her Jewish identity.
                                 </p>
                             </div>
-                        </div>
-                    </div>
-                    <div class="mt-10 max-w-4xl mx-auto rounded-2xl overflow-hidden shadow-xl bg-white">
-                        <div class="aspect-[8/11] min-h-[500px] w-full">
-                            <iframe
-                                :src="annualReportEmbedUrl"
-                                title="The Silver Academy Annual Report"
-                                class="w-full h-full border-0"
-                                allow="autoplay"
-                                allowfullscreen
-                            />
                         </div>
                     </div>
                 </div>

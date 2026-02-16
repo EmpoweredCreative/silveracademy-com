@@ -24,43 +24,41 @@ const donors = [
     <Head title="Corporate EITC - The Silver Academy" />
 
     <MarketingLayout>
-        <!-- Hero Section -->
-        <section class="relative h-[350px] overflow-hidden">
-            <div class="absolute inset-0">
-                <img 
-                    src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1920&q=80" 
-                    alt="Corporate EITC" 
-                    class="w-full h-full object-cover object-center"
-                />
-                <div class="absolute inset-0 bg-brand-900/80 mix-blend-multiply"></div>
-            </div>
-            <div class="absolute inset-0 flex items-center justify-center text-center">
-                <div class="max-w-4xl px-4 sm:px-6 lg:px-8">
-                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-white mb-6">
-                        Educational Improvement Tax Credit (EITC)
-                    </h1>
-                    <p class="text-xl text-brand-100 font-medium max-w-2xl mx-auto">
-                        A Win-Win for Businesses and Students
-                    </p>
-                </div>
+        <!-- Hero Section - Image only (Edit 40: header formatting matches other pages) -->
+        <section class="relative h-[400px] overflow-hidden">
+            <img 
+                src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1920&q=80" 
+                alt="Corporate EITC" 
+                class="w-full h-full object-cover object-center"
+            />
+        </section>
+        <!-- Hero Title - Below image -->
+        <section class="py-8 bg-white">
+            <div class="mx-auto max-w-7xl px-6 lg:px-8 text-center">
+                <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl text-slate-800 leading-tight tracking-tight">
+                    Educational Improvement Tax Credit (EITC)
+                </h1>
+                <p class="mt-6 text-lg text-slate-600 max-w-2xl mx-auto">
+                    A Win-Win for Businesses and Students
+                </p>
             </div>
         </section>
 
-        <!-- Intro -->
+        <!-- Intro (Edit 41: center align) -->
         <section class="py-16 bg-white">
-            <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
                 <p class="text-lg text-slate-700 leading-relaxed mb-8">
                     The Educational Improvement Tax Credit (EITC) program allows Pennsylvania businesses to support Jewish education at The Silver Academy while receiving substantial tax benefits. Your contribution helps provide need-based scholarships to low- and middle-income families, ensuring that students can access a values-driven, high-quality education.
                 </p>
             </div>
         </section>
 
-        <!-- How It Works -->
+        <!-- How It Works (Edit 41: center align heading) -->
         <section class="py-16 bg-slate-50">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl font-serif font-bold text-slate-800 mb-12 text-center">How It Works</h2>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                     <div>
-                        <h2 class="text-3xl font-serif font-bold text-slate-900 mb-6">How It Works</h2>
                         <p class="text-slate-600 mb-6">
                             Businesses fund scholarships for students at The Silver Academy or the Brenner Family Early Learning Center. In return, businesses receive tax credits:
                         </p>
@@ -133,10 +131,10 @@ const donors = [
             </div>
         </section>
 
-        <!-- Participation -->
+        <!-- Participation (Edit 41: center align) -->
         <section class="py-16 bg-white">
-            <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-                <h2 class="text-3xl font-serif font-bold text-slate-900 mb-6 text-center">Who Can Participate?</h2>
+            <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-3xl font-serif font-bold text-slate-800 mb-6">Who Can Participate?</h2>
                 <p class="text-slate-600 text-center mb-8">
                     The EITC program is available to businesses registered in Pennsylvania. Applications must be submitted online on or after July 1 for new applicants. Renewal applications open May 15.
                 </p>
@@ -148,8 +146,8 @@ const donors = [
                 </div>
 
                 <div class="space-y-8">
-                    <h3 class="text-2xl font-bold text-slate-900 mb-4">Steps to Apply</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <h3 class="text-2xl font-bold text-slate-800 mb-4">Steps to Apply</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
                         <div class="flex items-start p-4 bg-slate-50 rounded-lg">
                             <span class="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-brand-600 text-white font-bold mr-4">1</span>
                             <div>

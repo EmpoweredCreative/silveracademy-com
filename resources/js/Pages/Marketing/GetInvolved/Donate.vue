@@ -13,26 +13,24 @@ import {
     <Head title="Make a Donation - The Silver Academy" />
 
     <MarketingLayout>
-        <!-- Hero Section -->
+        <!-- Hero Section - Image only (Edit 38) -->
         <section class="relative h-[400px] overflow-hidden">
-            <div class="absolute inset-0">
-                <img 
-                    src="/img/graphics/programs/lower school/web-silveracademy2025_Silver Academy-718.jpg" 
-                    alt="Children learning" 
-                    class="w-full h-full object-cover"
-                    style="object-position: center 30%;"
-                />
-                <div class="absolute inset-0 bg-brand-900/70 mix-blend-multiply"></div>
-            </div>
-            <div class="absolute inset-0 flex items-center justify-center text-center">
-                <div class="max-w-4xl px-4 sm:px-6 lg:px-8">
-                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-white mb-6">
-                        Make a Donation
-                    </h1>
-                    <p class="text-xl md:text-2xl text-brand-100 font-medium max-w-2xl mx-auto">
-                        Support Tomorrow’s Leaders
-                    </p>
-                </div>
+            <img 
+                src="/img/graphics/programs/lower school/web-silveracademy2025_Silver Academy-718.jpg" 
+                alt="Children learning" 
+                class="w-full h-full object-cover"
+                style="object-position: center 30%;"
+            />
+        </section>
+        <!-- Hero Title - Below image (Edit 38) -->
+        <section class="py-8 bg-white">
+            <div class="mx-auto max-w-7xl px-6 lg:px-8 text-center">
+                <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl text-slate-800 leading-tight tracking-tight">
+                    Make a Donation
+                </h1>
+                <p class="mt-6 text-lg text-slate-600 max-w-2xl mx-auto">
+                    Support Tomorrow’s Leaders
+                </p>
             </div>
         </section>
 

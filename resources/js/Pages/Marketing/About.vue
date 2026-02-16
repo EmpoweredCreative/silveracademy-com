@@ -19,7 +19,7 @@ const cards = [
     },
     {
         title: 'MEET OUR AMAZING TEAM',
-        image: '/img/graphics/about/web-silveracademyAmazing Team.jpg',
+        image: '/img/graphics/about/websilver-meetourteachers.jpg',
         link: '#'
     },
     {
@@ -161,8 +161,8 @@ const cards = [
             </div>
         </section>
 
-        <!-- Our Story Section -->
-        <section id="our-story" class="bg-slate-50 py-24">
+        <!-- Our Story Section (Edit 14: tighter gap to Why Silver Academy on mobile) -->
+        <section id="our-story" class="bg-slate-50 pt-24 pb-12 sm:py-24">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
                 <!-- Large Image -->
                 <div class="relative w-full h-[500px] rounded-t-lg overflow-hidden mb-0">
@@ -173,8 +173,8 @@ const cards = [
                     />
                 </div>
                 
-                <!-- Story Content -->
-                <div class="bg-slate-50 text-center max-w-4xl mx-auto pt-16 pb-8">
+                <!-- Story Content (Edit 14: tighter gap to Why Silver Academy on mobile) -->
+                <div class="bg-slate-50 text-center max-w-4xl mx-auto pt-16 pb-6 sm:pb-8">
                     <h2 class="font-serif text-4xl text-slate-700 tracking-wide uppercase mb-4">
                         Our Story
                     </h2>
@@ -202,8 +202,8 @@ const cards = [
             </div>
         </section>
 
-        <!-- Three Cards Section -->
-        <section id="why-silver-academy" class="py-24 bg-white">
+        <!-- Three Cards Section (Edit 14: tighter gap from Visit Our Campus on mobile) -->
+        <section id="why-silver-academy" class="pt-12 pb-24 sm:py-24 bg-white">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
                 <div class="grid md:grid-cols-3 gap-8 mb-24">
                     <Link

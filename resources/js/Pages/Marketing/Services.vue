@@ -4,6 +4,7 @@ import { Head, Link } from '@inertiajs/vue3';
 import MarketingLayout from '@/Layouts/MarketingLayout.vue';
 
 const activeGrade = ref(0);
+const hoveredGrade = ref(null);
 const isHoveringGrades = ref(false);
 
 const pillars = [
@@ -89,14 +90,15 @@ const enrichment = [
             </div>
         </section>
 
-        <!-- Intro Section -->
+        <!-- Intro Section (Edit 20: adjusted line spacing on mobile) -->
         <section class="py-20 bg-white text-center">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
                 <div class="max-w-4xl mx-auto">
-                    <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl text-slate-800 leading-none tracking-tight mb-6">
-                        Learning, Growing, and Thriving<br />at Every Age
+                    <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl text-slate-800 leading-snug sm:leading-tight md:leading-none tracking-tight mb-6">
+                        <span class="block">Learning, Growing, and</span>
+                        <span class="block">Thriving at Every Age</span>
                     </h1>
-                    <p class="text-lg sm:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
+                    <p class="text-lg sm:text-xl text-slate-600 max-w-3xl mx-auto leading-loose md:leading-relaxed">
                         From Pre-K through 8th grade, The Silver Academy offers a rich, values-driven curriculum 
                         that nurtures the whole child – academically, socially, and spiritually.
                     </p>
@@ -138,56 +140,58 @@ const enrichment = [
         <section class="py-8 bg-slate-100">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
                 <!-- Grade levels: vertical on mobile, horizontal on md+ -->
-                <div class="flex flex-col md:flex-row w-full gap-2 min-h-[920px] md:min-h-0 md:h-[500px] rounded-2xl overflow-hidden" @mouseenter="isHoveringGrades = true" @mouseleave="isHoveringGrades = false">
+                <div class="flex flex-col md:flex-row w-full gap-2 min-h-[920px] md:min-h-0 md:h-[500px] rounded-2xl overflow-hidden" @mouseenter="isHoveringGrades = true" @mouseleave="isHoveringGrades = false; hoveredGrade = null">
                     <div 
                         v-for="(grade, index) in gradeLevels" 
                         :key="index"
                         class="relative rounded-2xl overflow-hidden cursor-pointer transition-all duration-500 ease-in-out group flex-shrink-0 md:flex-shrink md:min-h-0"
                         :class="[
-                            activeGrade === index ? 'md:flex-grow-[3]' : 'md:flex-grow-[1] md:hover:flex-grow-[1.2]',
-                            activeGrade === index ? 'min-h-[420px]' : 'min-h-[230px]'
+                            (activeGrade === index || hoveredGrade === index) ? 'md:flex-grow-[3]' : 'md:flex-grow-[1]',
+                            (activeGrade === index || hoveredGrade === index) ? 'min-h-[420px]' : 'min-h-[230px]'
                         ]"
                         @click="activeGrade = index"
-                        @mouseenter="activeGrade = index"
+                        @mouseenter="activeGrade = index; hoveredGrade = index"
+                        @mouseleave="hoveredGrade = null"
                     >
                         <img 
                             :src="grade.image" 
                             :alt="grade.title" 
                             class="absolute inset-0 w-full h-full object-cover transition-transform duration-700"
-                            :class="activeGrade === index ? 'scale-100' : 'scale-110'"
+                            :class="(activeGrade === index || hoveredGrade === index) ? 'scale-100' : 'scale-110'"
                         />
+                        <!-- Edit 8: No overlay when collapsed; overlay only on hover/expand when text appears -->
                         <div class="absolute inset-0 bg-black transition-opacity duration-300"
-                             :class="isHoveringGrades ? 'opacity-70' : (activeGrade === index ? 'opacity-60' : 'opacity-50')"></div>
+                             :class="(activeGrade === index || hoveredGrade === index) ? 'opacity-60' : 'opacity-0'"></div>
                         
                         <!-- Content: extra top padding on mobile only when this panel is expanded -->
                         <div 
                             class="absolute bottom-0 left-0 right-0 p-4 pt-6 md:p-8 flex flex-col justify-end h-full z-10"
-                            :class="activeGrade === index ? 'pt-12 md:pt-8' : ''"
+                            :class="(activeGrade === index || hoveredGrade === index) ? 'pt-12 md:pt-8' : ''"
                         >
                             <div class="transform transition-all duration-300"
-                                 :class="activeGrade === index ? 'translate-y-0' : 'translate-y-4'">
+                                 :class="(activeGrade === index || hoveredGrade === index) ? 'translate-y-0' : 'translate-y-4'">
                                 <!-- Background Bar for Title - Blue when collapsed, Yellow when expanded -->
                                 <Link 
                                     :href="grade.link"
                                     class="inline-block px-4 py-2 mb-2 rounded transition-colors duration-300 hover:opacity-90 cursor-pointer"
-                                    :class="activeGrade === index ? 'bg-accent-500/90' : 'bg-brand-500/90'"
+                                    :class="(activeGrade === index || hoveredGrade === index) ? 'bg-accent-500/90' : 'bg-brand-500/90'"
                                 >
                                     <h3 
                                         class="text-white font-bold uppercase tracking-wider transition-all duration-300 whitespace-nowrap"
-                                        :class="activeGrade === index ? 'text-2xl' : 'text-sm md:text-base'"
+                                        :class="(activeGrade === index || hoveredGrade === index) ? 'text-2xl' : 'text-sm md:text-base'"
                                     >
                                         {{ grade.title }}
                                     </h3>
                                 </Link>
                                 <p 
                                     class="text-white/90 text-xs md:text-sm font-medium uppercase tracking-widest mb-4 transition-opacity duration-300"
-                                    :class="activeGrade === index ? 'opacity-100' : 'opacity-100 md:opacity-0'"
+                                    :class="(activeGrade === index || hoveredGrade === index) ? 'opacity-100' : 'opacity-100 md:opacity-0'"
                                 >
                                     {{ grade.subtitle }}
                                 </p>
                                 <div 
                                     class="overflow-hidden transition-all duration-500"
-                                    :class="activeGrade === index ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'"
+                                    :class="(activeGrade === index || hoveredGrade === index) ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'"
                                 >
                                     <p class="text-white/90 mb-6 leading-relaxed text-sm md:text-base">
                                         {{ grade.description }}
