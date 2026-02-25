@@ -1,7 +1,7 @@
 <script setup>
 import { Head, useForm, usePage, router } from '@inertiajs/vue3';
 import PortalLayout from '@/Layouts/PortalLayout.vue';
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import axios from 'axios';
 import { 
     UserCircleIcon,
@@ -50,6 +50,36 @@ const addChild = async () => {
 };
 
 const page = usePage();
+const user = computed(() => page.props.auth?.user ?? props.user);
+
+// Show Linked Students when actually a parent, or when super_admin is previewing as parent
+const storedPreviewRole = ref('admin');
+const showLinkedStudents = computed(() => {
+    const role = user.value?.role;
+    if (role === 'parent') return true;
+    if (role === 'super_admin' && storedPreviewRole.value === 'parent') return true;
+    return false;
+});
+function updatePreviewRole() {
+    const stored = localStorage.getItem('portal_preview_role');
+    if (stored && ['admin', 'teacher', 'parent'].includes(stored)) storedPreviewRole.value = stored;
+}
+function onPreviewRoleChanged(event) {
+    if (event?.detail && ['admin', 'teacher', 'parent'].includes(event.detail)) {
+        storedPreviewRole.value = event.detail;
+    } else {
+        updatePreviewRole();
+    }
+}
+onMounted(() => {
+    updatePreviewRole();
+    window.addEventListener('storage', updatePreviewRole);
+    window.addEventListener('preview-role-changed', onPreviewRoleChanged);
+});
+onUnmounted(() => {
+    window.removeEventListener('storage', updatePreviewRole);
+    window.removeEventListener('preview-role-changed', onPreviewRoleChanged);
+});
 
 // Flash messages
 const successMessage = computed(() => page.props.flash?.success);
@@ -316,8 +346,8 @@ const roleLabel = computed(() => {
                 </form>
             </div>
 
-            <!-- Linked students (parents only) + Add Child -->
-            <div v-if="user?.role === 'parent'" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <!-- Linked students (parents only; also when super admin previews as parent) -->
+            <div v-if="showLinkedStudents" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                 <div class="px-6 py-4 border-b border-slate-200">
                     <div class="flex items-center gap-3">
                         <UserGroupIcon class="w-5 h-5 text-slate-400" />
