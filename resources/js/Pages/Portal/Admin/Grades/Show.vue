@@ -88,13 +88,28 @@ const doBulkEmail = () => {
     });
 };
 
-// Individual email code to parent(s)
+// Individual email code to parent(s) – confirmation dialog first
 const emailingStudentId = ref(null);
-const sendCodeToParent = (student) => {
+const showEmailCodeConfirm = ref(false);
+const emailCodeStudent = ref(null);
+const openEmailCodeConfirm = (student) => {
     if (!student.can_send_code) return;
+    emailCodeStudent.value = student;
+    showEmailCodeConfirm.value = true;
+};
+const closeEmailCodeConfirm = () => {
+    showEmailCodeConfirm.value = false;
+    emailCodeStudent.value = null;
+};
+const doSendCodeToParent = () => {
+    const student = emailCodeStudent.value;
+    if (!student) return;
     emailingStudentId.value = student.id;
+    closeEmailCodeConfirm();
     router.post(`/portal/admin/students/${student.id}/send-code-to-parent`, {}, {
-        preserveScroll: true,
+        preserveScroll: false,
+        onSuccess: () => { emailingStudentId.value = null; },
+        onError: () => { emailingStudentId.value = null; },
         onFinish: () => { emailingStudentId.value = null; },
     });
 };
@@ -441,7 +456,7 @@ const cancelDelete = () => {
                                 </span>
                                 <button
                                     type="button"
-                                    @click="sendCodeToParent(student)"
+                                    @click="openEmailCodeConfirm(student)"
                                     :disabled="!student.can_send_code || emailingStudentId === student.id"
                                     :title="student.can_send_code ? 'Email code to parent(s)' : 'Add parent emails in import or link a parent'"
                                     class="inline-flex items-center px-2 py-1 text-xs font-medium text-slate-700 bg-slate-100 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-200"
@@ -706,6 +721,49 @@ const cancelDelete = () => {
                         <button
                             type="button"
                             @click="closeBulkEmailConfirm"
+                            class="flex-1 inline-flex justify-center items-center px-4 py-2.5 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50"
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </Teleport>
+
+        <!-- Send code to parent confirmation -->
+        <Teleport to="body">
+        <div v-if="showEmailCodeConfirm && emailCodeStudent" class="fixed inset-0 z-[100] overflow-y-auto" aria-modal="true" role="dialog">
+            <div class="flex min-h-full items-center justify-center p-4">
+                <div class="fixed inset-0 bg-slate-500/75 transition-opacity" @click="closeEmailCodeConfirm" />
+                <div class="relative z-10 w-full max-w-md rounded-xl bg-white shadow-xl">
+                    <div class="p-6">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-50">
+                                <EnvelopeIcon class="h-5 w-5 text-brand-600" />
+                            </div>
+                            <h3 class="text-lg font-semibold text-slate-900">Email code to parent?</h3>
+                        </div>
+                        <p class="text-sm text-slate-600 mb-2">
+                            Send the parent code for <strong>{{ emailCodeStudent.name }}</strong> to:
+                        </p>
+                        <ul class="text-sm text-slate-700 list-disc list-inside space-y-0.5 mb-4">
+                            <li v-for="email in (emailCodeStudent.contact_emails && emailCodeStudent.contact_emails.length ? emailCodeStudent.contact_emails : ['linked parent account'])" :key="email">{{ email }}</li>
+                        </ul>
+                        <p class="text-xs text-slate-500">You’ll see a confirmation message after sending. If the email doesn’t arrive, check spam or the server’s SendGrid configuration.</p>
+                    </div>
+                    <div class="flex gap-3 px-6 pb-6">
+                        <button
+                            type="button"
+                            @click="doSendCodeToParent"
+                            :disabled="emailingStudentId === emailCodeStudent.id"
+                            class="flex-1 inline-flex justify-center items-center px-4 py-2.5 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg disabled:opacity-50"
+                        >
+                            {{ emailingStudentId === emailCodeStudent.id ? 'Sending…' : 'Send code' }}
+                        </button>
+                        <button
+                            type="button"
+                            @click="closeEmailCodeConfirm"
                             class="flex-1 inline-flex justify-center items-center px-4 py-2.5 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50"
                         >
                             Cancel
