@@ -19,6 +19,9 @@ use App\Http\Controllers\Portal\Admin\StaffDirectoryController;
 use App\Http\Controllers\Portal\Admin\StaffImportController;
 use App\Http\Controllers\Portal\Admin\ParentController;
 use App\Http\Controllers\Portal\Admin\LunchMenuImportController;
+use App\Http\Controllers\Portal\Admin\StudentCodeController;
+use App\Http\Controllers\Portal\Admin\StudentCodeEmailController;
+use App\Http\Controllers\Portal\AddChildController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -86,6 +89,9 @@ Route::middleware(['auth', 'approved'])->prefix('portal')->name('portal.')->grou
 
     // Help
     Route::get('/help', [HelpController::class, 'index'])->name('help');
+
+    // Parent: add another child via code
+    Route::post('/parent/add-child', [AddChildController::class, 'store'])->name('parent.add-child')->middleware('throttle:10,1');
 
     // Calendar (accessible to all authenticated users)
     Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar');
@@ -175,9 +181,17 @@ Route::middleware(['auth', 'admin'])->prefix('portal/admin')->name('admin.')->gr
     Route::get('/students/template', [StudentImportController::class, 'downloadTemplate'])->name('students.template');
     Route::get('/students/export', [StudentImportController::class, 'export'])->name('students.export');
 
+    // Student Parent Code management
+    Route::get('/students/{student}/code', [StudentCodeController::class, 'show'])->name('students.code.show');
+    Route::get('/students/{student}/code/regenerate/confirm', [StudentCodeController::class, 'confirmRegenerate'])->name('students.code.regenerate.confirm');
+    Route::post('/students/{student}/code/regenerate', [StudentCodeController::class, 'regenerate'])->name('students.code.regenerate');
+    Route::post('/students/{student}/send-code-to-parent', [StudentCodeEmailController::class, 'sendToParent'])->name('students.send-code-to-parent');
+    Route::patch('/students/{student}/code', [StudentCodeController::class, 'update'])->name('students.code.update');
+
     // Grade Management (replaces Classroom Management)
     Route::get('/grades', [GradeController::class, 'index'])->name('grades.index');
     Route::get('/grades/{grade}', [GradeController::class, 'show'])->name('grades.show');
+    Route::post('/grades/{grade}/send-codes-to-parents', [StudentCodeEmailController::class, 'bulkSendForGrade'])->name('grades.send-codes-to-parents');
     Route::put('/grades/{grade}/teachers', [GradeController::class, 'updateTeachers'])->name('grades.update-teachers');
     Route::post('/grades/{grade}/students', [GradeController::class, 'storeStudent'])->name('grades.students.store');
     Route::put('/grades/{grade}/students/{student}', [GradeController::class, 'updateStudent'])->name('grades.students.update');

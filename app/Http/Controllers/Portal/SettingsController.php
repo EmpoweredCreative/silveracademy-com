@@ -18,6 +18,11 @@ class SettingsController extends Controller
     public function index(): Response
     {
         $user = auth()->user();
+        $children = $user->children()->with('grade:id,name')->get()->map(fn ($s) => [
+            'id' => $s->id,
+            'name' => $s->name,
+            'grade' => $s->grade ? ['name' => $s->grade->name] : null,
+        ]);
 
         return Inertia::render('Portal/Settings', [
             'user' => [
@@ -28,6 +33,7 @@ class SettingsController extends Controller
                 'avatar_url' => $user->avatar_url ?? null,
                 'created_at' => $user->created_at,
             ],
+            'children' => $children,
         ]);
     }
 

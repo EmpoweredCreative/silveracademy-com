@@ -27,12 +27,12 @@ class StudentTemplateSheet implements FromArray, WithHeadings, WithStyles, WithC
 {
     public function array(): array
     {
-        // Provide sample data rows
+        // Provide sample data rows (Parent Email 1-4 optional, up to 4 per student)
         return [
-            ['John Smith', 'Kindergarten', 'Room A', 'teacher@silveracademypa.org'],
-            ['Jane Doe', 'Kindergarten', 'Room A', 'teacher@silveracademypa.org'],
-            ['Bob Johnson', 'Kindergarten', 'Room B', 'teacher2@silveracademypa.org'],
-            ['', '', '', ''], // Empty row for user to fill in
+            ['John Smith', 'Kindergarten', 'Room A', 'teacher@silveracademypa.org', 'parent1@example.com', 'parent2@example.com', '', ''],
+            ['Jane Doe', 'Kindergarten', 'Room A', 'teacher@silveracademypa.org', '', '', '', ''],
+            ['Bob Johnson', 'Kindergarten', 'Room B', 'teacher2@silveracademypa.org', 'parent@example.com', '', '', ''],
+            ['', '', '', '', '', '', '', ''], // Empty row for user to fill in
         ];
     }
 
@@ -43,6 +43,10 @@ class StudentTemplateSheet implements FromArray, WithHeadings, WithStyles, WithC
             'Grade',
             'Classroom Name',
             'Teacher Email',
+            'Parent Email 1',
+            'Parent Email 2',
+            'Parent Email 3',
+            'Parent Email 4',
         ];
     }
 
@@ -71,6 +75,10 @@ class StudentTemplateSheet implements FromArray, WithHeadings, WithStyles, WithC
             'B' => 25, // Grade
             'C' => 20, // Classroom Name
             'D' => 35, // Teacher Email
+            'E' => 35, // Parent Email 1
+            'F' => 35, // Parent Email 2
+            'G' => 35, // Parent Email 3
+            'H' => 35, // Parent Email 4
         ];
     }
 }

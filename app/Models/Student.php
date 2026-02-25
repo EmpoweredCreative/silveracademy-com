@@ -6,15 +6,20 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Student extends Model
 {
     use HasFactory;
 
+    public const STATUS_ACTIVE = 'active';
+    public const STATUS_INACTIVE = 'inactive';
+
     protected $fillable = [
         'name',
         'grade_id',
         'classroom_id',
+        'status',
     ];
 
     /**
@@ -49,6 +54,38 @@ class Student extends Model
     {
         return $this->belongsToMany(User::class, 'parent_student', 'student_id', 'parent_id')
             ->withTimestamps();
+    }
+
+    /**
+     * Get contact emails for sending codes (up to 4 per student).
+     */
+    public function contactEmails(): HasMany
+    {
+        return $this->hasMany(StudentContactEmail::class);
+    }
+
+    /**
+     * Get all access codes for this student.
+     */
+    public function accessCodes(): HasMany
+    {
+        return $this->hasMany(StudentAccessCode::class);
+    }
+
+    /**
+     * Get the single active access code for this student (if any).
+     */
+    public function activeAccessCode(): ?StudentAccessCode
+    {
+        return $this->accessCodes()->active()->first();
+    }
+
+    /**
+     * Count of distinct parent accounts linked to this student.
+     */
+    public function currentLinkCount(): int
+    {
+        return $this->parents()->count();
     }
 }
 

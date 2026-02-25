@@ -111,6 +111,18 @@ npm run dev
 
 Visit `http://localhost:8000` to view the application.
 
+### Using the remote database (e.g. on a laptop)
+
+The app’s `.env` points at `127.0.0.1:3307`. On your main machine you may have an SSH tunnel or local MySQL already. On a fresh clone (e.g. a laptop) nothing is listening on that port.
+
+**Start the DB tunnel** (run in its own terminal and leave it open):
+
+```bash
+./bin/db-tunnel
+```
+
+Then start the dev servers as above. The tunnel forwards local port 3307 to MySQL on the Forge server, so the app connects with no other config changes.
+
 ## Deployment on Laravel Forge
 
 ### Server Requirements
@@ -156,11 +168,27 @@ Set these in Forge's environment tab:
 
 ### Authentication
 - `/login` - Login page
-- `/register` - Registration page
+- `/register` - Registration page (parent approval flow)
+- `/parent/signup` - Parent signup with code (email + Parent Code)
 - `/logout` - Logout (POST)
 
 ### Portal (Authenticated)
 - `/portal/dashboard` - Parent dashboard
+
+## Parent Code workflow
+
+### Admin: generating and distributing codes
+
+1. Go to **Grades** in the admin portal, then open a grade.
+2. Each student row shows a **Parent Code** column. If no code exists, click **Generate**. To replace an existing code, click **Regenerate** (the old code stops working immediately).
+3. After generating or regenerating, the new code is shown **once** in a modal. Use **Copy** to copy it, then share it with the family through a secure channel (e.g. in person or secure message).
+4. The column shows the last 4 characters and link count (e.g. `••••1234 (3/5)`). Up to 5 parent accounts can link per student by default; admins can change this under student code settings if needed.
+
+### Parent: registering and adding children
+
+1. **First-time signup:** Open the login page and click **First time? Sign up with a Parent Code**. Enter your email and the Parent Code from the school. Submit the form; you will receive an email with a temporary password and a link to log in. Log in and change your password in Settings.
+2. **Adding another child:** After logging in, go to **Settings**. In the "Linked Students" section, enter the other child’s Parent Code and click **Add child**. That child’s grade-level content will appear on your dashboard.
+3. **Logging in later:** Use your email and password on the login page (no need to enter the code again).
 
 ## Customization
 

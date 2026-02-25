@@ -138,7 +138,11 @@ class HelpController extends Controller
                     ],
                     [
                         'title' => 'Importing Students',
-                        'content' => 'Use the Import feature to bulk upload students. The CSV should include student name and grade level. Students can be moved between grades as needed.',
+                        'content' => 'Use the Import feature to bulk upload students. The template requires student name and grade; classroom and teacher email are optional. Students can be moved between grades as needed.',
+                    ],
+                    [
+                        'title' => 'Parent Codes',
+                        'content' => 'Each student can have a Parent Code so families can sign up or link that student to their account. In Grades, open a grade and use "Generate" or "Regenerate" in the Parent Code column. The code is shown only once—copy it and share it securely with the family. By default, up to 5 parent accounts can link per student.',
                     ],
                 ],
             ],
@@ -326,6 +330,18 @@ class HelpController extends Controller
                 'title' => 'Your Account',
                 'icon' => 'user',
                 'items' => [
+                    [
+                        'title' => 'Signing up with a Parent Code',
+                        'content' => 'If the school gave you a Parent Code, go to the login page and click "First time? Sign up with a Parent Code." Enter your email and the code. You will receive an email with a temporary password and a link to log in. We recommend changing your password after your first login (Settings).',
+                    ],
+                    [
+                        'title' => 'Adding another child',
+                        'content' => 'If you have more than one child at Silver Academy, go to Settings and find the "Linked Students" section. Enter the Parent Code for your other child in the "Link another student" field and click "Add child." That child\'s grade-level news will then appear on your dashboard.',
+                    ],
+                    [
+                        'title' => 'Where to get your code',
+                        'content' => 'Parent Codes are provided by the school office or your child\'s teacher. Each student has a unique code; keep it private and share only with guardians who should have portal access.',
+                    ],
                     [
                         'title' => 'Updating Your Information',
                         'content' => 'Click on your avatar and select "Settings" to update your name, email address, or profile picture.',

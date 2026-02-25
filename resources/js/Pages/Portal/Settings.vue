@@ -1,7 +1,8 @@
 <script setup>
-import { Head, useForm, usePage } from '@inertiajs/vue3';
+import { Head, useForm, usePage, router } from '@inertiajs/vue3';
 import PortalLayout from '@/Layouts/PortalLayout.vue';
 import { ref, computed } from 'vue';
+import axios from 'axios';
 import { 
     UserCircleIcon,
     KeyIcon,
@@ -9,11 +10,44 @@ import {
     ExclamationTriangleIcon,
     CameraIcon,
     TrashIcon,
+    UserGroupIcon,
+    PlusIcon,
 } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
     user: Object,
+    children: {
+        type: Array,
+        default: () => [],
+    },
 });
+
+// Add Child (parents only)
+const addChildCode = ref('');
+const addChildSubmitting = ref(false);
+const addChildError = ref('');
+const addChildSuccess = ref('');
+
+const addChild = async () => {
+    const c = (addChildCode.value || '').trim();
+    if (!c) {
+        addChildError.value = 'Please enter a parent code.';
+        return;
+    }
+    addChildError.value = '';
+    addChildSuccess.value = '';
+    addChildSubmitting.value = true;
+    try {
+        const { data } = await axios.post('/portal/parent/add-child', { code: c });
+        addChildSuccess.value = data.message || 'Child added successfully.';
+        addChildCode.value = '';
+        router.reload({ preserveScroll: true });
+    } catch (err) {
+        addChildError.value = err.response?.data?.message || 'Invalid code or this student has reached the maximum number of linked accounts. Contact the school office.';
+    } finally {
+        addChildSubmitting.value = false;
+    }
+};
 
 const page = usePage();
 
@@ -280,6 +314,56 @@ const roleLabel = computed(() => {
                         </button>
                     </div>
                 </form>
+            </div>
+
+            <!-- Linked students (parents only) + Add Child -->
+            <div v-if="user?.role === 'parent'" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="px-6 py-4 border-b border-slate-200">
+                    <div class="flex items-center gap-3">
+                        <UserGroupIcon class="w-5 h-5 text-slate-400" />
+                        <div>
+                            <h2 class="text-lg font-semibold text-slate-900">Linked Students</h2>
+                            <p class="text-sm text-slate-500">Students linked to your account. Add another child with a Parent Code from the school.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6 space-y-6">
+                    <div v-if="children?.length" class="space-y-2">
+                        <p class="text-sm font-medium text-slate-700">Your linked students</p>
+                        <ul class="list-disc list-inside text-slate-600 space-y-1">
+                            <li v-for="child in children" :key="child.id">
+                                {{ child.name }}
+                                <span v-if="child.grade?.name" class="text-slate-500">({{ child.grade.name }})</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div v-else class="text-sm text-slate-500">
+                        No students linked yet. Use a Parent Code below to link a student.
+                    </div>
+
+                    <div class="border-t border-slate-200 pt-6">
+                        <p class="text-sm font-medium text-slate-700 mb-2">Link another student</p>
+                        <p v-if="addChildSuccess" class="text-sm text-green-700 mb-2">{{ addChildSuccess }}</p>
+                        <p v-if="addChildError" class="text-sm text-red-600 mb-2">{{ addChildError }}</p>
+                        <div class="flex gap-3 flex-wrap items-end">
+                            <input
+                                v-model="addChildCode"
+                                type="text"
+                                placeholder="Enter Parent Code"
+                                class="flex-1 min-w-[180px] px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 font-mono uppercase"
+                            />
+                            <button
+                                type="button"
+                                :disabled="addChildSubmitting"
+                                @click="addChild"
+                                class="inline-flex items-center px-4 py-2 bg-brand-600 text-white font-medium rounded-lg hover:bg-brand-700 disabled:opacity-50"
+                            >
+                                <PlusIcon class="w-4 h-4 mr-2" />
+                                {{ addChildSubmitting ? 'Adding...' : 'Add child' }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Update Password -->

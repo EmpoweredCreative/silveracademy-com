@@ -21,6 +21,10 @@ Route::middleware('guest')->group(function () {
 
     Route::post('register', [RegisteredUserController::class, 'store']);
 
+    // Parent signup with code (first-time: email + parent code)
+    Route::get('parent/signup', [\App\Http\Controllers\Auth\ParentSignupController::class, 'create'])
+        ->name('parent.signup');
+
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
         ->name('login');
 

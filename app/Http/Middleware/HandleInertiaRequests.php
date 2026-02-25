@@ -44,6 +44,10 @@ class HandleInertiaRequests extends Middleware
                 'message' => fn () => $request->session()->get('message'),
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
+                'new_student_code_plain' => fn () => $request->session()->get('new_student_code_plain'),
+                'new_student_name' => fn () => $request->session()->get('new_student_name'),
+                'regenerated_code_plain' => fn () => $request->session()->get('regenerated_code_plain'),
+                'regenerated_code_student_name' => fn () => $request->session()->get('regenerated_code_student_name'),
             ],
         ];
     }

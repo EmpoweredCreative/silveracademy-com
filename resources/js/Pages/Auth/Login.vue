@@ -115,11 +115,17 @@ const submit = () => {
             </button>
         </form>
 
-        <div class="mt-6 text-center">
+        <div class="mt-6 text-center space-y-2">
             <p class="text-sm text-slate-600">
-                Don't have an account?
+                First time? Sign up with a
+                <Link href="/parent/signup" class="font-medium text-brand-600 hover:text-brand-500">
+                    Parent Code
+                </Link>
+            </p>
+            <p class="text-sm text-slate-600">
+                Don't have a code?
                 <Link href="/register" class="font-medium text-brand-600 hover:text-brand-500">
-                    Register now
+                    Register for approval
                 </Link>
             </p>
         </div>
