@@ -26,19 +26,23 @@ class ParentCodeInvite
     }
 
     /**
-     * Send the invite email via SendGrid (or log if not configured).
+     * Send the invite email via SendGrid API.
      * Returns true if the email was sent successfully, false otherwise.
+     * Uses config first; falls back to env() so SendGrid is used even if config was cached before the key was set.
      */
     public function send(): bool
     {
-        $apiKey = config('services.sendgrid.api_key');
-        if (empty($apiKey)) {
-            Log::info('ParentCodeInvite: SendGrid not configured, skipping email', [
-                'email' => $this->toEmail,
+        $apiKey = config('services.sendgrid.api_key') ?: env('SENDGRID_API_KEY');
+        $apiKey = is_string($apiKey) ? trim($apiKey) : '';
+        if ($apiKey === '') {
+            Log::warning('ParentCodeInvite: SendGrid API key missing (set SENDGRID_API_KEY and run php artisan config:clear)', [
+                'to_email' => $this->toEmail,
                 'codes_count' => count($this->codes),
             ]);
             return false;
         }
+
+        Log::info('ParentCodeInvite: calling SendGrid API', ['to_email' => $this->toEmail]);
 
         $portalUrl = url('/login');
         $displayName = $this->toName ?: 'Parent';
@@ -74,12 +78,12 @@ class ParentCodeInvite
         </div>";
 
         try {
+            $fromEmail = config('services.sendgrid.from_email') ?: env('SENDGRID_FROM_EMAIL', 'noreply@silveracademypa.org');
+            $fromName = config('services.sendgrid.child_portal_from_name') ?: env('SENDGRID_CHILD_PORTAL_FROM_NAME', 'Silver Academy Child Portal');
+
             $sendgrid = new SendGrid($apiKey);
             $email = new Mail();
-            $email->setFrom(
-                config('services.sendgrid.from_email'),
-                config('services.sendgrid.child_portal_from_name', 'Silver Academy Child Portal')
-            );
+            $email->setFrom($fromEmail, $fromName);
             $email->setSubject(count($this->codes) > 1 ? 'Your Parent Codes – Silver Academy' : 'Your Parent Code – Silver Academy');
             $email->addTo($this->toEmail, $this->toName ?? '');
             $email->addContent('text/plain', $plain);

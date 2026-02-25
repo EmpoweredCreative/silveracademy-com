@@ -14,6 +14,7 @@ class AuthenticatedSessionController extends Controller
 {
     /**
      * Display the login view.
+     * (No-cache headers are added by middleware so the page always has a fresh CSRF token.)
      */
     public function create(): Response
     {
