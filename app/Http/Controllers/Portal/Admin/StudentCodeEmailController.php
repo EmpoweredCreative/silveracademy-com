@@ -19,6 +19,10 @@ class StudentCodeEmailController extends Controller
      */
     public function bulkSendForGrade(Grade $grade): RedirectResponse
     {
+        if (empty(config('services.sendgrid.api_key'))) {
+            return redirect()->back()->with('error', 'Email could not be sent: SendGrid is not configured on the server. Add SENDGRID_API_KEY to the server environment.');
+        }
+
         $students = $grade->students()
             ->with(['contactEmails', 'accessCodes' => fn ($q) => $q->active()])
             ->get();
@@ -49,12 +53,17 @@ class StudentCodeEmailController extends Controller
         foreach ($byEmail as $email => $codes) {
             $chunks = array_chunk($codes, self::MAX_CODES_PER_EMAIL);
             foreach ($chunks as $chunk) {
-                (new ParentCodeInvite($email, null, $chunk))->send();
-                $sent++;
+                if ((new ParentCodeInvite($email, null, $chunk))->send()) {
+                    $sent++;
+                }
             }
         }
 
         Log::info('Bulk code emails sent for grade', ['grade_id' => $grade->id, 'recipients' => $sent]);
+
+        if ($sent === 0 && $byEmail !== []) {
+            return redirect()->back()->with('error', 'No emails could be sent. Check server logs or SendGrid (from address must be verified).');
+        }
 
         return redirect()->back()->with('success', "Code emails sent to {$sent} recipient(s).");
     }
@@ -64,6 +73,10 @@ class StudentCodeEmailController extends Controller
      */
     public function sendToParent(Student $student): RedirectResponse
     {
+        if (empty(config('services.sendgrid.api_key'))) {
+            return redirect()->back()->with('error', 'Email could not be sent: SendGrid is not configured on the server. Add SENDGRID_API_KEY to the server environment.');
+        }
+
         $recipients = $student->contactEmails()->pluck('email')->map(fn ($e) => strtolower(trim($e)))->filter()->unique()->values();
         if ($recipients->isEmpty()) {
             $firstParent = $student->parents()->first();
@@ -85,10 +98,17 @@ class StudentCodeEmailController extends Controller
         }
 
         $payload = [['student_name' => $student->name, 'code' => $plain]];
+        $sent = 0;
         foreach ($recipients as $email) {
-            (new ParentCodeInvite($email, null, $payload))->send();
+            if ((new ParentCodeInvite($email, null, $payload))->send()) {
+                $sent++;
+            }
         }
 
-        return redirect()->back()->with('success', 'Code email sent to ' . $recipients->count() . ' recipient(s).');
+        if ($sent === 0) {
+            return redirect()->back()->with('error', 'Email could not be sent. Check the server logs or SendGrid configuration (from address must be verified in SendGrid).');
+        }
+
+        return redirect()->back()->with('success', 'Code email sent to ' . $sent . ' recipient(s).');
     }
 }

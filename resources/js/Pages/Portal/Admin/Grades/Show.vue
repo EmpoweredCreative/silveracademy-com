@@ -231,6 +231,15 @@ const cancelDelete = () => {
                 </Link>
             </div>
 
+            <!-- Success flash -->
+            <div v-if="flash?.success" class="p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
+                <p class="text-sm font-medium text-emerald-800">{{ flash.success }}</p>
+            </div>
+            <!-- Session expired / error flash -->
+            <div v-if="flash?.error" class="p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                <p class="text-sm font-medium text-amber-800">{{ flash.error }}</p>
+            </div>
+
             <!-- Grade Info Card -->
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
                 <div class="flex items-center justify-between">

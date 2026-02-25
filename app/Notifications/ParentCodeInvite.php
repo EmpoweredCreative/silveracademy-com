@@ -27,8 +27,9 @@ class ParentCodeInvite
 
     /**
      * Send the invite email via SendGrid (or log if not configured).
+     * Returns true if the email was sent successfully, false otherwise.
      */
-    public function send(): void
+    public function send(): bool
     {
         $apiKey = config('services.sendgrid.api_key');
         if (empty($apiKey)) {
@@ -36,7 +37,7 @@ class ParentCodeInvite
                 'email' => $this->toEmail,
                 'codes_count' => count($this->codes),
             ]);
-            return;
+            return false;
         }
 
         $portalUrl = url('/login');
@@ -87,11 +88,13 @@ class ParentCodeInvite
             $response = $sendgrid->send($email);
             if ($response->statusCode() >= 200 && $response->statusCode() < 300) {
                 Log::info('ParentCodeInvite sent', ['email' => $this->toEmail, 'count' => count($this->codes)]);
-            } else {
-                Log::error('SendGrid error ParentCodeInvite', ['email' => $this->toEmail, 'status' => $response->statusCode(), 'body' => $response->body()]);
+                return true;
             }
+            Log::error('SendGrid error ParentCodeInvite', ['email' => $this->toEmail, 'status' => $response->statusCode(), 'body' => $response->body()]);
+            return false;
         } catch (\Exception $e) {
             Log::error('ParentCodeInvite send failed', ['email' => $this->toEmail, 'message' => $e->getMessage()]);
+            return false;
         }
     }
 
