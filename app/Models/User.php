@@ -257,4 +257,18 @@ class User extends Authenticatable
 
         return false;
     }
+
+    /**
+     * Send the password reset notification.
+     * Uses SendGrid when configured (same as other app emails) so reset emails are sent on production.
+     */
+    public function sendPasswordResetNotification($token): void
+    {
+        $apiKey = config('services.sendgrid.api_key');
+        if ($apiKey) {
+            $this->notify(new \App\Notifications\ResetPassword($token));
+        } else {
+            $this->notify(new \Illuminate\Auth\Notifications\ResetPassword($token));
+        }
+    }
 }

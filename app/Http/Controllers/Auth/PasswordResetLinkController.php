@@ -10,7 +10,6 @@ use Inertia\Inertia;
 use Inertia\Response;
 
 class PasswordResetLinkController extends Controller
-{
     /**
      * Display the form to request a password reset link.
      */
@@ -23,8 +22,10 @@ class PasswordResetLinkController extends Controller
 
     /**
      * Send a reset link to the given user.
+     * Returns Inertia page with status in response (no redirect) so the success message
+     * shows reliably on production without depending on session flash.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): RedirectResponse|Response
     {
         $request->validate([
             'email' => 'required|email',
@@ -40,8 +41,9 @@ class PasswordResetLinkController extends Controller
         }
 
         if ($status === Password::RESET_LINK_SENT) {
-            return redirect()->route('password.request')
-                ->with('status', __($status));
+            return Inertia::render('Auth/ForgotPassword', [
+                'status' => __($status),
+            ]);
         }
 
         return back()->withInput($request->only('email'))
