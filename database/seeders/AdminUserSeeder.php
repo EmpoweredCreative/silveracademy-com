@@ -15,10 +15,10 @@ class AdminUserSeeder extends Seeder
     {
         // Create super admin user (website developer)
         User::updateOrCreate(
-            ['email' => 'admin@silveracademypa.org'],
+            ['email' => 'danny@empoweredcreative.co'],
             [
                 'name' => 'Super Admin',
-                'email' => 'admin@silveracademypa.org',
+                'email' => 'danny@empoweredcreative.co',
                 'password' => Hash::make('ChangeThisPassword123!'),
                 'role' => User::ROLE_SUPER_ADMIN,
                 'email_verified_at' => now(),
@@ -26,7 +26,7 @@ class AdminUserSeeder extends Seeder
         );
 
         $this->command->info('Super admin user created/updated:');
-        $this->command->info('Email: admin@silveracademypa.org');
+        $this->command->info('Email: danny@empoweredcreative.co');
         $this->command->info('Password: ChangeThisPassword123!');
         $this->command->warn('⚠️  Please change this password immediately after first login!');
     }
