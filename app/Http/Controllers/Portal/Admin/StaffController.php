@@ -7,7 +7,6 @@ use App\Models\Grade;
 use App\Models\User;
 use App\Notifications\AccountApproved;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
@@ -91,11 +90,11 @@ class StaffController extends Controller
         // Generate password
         $password = Str::password(12);
 
-        // Build user data
+        // Build user data (plain password so User model's 'hashed' cast hashes it once)
         $userData = [
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'password' => Hash::make($password),
+            'password' => $password,
             'role' => $validated['role'],
         ];
 
@@ -191,9 +190,9 @@ class StaffController extends Controller
             'role' => $validated['role'] ?? $staff->role,
         ]);
 
-        // Update password if provided
+        // Update password if provided (plain so User model's 'hashed' cast hashes it once)
         if (!empty($validated['password'])) {
-            $staff->update(['password' => Hash::make($validated['password'])]);
+            $staff->update(['password' => $validated['password']]);
         }
 
         // Update grade assignments
@@ -259,9 +258,9 @@ class StaffController extends Controller
             abort(404);
         }
 
-        // Generate password
+        // Generate password (plain so User model's 'hashed' cast hashes it once)
         $password = Str::password(12);
-        $staff->update(['password' => Hash::make($password)]);
+        $staff->update(['password' => $password]);
 
         // Send welcome email with credentials
         $staff->notify(new AccountApproved($password));
@@ -294,9 +293,9 @@ class StaffController extends Controller
         $sent = 0;
 
         foreach ($users as $user) {
-            // Generate password
+            // Generate password (plain so User model's 'hashed' cast hashes it once)
             $password = Str::password(12);
-            $user->update(['password' => Hash::make($password)]);
+            $user->update(['password' => $password]);
 
             // Send welcome email
             $user->notify(new AccountApproved($password));
@@ -330,9 +329,9 @@ class StaffController extends Controller
         $credentials = [];
 
         foreach ($users as $user) {
-            // Generate password
+            // Generate password (plain so User model's 'hashed' cast hashes it once)
             $password = Str::password(12);
-            $user->update(['password' => Hash::make($password)]);
+            $user->update(['password' => $password]);
 
             // Send welcome email
             $user->notify(new AccountApproved($password));
