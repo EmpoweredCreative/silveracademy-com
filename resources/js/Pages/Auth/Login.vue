@@ -1,8 +1,9 @@
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
+import { ref, computed } from 'vue';
 
-defineProps({
+const props = defineProps({
     canResetPassword: Boolean,
     status: String,
 });
@@ -13,9 +14,23 @@ const form = useForm({
     remember: false,
 });
 
+const firstValidationError = computed(() => {
+    const err = form.errors;
+    const key = err && Object.keys(err).length ? Object.keys(err)[0] : null;
+    return key ? form.errors[key] : '';
+});
+
+const genericError = ref('');
+
 const submit = () => {
+    genericError.value = '';
     form.post('/login', {
         onFinish: () => form.reset('password'),
+        onError: (errors) => {
+            genericError.value = typeof errors === 'object' && Object.keys(errors).length
+                ? Object.values(errors)[0]
+                : 'Something went wrong. Please try again.';
+        },
     });
 };
 </script>
@@ -46,7 +61,11 @@ const submit = () => {
             {{ status }}
         </div>
 
-        <form @submit.prevent="submit" class="space-y-6">
+        <div v-if="genericError || firstValidationError" class="mb-4 p-4 rounded-lg bg-red-50 border border-red-200 text-sm text-red-700 text-center">
+            {{ genericError || firstValidationError }}
+        </div>
+
+        <form @submit.prevent="submit" class="space-y-6" novalidate>
             <div>
                 <label for="email" class="block text-sm font-medium text-slate-700 mb-2">
                     Email address
