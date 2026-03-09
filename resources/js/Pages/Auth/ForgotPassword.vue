@@ -1,17 +1,23 @@
 <script setup>
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
+import { computed } from 'vue';
 
-defineProps({
-    status: String,
-});
+const page = usePage();
+const statusMessage = computed(() => page.props.status ?? page.props.flash?.status ?? '');
 
 const form = useForm({
     email: '',
 });
 
 const submit = () => {
-    form.post('/forgot-password');
+    form.post('/forgot-password', {
+        preserveState: false,
+        onSuccess: () => {
+            // Ensure we show the success message after redirect
+            form.reset();
+        },
+    });
 };
 </script>
 
@@ -24,8 +30,8 @@ const submit = () => {
             <p class="text-slate-600 mt-2">Enter your email and we'll send you a link to reset your password.</p>
         </div>
 
-        <div v-if="status" class="mb-4 font-medium text-sm text-green-600 text-center">
-            {{ status }}
+        <div v-if="statusMessage" class="mb-4 p-4 font-medium text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg text-center">
+            {{ statusMessage }}
         </div>
 
         <form @submit.prevent="submit" class="space-y-6">

@@ -30,12 +30,18 @@ class PasswordResetLinkController extends Controller
             'email' => 'required|email',
         ]);
 
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
+        try {
+            $status = Password::sendResetLink(
+                $request->only('email')
+            );
+        } catch (\Throwable $e) {
+            return back()->withInput($request->only('email'))
+                ->withErrors(['email' => 'We could not send the reset link. Please check that mail is configured and try again.']);
+        }
 
         if ($status === Password::RESET_LINK_SENT) {
-            return back()->with('status', __($status));
+            return redirect()->route('password.request')
+                ->with('status', __($status));
         }
 
         return back()->withInput($request->only('email'))
