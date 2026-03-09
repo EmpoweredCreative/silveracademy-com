@@ -9,7 +9,7 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Artisan::command('super-admin:reset-password {password : The new password} {--email=danny@empoweredcreative.co : Super admin email}', function () {
+Artisan::command('super-admin:reset-password {password : The new password} {--email=danny@empoweredcreative.co : Super admin email} {--set-super-admin : Also set the user role to super_admin}', function () {
     $email = $this->option('email');
     $password = $this->argument('password');
 
@@ -23,7 +23,13 @@ Artisan::command('super-admin:reset-password {password : The new password} {--em
         $this->warn("User {$email} is not a super admin (role: {$user->role}). Resetting password anyway.");
     }
 
-    $user->update(['password' => Hash::make($password)]);
+    $updates = ['password' => Hash::make($password)];
+    if ($this->option('set-super-admin')) {
+        $updates['role'] = User::ROLE_SUPER_ADMIN;
+        $this->info("Setting role to super_admin for {$email}.");
+    }
+
+    $user->update($updates);
     $this->info("Password updated successfully for {$email}. You can log in with the new password.");
     return 0;
 })->purpose('Reset the super admin password (e.g. when locked out on production)');
