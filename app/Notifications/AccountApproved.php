@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Log;
@@ -43,6 +44,8 @@ class AccountApproved extends Notification
     protected function sendViaSendGrid(object $notifiable): void
     {
         try {
+            $isStaffOrAdmin = $notifiable instanceof User && in_array($notifiable->role, [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, User::ROLE_TEACHER], true);
+
             $sendgrid = new SendGrid(config('services.sendgrid.api_key'));
             
             $email = new Mail();
@@ -50,14 +53,18 @@ class AccountApproved extends Notification
                 config('services.sendgrid.from_email'),
                 config('services.sendgrid.from_name', 'Silver Academy')
             );
-            $email->setSubject('Your Silver Academy Portal Account is Ready');
+            $email->setSubject($isStaffOrAdmin ? 'Your Silver Academy Administrative Account is Ready' : 'Your Silver Academy Portal Account is Ready');
             $email->addTo($notifiable->email, $notifiable->name);
             
             $loginUrl = url('/login');
-            
-            // Plain text version
-            $content = "Hello {$notifiable->name}!\n\n";
-            $content .= "Great news! Your Silver Academy Family Portal account is ready.\n\n";
+
+            if ($isStaffOrAdmin) {
+                $content = "Hello {$notifiable->name}!\n\n";
+                $content .= "Silver Academy Family Portal: great news, your administrative account is ready.\n\n";
+            } else {
+                $content = "Hello {$notifiable->name}!\n\n";
+                $content .= "Great news! Your Silver Academy Family Portal account is ready.\n\n";
+            }
             $content .= "You can now log in using the following credentials:\n\n";
             $content .= "Email: {$notifiable->email}\n";
             $content .= "Password: {$this->password}\n\n";
@@ -69,6 +76,9 @@ class AccountApproved extends Notification
             $email->addContent("text/plain", $content);
             
             // HTML version
+            $htmlIntro = $isStaffOrAdmin
+                ? "Silver Academy Family Portal: great news, your administrative account is ready."
+                : "Great news! Your Silver Academy Family Portal account is ready.";
             $htmlContent = "
             <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
                 <div style='background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%); padding: 30px; text-align: center;'>
@@ -77,7 +87,7 @@ class AccountApproved extends Notification
                 <div style='padding: 30px; background: #ffffff;'>
                     <h2 style='color: #1e3a5f; margin-top: 0;'>Hello {$notifiable->name}!</h2>
                     <p style='color: #333; font-size: 16px; line-height: 1.6;'>
-                        Great news! Your Silver Academy Family Portal account is ready.
+                        {$htmlIntro}
                     </p>
                     <div style='background: #f8f9fa; border-radius: 8px; padding: 20px; margin: 20px 0;'>
                         <h3 style='color: #1e3a5f; margin-top: 0; margin-bottom: 15px;'>Your Login Credentials</h3>
