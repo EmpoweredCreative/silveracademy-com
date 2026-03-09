@@ -60,7 +60,7 @@ class AccountApproved extends Notification
 
             if ($isStaffOrAdmin) {
                 $content = "Hello {$notifiable->name}!\n\n";
-                $content .= "Silver Academy Family Portal: great news, your administrative account is ready.\n\n";
+                $content .= "Great news, your Administrative Account is ready.\n\n";
             } else {
                 $content = "Hello {$notifiable->name}!\n\n";
                 $content .= "Great news! Your Silver Academy Family Portal account is ready.\n\n";
@@ -77,7 +77,7 @@ class AccountApproved extends Notification
             
             // HTML version
             $htmlIntro = $isStaffOrAdmin
-                ? "Silver Academy Family Portal: great news, your administrative account is ready."
+                ? "Great news, your <strong>Administrative Account</strong> is ready."
                 : "Great news! Your Silver Academy Family Portal account is ready.";
             $htmlContent = "
             <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
