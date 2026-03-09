@@ -3,7 +3,6 @@
 use App\Models\User;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Hash;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
@@ -23,7 +22,8 @@ Artisan::command('super-admin:reset-password {password : The new password} {--em
         $this->warn("User {$email} is not a super admin (role: {$user->role}). Resetting password anyway.");
     }
 
-    $updates = ['password' => Hash::make($password)];
+    // Use plain password so the User model's 'hashed' cast hashes it once (avoids double-hashing)
+    $updates = ['password' => $password];
     if ($this->option('set-super-admin')) {
         $updates['role'] = User::ROLE_SUPER_ADMIN;
         $this->info("Setting role to super_admin for {$email}.");
@@ -31,5 +31,6 @@ Artisan::command('super-admin:reset-password {password : The new password} {--em
 
     $user->update($updates);
     $this->info("Password updated successfully for {$email}. You can log in with the new password.");
+    $this->comment('If you were locked out after too many attempts, run: php artisan cache:clear');
     return 0;
 })->purpose('Reset the super admin password (e.g. when locked out on production)');

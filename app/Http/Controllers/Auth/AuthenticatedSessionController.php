@@ -33,6 +33,10 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        // Persist session before redirect so the next request (dashboard) sees the auth state.
+        // Without this, session may not be written before the browser follows the redirect on production.
+        $request->session()->save();
+
         return redirect()->intended(route('portal.dashboard', absolute: false));
     }
 

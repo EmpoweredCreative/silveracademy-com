@@ -117,8 +117,9 @@ class ResetPassword extends Notification
             Log::error('ResetPassword notification failed', [
                 'email' => $notifiable->getEmailForPasswordReset(),
                 'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
-            throw $e;
+            // Do not rethrow: avoid 500 on forgot-password; user sees "link sent" and can check logs
         }
     }
 
