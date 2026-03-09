@@ -22,6 +22,10 @@ const props = defineProps({
     recentAnnouncements: Array,
     teacherAnnouncements: Array,
     gradeNews: Array,
+    linkedStudentGradeNames: {
+        type: Array,
+        default: () => [],
+    },
     teacherGrades: Array,
     studentCount: Number,
     staffCount: Number,
@@ -419,12 +423,20 @@ const formatWeekDate = (dateStr) => {
 
             <!-- PARENT VIEW -->
             <template v-else-if="showParentView">
-                <!-- Combined News Section: School-Wide + Grade-Specific -->
-                <div v-if="(recentAnnouncements && recentAnnouncements.length > 0) || (gradeNews && gradeNews.length > 0)" class="mb-8 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <!-- Combined News Section: School-Wide + Grade-Specific (per linked students' grades) -->
+                <div v-if="(recentAnnouncements && recentAnnouncements.length > 0) || (gradeNews && gradeNews.length > 0) || (linkedStudentGradeNames && linkedStudentGradeNames.length > 0)" class="mb-8 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                     <div class="px-6 py-4 border-b border-slate-200 bg-gradient-to-r from-brand-50 to-emerald-50">
                         <div class="flex items-center gap-3">
                             <MegaphoneIcon class="w-5 h-5 text-brand-700" />
-                            <h2 class="text-lg font-serif font-semibold text-slate-900">News & Announcements</h2>
+                            <div>
+                                <h2 class="text-lg font-serif font-semibold text-slate-900">News & Announcements</h2>
+                                <p v-if="linkedStudentGradeNames && linkedStudentGradeNames.length > 0" class="text-sm text-slate-600 mt-0.5">
+                                    Showing school-wide news and grade-level messages for: {{ linkedStudentGradeNames.join(', ') }}
+                                </p>
+                                <p v-else class="text-sm text-slate-500 mt-0.5">
+                                    Add your children in <Link href="/portal/settings" class="text-brand-600 hover:text-brand-700 font-medium">Settings → Linked Students</Link> to see grade-level news here.
+                                </p>
+                            </div>
                         </div>
                     </div>
                     <div class="divide-y divide-slate-100">

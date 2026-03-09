@@ -9,6 +9,7 @@ use App\Models\StudentContactEmail;
 use App\Models\User;
 use App\Services\ParentCodeService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -138,19 +139,23 @@ class GradeController extends Controller
             'parent_email_4' => 'nullable|email',
         ]);
 
-        $student = Student::create([
-            'name' => $validated['name'],
-            'grade_id' => $grade->id,
-            'status' => Student::STATUS_ACTIVE,
-        ]);
+        $result = DB::transaction(function () use ($validated, $grade) {
+            $student = Student::create([
+                'name' => $validated['name'],
+                'grade_id' => $grade->id,
+                'status' => Student::STATUS_ACTIVE,
+            ]);
 
-        $result = ParentCodeService::createCodeForStudent($student, ParentCodeService::DEFAULT_MAX_LINKS, false);
-        $this->syncStudentContactEmails($student, $validated);
+            $codeResult = ParentCodeService::createCodeForStudent($student, ParentCodeService::DEFAULT_MAX_LINKS, false);
+            $this->syncStudentContactEmails($student, $validated);
 
-        return redirect()->back()
+            return ['student' => $student, 'plain_code' => $codeResult['plain_code']];
+        });
+
+        return redirect()->route('admin.grades.show', $grade)
             ->with('success', 'Student added successfully.')
             ->with('new_student_code_plain', $result['plain_code'])
-            ->with('new_student_name', $student->name);
+            ->with('new_student_name', $result['student']->name);
     }
 
     /**

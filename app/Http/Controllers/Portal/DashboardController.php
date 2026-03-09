@@ -62,12 +62,15 @@ class DashboardController extends Controller
             ->take(3)
             ->get();
 
-        // Get grade-specific news for parents (from teachers)
+        // Get grade-specific news for parents (from teachers) – one message set per grade, based on ALL linked students' grades
         // Admins/Super Admins get ALL grade news for preview purposes
         $gradeNews = collect();
+        $linkedStudentGradeNames = []; // Grade names for the parent's linked children (for UI label)
         if ($user->isParent()) {
-            $childrenGradeIds = $user->children()->pluck('grade_id')->unique()->filter()->toArray();
-            
+            $children = $user->children()->with('grade:id,name')->get();
+            $childrenGradeIds = $children->pluck('grade_id')->unique()->filter()->toArray();
+            $linkedStudentGradeNames = $children->map(fn ($s) => $s->grade?->name)->filter()->unique()->values()->toArray();
+
             if (!empty($childrenGradeIds)) {
                 $gradeNews = Post::with(['targetGrade', 'author'])
                     ->where('type', 'news')
@@ -149,6 +152,7 @@ class DashboardController extends Controller
             'recentAnnouncements' => $recentAnnouncements,
             'teacherAnnouncements' => $teacherAnnouncements,
             'gradeNews' => $gradeNews,
+            'linkedStudentGradeNames' => $linkedStudentGradeNames ?? [],
             'teacherGrades' => $teacherGrades,
             'studentCount' => $studentCount,
             'staffCount' => $staffCount,

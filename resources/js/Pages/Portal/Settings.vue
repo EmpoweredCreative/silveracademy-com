@@ -1,7 +1,7 @@
 <script setup>
 import { Head, useForm, usePage, router } from '@inertiajs/vue3';
 import PortalLayout from '@/Layouts/PortalLayout.vue';
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import axios from 'axios';
 import { 
     UserCircleIcon,
@@ -28,6 +28,16 @@ const addChildSubmitting = ref(false);
 const addChildError = ref('');
 const addChildSuccess = ref('');
 
+// Local list of linked students – synced from server and updated when we add a child so the UI updates immediately
+const linkedStudents = ref([]);
+watch(
+    () => props.children,
+    (next) => {
+        linkedStudents.value = Array.isArray(next) ? [...next] : [];
+    },
+    { immediate: true }
+);
+
 const addChild = async () => {
     const c = (addChildCode.value || '').trim();
     if (!c) {
@@ -41,6 +51,10 @@ const addChild = async () => {
         const { data } = await axios.post('/portal/parent/add-child', { code: c });
         addChildSuccess.value = data.message || 'Child added successfully.';
         addChildCode.value = '';
+        // Update the displayed list immediately with the new student from the response
+        if (data.student && !linkedStudents.value.some((s) => s.id === data.student.id)) {
+            linkedStudents.value = [...linkedStudents.value, data.student];
+        }
         router.reload({ preserveScroll: true });
     } catch (err) {
         addChildError.value = err.response?.data?.message || 'Invalid code or this student has reached the maximum number of linked accounts. Contact the school office.';
@@ -52,12 +66,16 @@ const addChild = async () => {
 const page = usePage();
 const user = computed(() => page.props.auth?.user ?? props.user);
 
-// Show Linked Students when actually a parent, or when super_admin is previewing as parent
+// Show Linked Students when user is a parent, has linked children, or is super_admin (so they can see/test the UI).
+// Prefer props.user.role (from Settings controller) so the section is visible for parents regardless of shared auth shape.
 const storedPreviewRole = ref('admin');
 const showLinkedStudents = computed(() => {
-    const role = user.value?.role;
+    const role = props.user?.role ?? user.value?.role;
+    const childrenList = linkedStudents.value;
+    const hasChildren = Array.isArray(childrenList) && childrenList.length > 0;
     if (role === 'parent') return true;
-    if (role === 'super_admin' && storedPreviewRole.value === 'parent') return true;
+    if (role === 'super_admin') return true;
+    if (hasChildren) return true; // e.g. parent whose role might not be set
     return false;
 });
 function updatePreviewRole() {
@@ -196,22 +214,27 @@ const roleLabel = computed(() => {
     <PortalLayout>
         <template #header>Account Settings</template>
 
-        <div class="max-w-3xl mx-auto space-y-8">
-            <!-- Success/Error Messages -->
-            <div v-if="successMessage" class="bg-green-50 border border-green-200 rounded-lg p-4">
-                <div class="flex items-center gap-3">
-                    <CheckCircleIcon class="w-5 h-5 text-green-600" />
-                    <p class="text-sm text-green-800">{{ successMessage }}</p>
+        <div
+            class="mx-auto grid grid-cols-1 gap-8"
+            :class="showLinkedStudents ? 'max-w-6xl lg:grid-cols-[65fr_35fr]' : 'max-w-3xl'"
+        >
+            <!-- Left column (65%): flash messages, avatar, profile, password, account info -->
+            <div class="min-w-0 space-y-8">
+                <!-- Success/Error Messages -->
+                <div v-if="successMessage" class="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <div class="flex items-center gap-3">
+                        <CheckCircleIcon class="w-5 h-5 text-green-600" />
+                        <p class="text-sm text-green-800">{{ successMessage }}</p>
+                    </div>
                 </div>
-            </div>
-            <div v-if="errorMessage" class="bg-red-50 border border-red-200 rounded-lg p-4">
-                <div class="flex items-center gap-3">
-                    <ExclamationTriangleIcon class="w-5 h-5 text-red-600" />
-                    <p class="text-sm text-red-800">{{ errorMessage }}</p>
+                <div v-if="errorMessage" class="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <div class="flex items-center gap-3">
+                        <ExclamationTriangleIcon class="w-5 h-5 text-red-600" />
+                        <p class="text-sm text-red-800">{{ errorMessage }}</p>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Avatar Section -->
+                <!-- Avatar Section -->
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                 <div class="px-6 py-4 border-b border-slate-200">
                     <h2 class="text-lg font-semibold text-slate-900">Profile Picture</h2>
@@ -346,56 +369,6 @@ const roleLabel = computed(() => {
                 </form>
             </div>
 
-            <!-- Linked students (parents only; also when super admin previews as parent) -->
-            <div v-if="showLinkedStudents" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="px-6 py-4 border-b border-slate-200">
-                    <div class="flex items-center gap-3">
-                        <UserGroupIcon class="w-5 h-5 text-slate-400" />
-                        <div>
-                            <h2 class="text-lg font-semibold text-slate-900">Linked Students</h2>
-                            <p class="text-sm text-slate-500">Students linked to your account. Add another child with a Parent Code from the school.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="p-6 space-y-6">
-                    <div v-if="children?.length" class="space-y-2">
-                        <p class="text-sm font-medium text-slate-700">Your linked students</p>
-                        <ul class="list-disc list-inside text-slate-600 space-y-1">
-                            <li v-for="child in children" :key="child.id">
-                                {{ child.name }}
-                                <span v-if="child.grade?.name" class="text-slate-500">({{ child.grade.name }})</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <div v-else class="text-sm text-slate-500">
-                        No students linked yet. Use a Parent Code below to link a student.
-                    </div>
-
-                    <div class="border-t border-slate-200 pt-6">
-                        <p class="text-sm font-medium text-slate-700 mb-2">Link another student</p>
-                        <p v-if="addChildSuccess" class="text-sm text-green-700 mb-2">{{ addChildSuccess }}</p>
-                        <p v-if="addChildError" class="text-sm text-red-600 mb-2">{{ addChildError }}</p>
-                        <div class="flex gap-3 flex-wrap items-end">
-                            <input
-                                v-model="addChildCode"
-                                type="text"
-                                placeholder="Enter Parent Code"
-                                class="flex-1 min-w-[180px] px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 font-mono uppercase"
-                            />
-                            <button
-                                type="button"
-                                :disabled="addChildSubmitting"
-                                @click="addChild"
-                                class="inline-flex items-center px-4 py-2 bg-brand-600 text-white font-medium rounded-lg hover:bg-brand-700 disabled:opacity-50"
-                            >
-                                <PlusIcon class="w-4 h-4 mr-2" />
-                                {{ addChildSubmitting ? 'Adding...' : 'Add child' }}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Update Password -->
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                 <div class="px-6 py-4 border-b border-slate-200">
@@ -473,6 +446,65 @@ const roleLabel = computed(() => {
             <!-- Account Info -->
             <div class="bg-slate-50 rounded-xl p-6 text-center text-sm text-slate-500">
                 <p>Account created on {{ new Date(user.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) }}</p>
+            </div>
+            </div>
+
+            <!-- Right column (35%): Linked Students -->
+            <div v-if="showLinkedStudents" class="min-w-0 space-y-8">
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden lg:sticky lg:top-8">
+                    <div class="px-6 py-4 border-b border-slate-200">
+                        <div class="flex items-center gap-3">
+                            <UserGroupIcon class="w-5 h-5 text-slate-400" />
+                            <div>
+                                <h2 class="text-lg font-semibold text-slate-900">Linked Students</h2>
+                                <p class="text-sm text-slate-500">Students linked to your account. Add another child with a Parent Code from the school.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6 space-y-6">
+                        <!-- Currently linked students – always show this section -->
+                        <div class="space-y-2">
+                            <p class="text-sm font-semibold text-slate-700">Currently linked</p>
+                            <ul v-if="linkedStudents.length" class="space-y-2" role="list">
+                                <li
+                                    v-for="child in linkedStudents"
+                                    :key="child.id"
+                                    class="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-800"
+                                >
+                                    <UserGroupIcon class="h-4 w-4 flex-shrink-0 text-slate-400" />
+                                    <span class="font-medium">{{ child.name }}</span>
+                                    <span v-if="child.grade?.name" class="text-slate-500">· {{ child.grade.name }}</span>
+                                </li>
+                            </ul>
+                            <p v-else class="rounded-lg bg-slate-50 px-3 py-3 text-sm text-slate-500">
+                                No students linked yet. Use a Parent Code below to link a student.
+                            </p>
+                        </div>
+
+                        <div class="border-t border-slate-200 pt-6">
+                            <p class="text-sm font-medium text-slate-700 mb-2">Link another student</p>
+                            <p v-if="addChildSuccess" class="text-sm text-green-700 mb-2">{{ addChildSuccess }}</p>
+                            <p v-if="addChildError" class="text-sm text-red-600 mb-2">{{ addChildError }}</p>
+                            <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
+                                <input
+                                    v-model="addChildCode"
+                                    type="text"
+                                    placeholder="Enter Parent Code"
+                                    class="min-w-0 flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 font-mono uppercase"
+                                />
+                                <button
+                                    type="button"
+                                    :disabled="addChildSubmitting"
+                                    @click="addChild"
+                                    class="inline-flex items-center justify-center px-4 py-2 bg-brand-600 text-white font-medium rounded-lg hover:bg-brand-700 disabled:opacity-50 whitespace-nowrap"
+                                >
+                                    <PlusIcon class="w-4 h-4 mr-2" />
+                                    {{ addChildSubmitting ? 'Adding...' : 'Add child' }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </PortalLayout>

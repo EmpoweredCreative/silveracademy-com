@@ -1,7 +1,21 @@
 import './bootstrap';
-import '../css/app.css';import { createApp, h } from 'vue';
-import { createInertiaApp } from '@inertiajs/vue3';
-import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';const appName = import.meta.env.VITE_APP_NAME || 'Silver Academy';createInertiaApp({
+import '../css/app.css';
+import { createApp, h } from 'vue';
+import { createInertiaApp, router } from '@inertiajs/vue3';
+import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
+
+const appName = import.meta.env.VITE_APP_NAME || 'Silver Academy';
+
+// On 419 (CSRF/session expired), reload the page so the user gets a fresh token and can retry
+router.on('invalid', (event) => {
+    const response = event.detail?.response;
+    if (response?.status === 419) {
+        event.preventDefault();
+        window.location.reload();
+    }
+});
+
+createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: (name) => resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob('./Pages/**/*.vue')),
     setup({ el, App, props, plugin }) {

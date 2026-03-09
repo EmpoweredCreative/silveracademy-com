@@ -179,8 +179,12 @@ const editStudentForm = useForm({
 const addStudent = () => {
     newStudentForm.post(`/portal/admin/grades/${props.grade.id}/students`, {
         onSuccess: () => {
-            newStudentForm.reset();
-            showAddStudentForm.value = false;
+            // Only close and reset when there are no validation errors (Inertia may call onSuccess even when server returned errors)
+            if (Object.keys(newStudentForm.errors).length === 0) {
+                newStudentForm.reset();
+                showAddStudentForm.value = false;
+                router.reload({ preserveScroll: false });
+            }
         },
     });
 };
