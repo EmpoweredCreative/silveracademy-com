@@ -10,11 +10,13 @@ use Illuminate\Http\Request;
 class AddChildController extends Controller
 {
     /**
-     * Add a child to the current parent account using a parent code.
+     * Add a child to the current account using a parent code.
+     * Parents can link their children; super_admin can link for testing the full flow.
      */
     public function store(Request $request): JsonResponse
     {
-        if (!$request->user()->isParent()) {
+        $user = $request->user();
+        if (!$user->isParent() && !$user->isSuperAdmin()) {
             abort(403, 'Only parent accounts can link students.');
         }
 
@@ -38,7 +40,6 @@ class AddChildController extends Controller
             ], 422);
         }
 
-        $user = $request->user();
         if ($user->children()->where('students.id', $student->id)->exists()) {
             return response()->json([
                 'message' => 'You have already linked this student.',
