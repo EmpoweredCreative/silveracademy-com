@@ -176,15 +176,24 @@ const editStudentForm = useForm({
     parent_email_4: '',
 });
 
+const addStudentError = ref('');
+
 const addStudent = () => {
+    addStudentError.value = '';
     newStudentForm.post(`/portal/admin/grades/${props.grade.id}/students`, {
         onSuccess: () => {
             // Only close and reset when there are no validation errors (Inertia may call onSuccess even when server returned errors)
             if (Object.keys(newStudentForm.errors).length === 0) {
                 newStudentForm.reset();
                 showAddStudentForm.value = false;
+                addStudentError.value = '';
                 router.reload({ preserveScroll: false });
             }
+        },
+        onError: (errors) => {
+            addStudentError.value = typeof errors === 'object' && Object.keys(errors).length
+                ? Object.values(errors)[0]
+                : 'Something went wrong. If the page just refreshed, your session may have expired — try again or refresh the page.';
         },
     });
 };
@@ -337,6 +346,9 @@ const cancelDelete = () => {
 
                 <!-- Add Student Form -->
                 <div v-if="showAddStudentForm" class="px-6 py-4 bg-slate-50 border-b border-slate-200">
+                    <p v-if="addStudentError" class="mb-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+                        {{ addStudentError }}
+                    </p>
                     <form @submit.prevent="addStudent" class="space-y-4">
                         <div class="flex flex-wrap items-end gap-3">
                             <div class="flex-1 min-w-[200px]">

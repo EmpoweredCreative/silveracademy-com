@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Services\ParentCodeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -131,31 +132,49 @@ class GradeController extends Controller
      */
     public function storeStudent(Request $request, Grade $grade)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'parent_email_1' => 'nullable|email',
-            'parent_email_2' => 'nullable|email',
-            'parent_email_3' => 'nullable|email',
-            'parent_email_4' => 'nullable|email',
+        Log::info('Add student: request received', [
+            'grade_id' => $grade->id,
+            'name' => $request->input('name'),
+            'user_id' => $request->user()?->id,
         ]);
 
-        $result = DB::transaction(function () use ($validated, $grade) {
-            $student = Student::create([
-                'name' => $validated['name'],
-                'grade_id' => $grade->id,
-                'status' => Student::STATUS_ACTIVE,
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'parent_email_1' => 'nullable|email',
+                'parent_email_2' => 'nullable|email',
+                'parent_email_3' => 'nullable|email',
+                'parent_email_4' => 'nullable|email',
             ]);
 
-            $codeResult = ParentCodeService::createCodeForStudent($student, ParentCodeService::DEFAULT_MAX_LINKS, false);
-            $this->syncStudentContactEmails($student, $validated);
+            $result = DB::transaction(function () use ($validated, $grade) {
+                $student = Student::create([
+                    'name' => $validated['name'],
+                    'grade_id' => $grade->id,
+                    'status' => Student::STATUS_ACTIVE,
+                ]);
 
-            return ['student' => $student, 'plain_code' => $codeResult['plain_code']];
-        });
+                $codeResult = ParentCodeService::createCodeForStudent($student, ParentCodeService::DEFAULT_MAX_LINKS, false);
+                $this->syncStudentContactEmails($student, $validated);
 
-        return redirect()->route('admin.grades.show', $grade)
-            ->with('success', 'Student added successfully.')
-            ->with('new_student_code_plain', $result['plain_code'])
-            ->with('new_student_name', $result['student']->name);
+                return ['student' => $student, 'plain_code' => $codeResult['plain_code']];
+            });
+
+            return redirect()->route('admin.grades.show', $grade)
+                ->with('success', 'Student added successfully.')
+                ->with('new_student_code_plain', $result['plain_code'])
+                ->with('new_student_name', $result['student']->name);
+        } catch (\Throwable $e) {
+            Log::error('Add student failed', [
+                'grade_id' => $grade->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return redirect()->back()
+                ->withInput($request->only('name', 'parent_email_1', 'parent_email_2', 'parent_email_3', 'parent_email_4'))
+                ->withErrors(['name' => 'Failed to add student. Please try again. Check server logs for details.']);
+        }
     }
 
     /**

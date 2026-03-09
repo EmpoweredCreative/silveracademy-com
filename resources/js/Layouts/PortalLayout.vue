@@ -27,15 +27,18 @@ const handlePreviewRoleChanged = (event) => {
     }
 }
 
+const showSessionExpiredBanner = ref(false)
+
 onMounted(() => {
     updatePreviewRole()
-    
+    if (sessionStorage.getItem('session_expired_message')) {
+        showSessionExpiredBanner.value = true
+        sessionStorage.removeItem('session_expired_message')
+    }
     // Listen for storage changes (in case another tab changes it)
     window.addEventListener('storage', updatePreviewRole)
-    
     // Listen for preview role changes from Dashboard/Calendar
     window.addEventListener('preview-role-changed', handlePreviewRoleChanged)
-    
     // Also update on Inertia navigation
     router.on('navigate', updatePreviewRole)
 })
@@ -330,6 +333,11 @@ const isActive = (href) => {
                 </div>
             </header>
             <main>
+                <div v-if="showSessionExpiredBanner" class="mx-auto max-w-7xl px-4 pt-4 sm:px-6 lg:px-8">
+                    <div class="rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800">
+                        Your session expired. Please try your action again.
+                    </div>
+                </div>
                 <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
                     <slot />
                 </div>

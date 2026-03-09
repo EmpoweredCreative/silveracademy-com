@@ -6,11 +6,12 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Silver Academy';
 
-// On 419 (CSRF/session expired), reload the page so the user gets a fresh token and can retry
+// On 419 (CSRF/session expired), show message and reload so the user gets a fresh token
 router.on('invalid', (event) => {
     const response = event.detail?.response;
     if (response?.status === 419) {
         event.preventDefault();
+        sessionStorage.setItem('session_expired_message', '1');
         window.location.reload();
     }
 });
