@@ -10,6 +10,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 
 class PasswordResetLinkController extends Controller
+{
     /**
      * Display the form to request a password reset link.
      */
