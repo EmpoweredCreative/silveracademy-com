@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
 import MarketingLayout from '@/Layouts/MarketingLayout.vue';
 
@@ -112,12 +112,65 @@ const stats = [
     { value: '12', label: 'average class size' },
     { value: '100%', label: 'high school acceptance' },
 ];
+
+// CauseMatch 2026 pop-up: show until end of day March 16, 2026; dismissible via localStorage
+const CAMPAIGN_POPUP_EXPIRY = new Date(2026, 2, 16, 23, 59, 59, 999); // March 16, 2026 23:59:59 local
+const CAMPAIGN_POPUP_STORAGE_KEY = 'silveracademy_causematch_2026_dismissed';
+const showCampaignPopup = ref(false);
+
+onMounted(() => {
+    const beforeExpiry = new Date() < CAMPAIGN_POPUP_EXPIRY;
+    const notDismissed = localStorage.getItem(CAMPAIGN_POPUP_STORAGE_KEY) !== '1';
+    const previewMode = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('show_campaign_popup') === '1';
+    if (beforeExpiry && (notDismissed || previewMode)) {
+        showCampaignPopup.value = true;
+    }
+});
+
+const dismissCampaignPopup = () => {
+    localStorage.setItem(CAMPAIGN_POPUP_STORAGE_KEY, '1');
+    showCampaignPopup.value = false;
+};
 </script>
 
 <template>
     <Head title="Home - Central PA's Jewish Day School" />
 
     <MarketingLayout>
+        <!-- CauseMatch 2026 campaign pop-up (expires end of day March 16, 2026) -->
+        <div
+            v-if="showCampaignPopup"
+            class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Campaign: Silver Academy CauseMatch 2026"
+        >
+            <div class="relative max-w-2xl w-full animate-popup">
+                <button
+                    type="button"
+                    class="absolute -top-2 -right-2 z-10 rounded-full bg-white/90 p-1.5 text-slate-600 shadow-md hover:bg-white hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    aria-label="Close"
+                    @click="dismissCampaignPopup"
+                >
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+                <a
+                    href="https://causematch.com/silveracademypa26"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="block rounded-lg overflow-hidden shadow-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+                >
+                    <img
+                        src="/img/pop-ups/causematch-silveracademy-2026.png"
+                        alt="Silver Academy CauseMatch 2026 - Rising Together"
+                        class="w-full h-auto object-contain"
+                    />
+                </a>
+            </div>
+        </div>
+
         <!-- Hero Section - Video banner (no overlay), text underneath (Edits 1, 2, 3) -->
         <!-- Video banner - shorter height so text and video visible on load -->
         <section class="relative overflow-hidden bg-slate-900">
